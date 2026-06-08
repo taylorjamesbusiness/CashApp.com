@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:#000; color:#fff; min-height:100vh; }
+
+/* LOGIN */
+.login-wrap {
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+  background: radial-gradient(circle at 30% 50%, rgba(0,200,81,0.08) 0%, transparent 60%);
+}
+.login-card {
+  width:100%; max-width:380px; background:#0a0a0a;
+  border:1px solid rgba(0,200,81,0.25); border-radius:20px; padding:36px 28px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.8);
+}
+.login-logo {
+  width:56px; height:56px; background:linear-gradient(135deg,#00C851,#00a040);
+  border-radius:14px; display:flex; align-items:center; justify-content:center;
+  font-size:26px; font-weight:900; color:#fff; margin:0 auto 20px;
+  box-shadow:0 4px 20px rgba(0,200,81,0.4);
+}
+.login-title { text-align:center; font-size:20px; font-weight:800; margin-bottom:6px; }
+.login-sub { text-align:center; color:rgba(255,255,255,0.4); font-size:13px; margin-bottom:28px; }
+.field-label { font-size:12px; font-weight:700; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; }
+.field-input {
+  width:100%; background:#111; border:1.5px solid rgba(255,255,255,0.1);
+  border-radius:12px; padding:12px 14px; font-size:14px; color:#fff;
+  outline:none; font-family:'DM Sans',sans-serif; margin-bottom:16px; transition:all 0.2s;
+}
+.field-input:focus { border-color:#00C851; box-shadow:0 0 0 3px rgba(0,200,81,0.15); }
+.login-btn {
+  width:100%; background:linear-gradient(135deg,#00C851,#00a040);
+  color:#fff; border:none; border-radius:12px; padding:13px;
+  font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
+  box-shadow:0 4px 20px rgba(0,200,81,0.3); transition:all 0.3s;
+}
+.login-btn:hover { transform:translateY(-1px); }
+.login-error { color:#ff4d4d; font-size:13px; text-align:center; margin-top:12px; display:none; }
+
+/* DASHBOARD */
+#dashboard { display:none; }
+.topbar {
+  background:#0a0a0a; border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:14px 24px; display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+}
+.topbar-logo { display:flex; align-items:center; gap:10px; }
+.topbar-icon {
+  width:36px; height:36px; background:linear-gradient(135deg,#00C851,#00a040);
+  border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:900; color:#fff;
+}
+.topbar-title { font-size:16px; font-weight:800; }
+.topbar-right { display:flex; align-items:center; gap:12px; }
+.logout-btn {
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.6); padding:7px 16px; border-radius:8px;
+  font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;
+}
+.logout-btn:hover { background:rgba(255,255,255,0.1); color:#fff; }
+.content { padding:24px; max-width:1200px; margin:0 auto; }
+
+/* STAT CARDS */
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:16px; margin-bottom:28px; }
+.stat-card {
+  background:#0a0a0a; border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px; padding:20px;
+}
+.stat-label { font-size:11px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.1em; font-weight:700; margin-bottom:8px; }
+.stat-val { font-size:28px; font-weight:800; color:#fff; }
+.stat-sub { font-size:12px; color:rgba(255,255,255,0.3); margin-top:4px; }
+.stat-card.green { border-color:rgba(0,200,81,0.2); }
+.stat-card.green .stat-val { color:#00C851; }
+
+/* TABS */
+.tabs { display:flex; gap:8px; margin-bottom:20px; }
+.tab-btn {
+  background:#111; border:1px solid rgba(255,255,255,0.08);
+  color:rgba(255,255,255,0.5); padding:9px 20px; border-radius:10px;
+  font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;
+}
+.tab-btn.active { background:rgba(0,200,81,0.12); border-color:rgba(0,200,81,0.3); color:#00C851; }
+
+/* FILTER BAR */
+.filter-bar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+.filter-select {
+  background:#111; border:1px solid rgba(255,255,255,0.1); color:#fff;
+  padding:8px 14px; border-radius:10px; font-size:13px; font-family:'DM Sans',sans-serif;
+  outline:none; cursor:pointer;
+}
+.filter-select option { background:#111; }
+.search-input {
+  background:#111; border:1px solid rgba(255,255,255,0.1); color:#fff;
+  padding:8px 14px; border-radius:10px; font-size:13px; font-family:'DM Sans',sans-serif;
+  outline:none; flex:1; min-width:180px;
+}
+.search-input::placeholder { color:rgba(255,255,255,0.25); }
+.search-input:focus { border-color:#00C851; }
+.refresh-btn {
+  background:rgba(0,200,81,0.1); border:1px solid rgba(0,200,81,0.3);
+  color:#00C851; padding:8px 16px; border-radius:10px;
+  font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;
+}
+.refresh-btn:hover { background:rgba(0,200,81,0.2); }
+
+/* TABLE */
+.table-wrap {
+  background:#0a0a0a; border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px; overflow:hidden;
+}
+.table-scroll { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+thead th {
+  background:#111; padding:12px 16px; text-align:left;
+  font-size:11px; font-weight:700; color:rgba(255,255,255,0.4);
+  text-transform:uppercase; letter-spacing:0.08em; white-space:nowrap;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+tbody td {
+  padding:14px 16px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04);
+  white-space:nowrap;
+}
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover { background:rgba(255,255,255,0.02); }
+.badge {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:999px; font-size:11px; font-weight:700; text-transform:uppercase;
+}
+.badge.settled { background:rgba(0,200,81,0.12); border:1px solid rgba(0,200,81,0.3); color:#00C851; }
+.badge.new { background:rgba(255,200,0,0.1); border:1px solid rgba(255,200,0,0.3); color:#ffc800; }
+.badge.expired { background:rgba(255,80,80,0.1); border:1px solid rgba(255,80,80,0.3); color:#ff5050; }
+.badge.pending { background:rgba(100,180,255,0.1); border:1px solid rgba(100,180,255,0.3); color:#64b4ff; }
+.badge.completed { background:rgba(0,200,81,0.12); border:1px solid rgba(0,200,81,0.3); color:#00C851; }
+.badge-dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+.empty-state { text-align:center; padding:48px 20px; color:rgba(255,255,255,0.3); font-size:14px; }
+.table-footer {
+  padding:12px 16px; border-top:1px solid rgba(255,255,255,0.06);
+  font-size:12px; color:rgba(255,255,255,0.3);
+}
+
+/* Expire countdown */
+.expire-text { font-size:12px; color:rgba(255,200,0,0.8); font-weight:600; }
+.expired-text { font-size:12px; color:#ff5050; }
+
+@media (max-width:640px) {
+  .content { padding:16px; }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .topbar { padding:12px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="login-wrap" id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">$</div>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">Rose</div>
+    <div class="field-label">Username</div>
+    <input type="text" id="loginUser" class="field-input" placeholder="Enter username" autocomplete="username">
+    <div class="field-label">Password</div>
+    <input type="password" id="loginPass" class="field-input" placeholder="Enter password" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter') doLogin()">
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="loginError">Invalid username or password</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-icon">$</div>
+      <div class="topbar-title">Admin Panel</div>
+    </div>
+    <div class="topbar-right">
+      <span style="font-size:12px;color:rgba(255,255,255,0.3);" id="lastUpdated"></span>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card green">
+        <div class="stat-label">Total Settled</div>
+        <div class="stat-val" id="statSettled">$0.00</div>
+        <div class="stat-sub" id="statSettledCount">0 payments</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Today's Earnings</div>
+        <div class="stat-val" id="statToday" style="color:#00C851;">$0.00</div>
+        <div class="stat-sub" id="statTodayCount">0 payments</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending</div>
+        <div class="stat-val" id="statPending" style="color:#ffc800;">0</div>
+        <div class="stat-sub">Awaiting payment</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Payments</div>
+        <div class="stat-val" id="statTotal">0</div>
+        <div class="stat-sub" id="statExpired" style="color:rgba(255,80,80,0.7);">0 expired</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('payments', this)">💳 Payments</button>
+      <button class="tab-btn" onclick="switchTab('withdrawals', this)">💸 Withdrawals</button>
+    </div>
+
+    <!-- PAYMENTS TAB -->
+    <div id="tab-payments">
+      <div class="filter-bar">
+        <select class="filter-select" id="filterStatus" onchange="renderPayments()">
+          <option value="">All Status</option>
+          <option value="new">Pending</option>
+          <option value="settled">Settled</option>
+          <option value="expired">Expired</option>
+        </select>
+        <select class="filter-select" id="filterDate" onchange="renderPayments()">
+          <option value="">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+        </select>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search invoice ID..." oninput="renderPayments()">
+        <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Invoice ID</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Source</th>
+                <th>City</th>
+                <th>Country</th>
+                <th>Expires In</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody id="paymentsBody">
+              <tr><td colspan="9" class="empty-state">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer" id="paymentsFooter"></div>
+      </div>
+    </div>
+
+    <!-- WITHDRAWALS TAB -->
+    <div id="tab-withdrawals" style="display:none;">
+      <div class="filter-bar">
+        <select class="filter-select" id="filterWStatus" onchange="renderWithdrawals()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+        </select>
+        <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Amount</th>
+                <th>Address</th>
+                <th>Source</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody id="withdrawalsBody">
+              <tr><td colspan="7" class="empty-state">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer" id="withdrawalsFooter"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://pbxpdppibnmtyxfoyydr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo';
+
+// ─── Simple hardcoded admin credentials ───
+// ⚠️ Production-এ Supabase Auth দিয়ে replace করো
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'rose2025!'; // এটা তুমি নিজে change করো
+
+const INVOICE_EXPIRE_MINUTES = 15;
+
+let allPayments = [];
+let allWithdrawals = [];
+
+// ─── AUTH ───
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    sessionStorage.setItem('adminAuth', 'true');
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('adminAuth');
+  location.reload();
+}
+
+// Auto-login check
+if (sessionStorage.getItem('adminAuth') === 'true') {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
+
+// ─── DATA FETCH ───
+async function loadData() {
+  await Promise.all([fetchPayments(), fetchWithdrawals()]);
+  updateStats();
+  renderPayments();
+  renderWithdrawals();
+  document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+async function fetchPayments() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?select=*&order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    allPayments = await res.json();
+    // ✅ Auto-expire: 15 min পার হলে status 'expired' দেখাও (UI only)
+    const now = new Date();
+    allPayments = allPayments.map(p => {
+      if (p.status === 'new') {
+        const created = new Date(p.created_at);
+        const diffMin = (now - created) / 60000;
+        if (diffMin > INVOICE_EXPIRE_MINUTES) p._uiExpired = true;
+      }
+      return p;
+    });
+  } catch(e) { console.error(e); }
+}
+
+async function fetchWithdrawals() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+    });
+    allWithdrawals = await res.json();
+  } catch(e) { console.error(e); }
+}
+
+// ─── STATS ───
+function updateStats() {
+  const settled = allPayments.filter(p => p.status === 'settled');
+  const pending = allPayments.filter(p => p.status === 'new' && !p._uiExpired);
+  const expired = allPayments.filter(p => p.status === 'expired' || p._uiExpired);
+
+  const totalSettled = settled.reduce((s, p) => s + parseFloat(p.amount), 0);
+  document.getElementById('statSettled').textContent = '$' + totalSettled.toFixed(2);
+  document.getElementById('statSettledCount').textContent = settled.length + ' payments';
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayPayments = settled.filter(p => new Date(p.created_at) >= today);
+  const todayTotal = todayPayments.reduce((s, p) => s + parseFloat(p.amount), 0);
+  document.getElementById('statToday').textContent = '$' + todayTotal.toFixed(2);
+  document.getElementById('statTodayCount').textContent = todayPayments.length + ' today';
+
+  document.getElementById('statPending').textContent = pending.length;
+  document.getElementById('statTotal').textContent = allPayments.length;
+  document.getElementById('statExpired').textContent = expired.length + ' expired';
+}
+
+// ─── PAYMENTS TABLE ───
+function renderPayments() {
+  const statusFilter = document.getElementById('filterStatus').value;
+  const dateFilter = document.getElementById('filterDate').value;
+  const search = document.getElementById('searchInput').value.toLowerCase();
+
+  let filtered = allPayments.filter(p => {
+    const effectiveStatus = p._uiExpired ? 'expired' : p.status;
+    if (statusFilter && effectiveStatus !== statusFilter) return false;
+    if (search && !p.invoice_id.toLowerCase().includes(search)) return false;
+    if (dateFilter) {
+      const d = new Date(p.created_at);
+      const now = new Date();
+      if (dateFilter === 'today') {
+        const t = new Date(); t.setHours(0,0,0,0);
+        if (d < t) return false;
+      } else if (dateFilter === 'week') {
+        const w = new Date(); w.setDate(w.getDate() - 7);
+        if (d < w) return false;
+      } else if (dateFilter === 'month') {
+        const m = new Date(); m.setDate(m.getDate() - 30);
+        if (d < m) return false;
+      }
+    }
+    return true;
+  });
+
+  const tbody = document.getElementById('paymentsBody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No payments found</td></tr>';
+    document.getElementById('paymentsFooter').textContent = '';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((p, i) => {
+    const effectiveStatus = p._uiExpired ? 'expired' : p.status;
+    const shortId = p.invoice_id.substring(0, 16) + '...';
+    const date = new Date(p.created_at).toLocaleString();
+    let expiresHtml = '-';
+    if (p.status === 'new' && !p._uiExpired) {
+      const created = new Date(p.created_at);
+      const expireAt = new Date(created.getTime() + INVOICE_EXPIRE_MINUTES * 60000);
+      const diff = Math.max(0, Math.floor((expireAt - new Date()) / 1000));
+      const m = Math.floor(diff / 60), s = diff % 60;
+      expiresHtml = `<span class="expire-text">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</span>`;
+    } else if (effectiveStatus === 'expired') {
+      expiresHtml = '<span class="expired-text">Expired</span>';
+    }
+    return `<tr>
+      <td style="color:rgba(255,255,255,0.3);">${i+1}</td>
+      <td style="font-family:monospace;font-size:12px;" title="${p.invoice_id}">${shortId}</td>
+      <td style="font-weight:700;color:#fff;">$${parseFloat(p.amount).toFixed(2)}</td>
+      <td><span class="badge ${effectiveStatus}"><span class="badge-dot"></span>${effectiveStatus}</span></td>
+      <td style="color:rgba(255,255,255,0.5);">${p.source || '-'}</td>
+      <td style="color:rgba(255,255,255,0.5);">${p.city || '-'}</td>
+      <td style="color:rgba(255,255,255,0.5);">${p.country || '-'}</td>
+      <td>${expiresHtml}</td>
+      <td style="color:rgba(255,255,255,0.4);font-size:12px;">${date}</td>
+    </tr>`;
+  }).join('');
+
+  const total = filtered.reduce((s, p) => s + parseFloat(p.amount), 0);
+  document.getElementById('paymentsFooter').textContent =
+    `Showing ${filtered.length} of ${allPayments.length} payments · Total: $${total.toFixed(2)}`;
+}
+
+// ─── WITHDRAWALS TABLE ───
+function renderWithdrawals() {
+  const statusFilter = document.getElementById('filterWStatus').value;
+  let filtered = allWithdrawals.filter(w => !statusFilter || w.status === statusFilter);
+
+  const tbody = document.getElementById('withdrawalsBody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No withdrawals found</td></tr>';
+    document.getElementById('withdrawalsFooter').textContent = '';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((w, i) => {
+    const date = new Date(w.created_at).toLocaleString();
+    const shortAddr = w.address.length > 20 ? w.address.substring(0,20) + '...' : w.address;
+    return `<tr>
+      <td style="color:rgba(255,255,255,0.3);">${i+1}</td>
+      <td style="font-weight:700;color:#fff;">$${parseFloat(w.amount).toFixed(2)}</td>
+      <td style="font-family:monospace;font-size:12px;" title="${w.address}">${shortAddr}</td>
+      <td style="color:rgba(255,255,255,0.5);">${w.source || '-'}</td>
+      <td><span class="badge ${w.status}"><span class="badge-dot"></span>${w.status}</span></td>
+      <td>
+        ${w.status === 'pending' ? `<button onclick="markCompleted('${w.id}')" style="background:rgba(0,200,81,0.15);border:1px solid rgba(0,200,81,0.3);color:#00C851;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Mark Done</button>` : '✓'}
+      </td>
+      <td style="color:rgba(255,255,255,0.4);font-size:12px;">${date}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('withdrawalsFooter').textContent =
+    `Showing ${filtered.length} withdrawals`;
+}
+
+async function markCompleted(id) {
+  await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ status: 'completed' })
+  });
+  await loadData();
+}
+
+// ─── TABS ───
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-payments').style.display = tab === 'payments' ? 'block' : 'none';
+  document.getElementById('tab-withdrawals').style.display = tab === 'withdrawals' ? 'block' : 'none';
+}
+
+// ─── AUTO REFRESH every 30 sec ───
+if (sessionStorage.getItem('adminAuth') === 'true') {
+  loadData();
+  setInterval(loadData, 30000);
+}
+</script>
+</body>
+</html>
