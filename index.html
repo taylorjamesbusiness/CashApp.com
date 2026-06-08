@@ -1,171 +1,514 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pay Mila69</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2300D632'/><text x='50' y='72' font-size='65' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>$</text></svg>" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  width: 100%; height: 100%;
+  font-family: 'DM Sans', sans-serif;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1a2e 100%);
+}
+body {
+  min-height: 100dvh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-x: hidden;
+}
+.bg-container { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+.glass-bg {
+  position: absolute; width: 100%; height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(0,214,50,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(100,200,255,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 0%, rgba(200,150,255,0.05) 0%, transparent 50%);
+  animation: gradientShift 15s ease infinite;
+}
+@keyframes gradientShift {
+  0%, 100% { transform: translate(0,0); }
+  50% { transform: translate(10px,-10px); }
+}
+.particle {
+  position: absolute; width: 4px; height: 4px;
+  background: rgba(255,255,255,0.3); border-radius: 50%;
+  animation: float 20s infinite;
+}
+.particle:nth-child(1) { left:10%; top:20%; animation-delay:0s; }
+.particle:nth-child(2) { left:20%; top:60%; animation-delay:2s; }
+.particle:nth-child(3) { left:60%; top:30%; animation-delay:4s; }
+.particle:nth-child(4) { left:80%; top:70%; animation-delay:6s; }
+.particle:nth-child(5) { left:40%; top:80%; animation-delay:8s; }
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity:0; }
+  10% { opacity:0.5; } 90% { opacity:0.5; }
+  100% { transform: translateY(-100px) translateX(20px); opacity:0; }
+}
+.sheet {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 420px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2), inset 0 -1px 1px rgba(0,0,0,0.2);
+  overflow: hidden;
+  animation: cardSlideIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes cardSlideIn {
+  from { transform: translateY(40px) scale(0.95); opacity:0; }
+  to { transform: translateY(0) scale(1); opacity:1; }
+}
+.drag-bar { width:40px; height:4px; background:rgba(255,255,255,0.3); border-radius:4px; margin:12px auto 0; }
+.s1-body { padding: 20px 22px 28px; }
+.title-row { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:16px; }
+.s1-title { font-size:24px; font-weight:800; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.3); }
+.verified-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px;
+  background: linear-gradient(135deg,#1E90FF,#0066FF);
+  border-radius:50%; box-shadow:0 2px 8px rgba(30,144,255,0.4);
+  animation: badgePulse 2s ease-in-out infinite;
+}
+.verified-badge svg { width:14px; height:14px; stroke:white; stroke-width:3; }
+@keyframes badgePulse {
+  0%, 100% { box-shadow:0 2px 8px rgba(30,144,255,0.4); }
+  50% { box-shadow:0 4px 16px rgba(30,144,255,0.7); }
+}
+.secure-badge {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  background:rgba(0,214,50,0.15); border:1px solid rgba(0,214,50,0.4);
+  color:#4ade80; font-size:12px; font-weight:600;
+  padding:6px 14px; border-radius:999px; width:fit-content; margin:0 auto 16px;
+}
+.cashapp-box {
+  border:1px solid rgba(255,255,255,0.15); border-radius:16px;
+  padding:16px; text-align:center; margin-bottom:14px;
+  background:rgba(255,255,255,0.05); transition:all 0.3s ease;
+}
+.cashapp-box:hover { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.25); }
+.ca-logo {
+  width:50px; height:50px;
+  background:linear-gradient(135deg,#00D632,#00a826);
+  border-radius:12px; display:flex; align-items:center; justify-content:center;
+  margin:0 auto 8px; font-size:24px; font-weight:900; color:white;
+  box-shadow:0 4px 16px rgba(0,214,50,0.35);
+}
+.ca-name { font-size:16px; font-weight:700; color:#fff; }
+.ca-sub { font-size:12px; color:rgba(255,255,255,0.6); margin-top:2px; }
+.amount-box {
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
+  border-radius:16px; padding:14px; margin-bottom:14px;
+}
+.amount-label {
+  display:flex; align-items:center; gap:6px;
+  color:rgba(255,255,255,0.7); font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.1em; margin-bottom:12px;
+}
+.amounts-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:8px; }
+.amt-btn {
+  border:1.5px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.08);
+  color:#fff; border-radius:12px; padding:11px 0; font-size:14px; font-weight:700;
+  cursor:pointer; transition:all 0.2s ease; font-family:'DM Sans',sans-serif;
+}
+.amt-btn:hover { background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.4); }
+.amt-btn.selected {
+  border-color:#00D632; background:linear-gradient(135deg,#00D632,#00a826);
+  color:white; box-shadow:0 4px 16px rgba(0,214,50,0.4);
+}
+.show-more-btn {
+  width:100%; background:rgba(0,214,50,0.15); border:1.5px solid rgba(0,214,50,0.5);
+  color:#00D632; border-radius:12px; padding:10px; font-size:13px; font-weight:700;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+  margin-bottom:10px; font-family:'DM Sans',sans-serif; transition:all 0.2s ease;
+}
+.show-more-btn:hover { background:rgba(0,214,50,0.2); border-color:rgba(0,214,50,0.4); }
+.custom-wrap { position:relative; }
+.custom-icon {
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  color:rgba(255,255,255,0.5); font-size:15px; font-weight:700;
+}
+.custom-input {
+  width:100%; background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.15);
+  border-radius:12px; padding:11px 14px 11px 34px; font-size:14px; color:#fff;
+  outline:none; font-family:'DM Sans',sans-serif; transition:all 0.2s ease;
+}
+.custom-input::placeholder { color:rgba(255,255,255,0.35); }
+.custom-input:focus {
+  border-color:#00D632; background:rgba(0,214,50,0.1);
+  box-shadow:0 0 0 3px rgba(0,214,50,0.15);
+}
+.pay-btn {
+  width:100%; background:linear-gradient(135deg,#00D632,#00a826);
+  color:white; border:none; border-radius:14px; padding:15px;
+  font-size:16px; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  box-shadow:0 6px 24px rgba(0,214,50,0.4); transition:all 0.3s ease;
+  font-family:'DM Sans',sans-serif;
+}
+.pay-btn:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,214,50,0.5); }
+.pay-btn:active { transform:translateY(0); }
+.powered {
+  text-align:center; padding:12px 0 4px; color:rgba(255,255,255,0.35);
+  font-size:11px; display:flex; align-items:center; justify-content:center; gap:6px;
+}
+/* STEP 2 */
+#step2 { display:none; padding:24px 22px; text-align:center; }
+.amount-due-label { font-size:11px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:0.1em; font-weight:600; }
+.amount-due-val { font-size:42px; font-weight:800; color:#fff; margin:6px 0; text-shadow:0 2px 12px rgba(0,0,0,0.3); }
+.scan-tip { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:20px; }
+.qr-wrap {
+  background:white; border-radius:20px; padding:14px; display:inline-block;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4); position:relative; margin-bottom:20px;
+  cursor:pointer; transition:transform 0.3s ease;
+}
+.qr-wrap:hover { transform:scale(1.02); }
+.qr-logo-overlay {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:white; padding:4px; border-radius:8px;
+}
+.qr-logo-inner {
+  background:#00D632; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:900; color:white;
+}
+.invoice-box {
+  background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
+  border-radius:16px; padding:16px; margin-bottom:16px;
+}
+.timer-label { color:#4ade80; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.15em; text-align:center; }
+.timer-val { font-size:28px; font-weight:800; color:#fff; text-align:center; letter-spacing:0.1em; margin:6px 0 16px; }
+.inv-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.08); font-size:14px;
+}
+.inv-row:last-of-type { border-bottom:none; }
+.inv-key { color:rgba(255,255,255,0.5); font-weight:600; }
+.status-badge {
+  background:rgba(0,214,50,0.15); border:1px solid rgba(0,214,50,0.3);
+  color:#4ade80; padding:4px 12px; border-radius:999px;
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  display:flex; align-items:center; gap:5px;
+}
+.status-dot { width:6px; height:6px; background:#00D632; border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+.pay-now-btn {
+  width:100%; background:linear-gradient(135deg,#00D632,#00a826);
+  color:white; border:none; border-radius:14px; padding:14px; font-size:15px; font-weight:700;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  box-shadow:0 6px 20px rgba(0,214,50,0.35); text-decoration:none; margin-top:14px;
+  font-family:'DM Sans',sans-serif; transition:all 0.3s ease;
+}
+.pay-now-btn:hover { transform:translateY(-2px); }
+.copy-btn {
+  width:100%; margin-top:12px; background:none; border:none;
+  color:rgba(255,255,255,0.35); font-size:12px; font-weight:600;
+  cursor:pointer; text-decoration:underline;
+  font-family:'DM Sans',sans-serif; transition:color 0.2s ease;
+}
+.copy-btn:hover { color:rgba(255,255,255,0.6); }
+/* STEP 3 */
+#step3 { display:none; padding:40px 24px; text-align:center; }
+@keyframes pop {
+  0% { transform:scale(0); opacity:0; }
+  60% { transform:scale(1.15); }
+  100% { transform:scale(1); opacity:1; }
+}
+.success-icon {
+  width:80px; height:80px; background:linear-gradient(135deg,#00D632,#00a826);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  margin:0 auto 20px; box-shadow:0 0 40px rgba(0,214,50,0.5);
+  animation:pop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.success-title { font-size:24px; font-weight:800; color:#fff; margin-bottom:6px; }
+.success-sub { color:rgba(255,255,255,0.6); font-size:14px; margin-bottom:8px; }
+.success-amount { font-size:40px; font-weight:800; color:#4ade80; margin-bottom:24px; text-shadow:0 2px 12px rgba(0,214,50,0.3); }
+.reload-btn {
+  width:100%; background:linear-gradient(135deg,#00D632,#00a826);
+  color:white; border:none; border-radius:14px; padding:15px; font-size:15px; font-weight:700;
+  cursor:pointer; box-shadow:0 6px 20px rgba(0,214,50,0.35);
+  font-family:'DM Sans',sans-serif; transition:all 0.3s ease;
+}
+.reload-btn:hover { transform:translateY(-2px); }
+@media (max-width:480px) {
+  .sheet { max-width:100%; border-radius:24px 24px 0 0; }
+  .s1-title { font-size:22px; }
+  .amount-due-val { font-size:36px; }
+  .pay-btn, .pay-now-btn, .reload-btn { padding:14px; font-size:15px; }
+}
+</style>
+</head>
+<body>
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, content-type",
+<div class="bg-container">
+  <div class="glass-bg"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+</div>
+
+<div class="sheet">
+  <div class="drag-bar"></div>
+
+  <!-- STEP 1 -->
+  <div id="step1" class="s1-body">
+    <div class="title-row">
+      <div class="s1-title">Pay Mila69</div>
+      <div class="verified-badge" title="Verified Account">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+    </div>
+    <div class="secure-badge">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+      </svg>
+      Secure Payment
+    </div>
+    <div class="cashapp-box">
+      <div class="ca-logo">$</div>
+      <div class="ca-name">CashApp</div>
+      <div class="ca-sub">Instant</div>
+    </div>
+    <div class="amount-box">
+      <div class="amount-label">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+        </svg>
+        Select Amount
+      </div>
+      <div class="amounts-grid">
+        <button class="amt-btn selected" onclick="selectAmt(this,10)">$10</button>
+        <button class="amt-btn" onclick="selectAmt(this,15)">$15</button>
+        <button class="amt-btn" onclick="selectAmt(this,20)">$20</button>
+      </div>
+      <button class="show-more-btn" id="toggleBtn" onclick="toggleMore()">Show more amounts <span id="arrow">▾</span></button>
+      <div id="moreAmounts" style="display:none;">
+        <div class="amounts-grid">
+          <button class="amt-btn" onclick="selectAmt(this,25)">$25</button>
+          <button class="amt-btn" onclick="selectAmt(this,50)">$50</button>
+          <button class="amt-btn" onclick="selectAmt(this,75)">$75</button>
+        </div>
+        <div class="amounts-grid" style="margin-top:8px;">
+          <button class="amt-btn" onclick="selectAmt(this,100)">$100</button>
+          <button class="amt-btn" onclick="selectAmt(this,150)">$150</button>
+          <button class="amt-btn" onclick="selectAmt(this,200)">$200</button>
+        </div>
+        <div class="amounts-grid" style="margin-top:8px;margin-bottom:8px;">
+          <button class="amt-btn" onclick="selectAmt(this,250)">$250</button>
+          <button class="amt-btn" onclick="selectAmt(this,300)">$300</button>
+          <button class="amt-btn" style="visibility:hidden;"></button>
+        </div>
+      </div>
+      <div class="custom-wrap">
+        <span class="custom-icon">$</span>
+        <input type="number" id="customInput" class="custom-input" placeholder="Custom amount" min="2" max="2000" oninput="onCustomInput(this)">
+      </div>
+    </div>
+    <button class="pay-btn" id="payBtn" onclick="submitPayment()">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+      Pay Now →
+    </button>
+    <div class="powered">
+      <span style="width:14px;height:14px;border:1.5px solid rgba(255,255,255,0.25);border-radius:50%;display:inline-block;"></span>
+      Powered by <strong>Cashapp</strong>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2">
+    <div class="amount-due-label">Amount Due</div>
+    <div class="amount-due-val">$<span id="displayAmount">0.00</span></div>
+    <div class="scan-tip">Scan or tap to pay</div>
+    <a id="qrLink" href="#" target="_blank">
+      <div class="qr-wrap">
+        <div id="qrcode"></div>
+        <div class="qr-logo-overlay"><div class="qr-logo-inner">$</div></div>
+      </div>
+    </a>
+    <div class="invoice-box">
+      <div class="timer-label">Time Remaining</div>
+      <div class="timer-val" id="timer">15 : 00</div>
+      <div class="inv-row">
+        <span class="inv-key">Reference</span>
+        <span style="font-weight:700;font-size:12px;color:#fff;" id="invoiceIdDisplay">Loading...</span>
+      </div>
+      <div class="inv-row">
+        <span class="inv-key">Status</span>
+        <span class="status-badge" id="statusBadge"><span class="status-dot"></span> Awaiting Payment</span>
+      </div>
+    </div>
+    <a id="payNowBtn" href="#" target="_blank" class="pay-now-btn">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+      Pay Now
+    </a>
+    <button class="copy-btn" onclick="copyInvoice()">Copy Invoice Address</button>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="step3">
+    <div class="success-icon">
+      <svg width="44" height="44" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <div class="success-title">Payment Received!</div>
+    <div class="success-sub">Thank you for your payment</div>
+    <div class="success-amount" id="successAmount">$0.00</div>
+    <button class="reload-btn" onclick="location.reload()">Make Another Payment</button>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://pbxpdppibnmtyxfoyydr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo';
+
+let selectedAmount = 10;
+let timerInterval, pollInterval;
+let currentLightningInvoice = '';
+
+function selectAmt(btn, amt) {
+  document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedAmount = amt;
+  document.getElementById('customInput').value = '';
 }
 
-serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders })
+function toggleMore() {
+  const more = document.getElementById('moreAmounts');
+  const btn = document.getElementById('toggleBtn');
+  const arrow = document.getElementById('arrow');
+  if (more.style.display === 'none') {
+    more.style.display = 'block';
+    btn.textContent = 'Show less amounts ';
+    btn.appendChild(arrow);
+    arrow.textContent = '▴';
+  } else {
+    more.style.display = 'none';
+    btn.textContent = 'Show more amounts ';
+    btn.appendChild(arrow);
+    arrow.textContent = '▾';
   }
+}
 
+function onCustomInput(input) {
+  const val = parseFloat(input.value);
+  if (val && val >= 2) {
+    selectedAmount = val;
+    document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('selected'));
+  }
+}
+
+async function submitPayment() {
+  if (!selectedAmount || selectedAmount < 2) {
+    alert('Please select or enter an amount (min $2)');
+    return;
+  }
+  const btn = document.getElementById('payBtn');
+  btn.textContent = 'Generating Invoice…';
+  btn.disabled = true;
   try {
-    const rawBody = await req.text()
-
-    if (!rawBody || rawBody.trim() === "") {
-      return new Response(JSON.stringify({ received: true }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
-    }
-
-    const payload = JSON.parse(rawBody)
-
-    // ✅ Cloudflare headers থেকে city/country auto নাও
-    const cfCity = req.headers.get('CF-IPCity') || ''
-    const cfCountry = req.headers.get('CF-IPCountry') || ''
-
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
-    // ─── Status Check (Frontend polling) ───
-    if (payload.checkStatus && payload.invoiceId) {
-      const { data } = await supabase
-        .from('payments')
-        .select('status')
-        .eq('invoice_id', payload.invoiceId)
-        .single()
-
-      return new Response(JSON.stringify({ status: data?.status || 'new' }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
-    }
-
-    // ─── Frontend থেকে Invoice Create Request ───
-    if (payload.amount && payload.source && !payload.type) {
-      const amount = parseFloat(payload.amount)
-      const source = payload.source
-      const email = payload.email || ''
-
-      if (!amount || amount < 2) {
-        return new Response(JSON.stringify({ error: 'Invalid amount' }), {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        })
-      }
-
-      const btcpayStoreId = Deno.env.get('BTCPAY_STORE_ID') ?? ''
-      const btcpayApiKey = Deno.env.get('BTCPAY_API_KEY') ?? ''
-      const btcpayUrl = 'https://btcpay684158.lndyn.com'
-
-      if (!btcpayStoreId || !btcpayApiKey) {
-        return new Response(JSON.stringify({ error: 'BTCPay configuration missing' }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        })
-      }
-
-      const invoiceResponse = await fetch(`${btcpayUrl}/api/v1/stores/${btcpayStoreId}/invoices`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `token ${btcpayApiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          amount: amount.toString(),
-          currency: 'USD',
-          orderId: `order-${Date.now()}`,
-          buyerEmail: email,
-          notificationUrl: `${Deno.env.get('SUPABASE_URL')}/functions/v1/btcpay-webhook`,
-          redirectUrl: 'https://cash-app-payment.xyz/success.html'
-        })
-      })
-
-      if (!invoiceResponse.ok) {
-        const errorData = await invoiceResponse.text()
-        console.error('BTCPay API error:', errorData)
-        return new Response(JSON.stringify({ error: 'Failed to create invoice' }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        })
-      }
-
-      const invoiceData = await invoiceResponse.json()
-      const invoiceId = invoiceData.id
-
-      const lightningMethod = invoiceData.paymentMethods?.find(
-        (pm: any) => pm.paymentMethod?.toLowerCase().includes('lightning')
-      )
-      const lightningCode = lightningMethod?.destination || invoiceData.checkoutLink || ''
-
-      const { error: insertError } = await supabase
-        .from('payments')
-        .insert({
-          invoice_id: invoiceId,
-          amount: amount,
-          currency: 'USD',
-          status: 'new',
-          source: source,
-          email: email,
-          created_at: new Date().toISOString(),
-          city: cfCity,      // ✅ Cloudflare auto
-          country: cfCountry // ✅ Cloudflare auto
-        })
-
-      if (insertError) {
-        console.error('DB insert error:', insertError)
-        return new Response(JSON.stringify({ error: 'Failed to save payment record' }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        })
-      }
-
-      return new Response(JSON.stringify({
-        invoiceId,
-        amount,
-        lightningCode,
-        checkoutLink: invoiceData.checkoutLink
-      }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
-    }
-
-    // ─── BTCPay Webhook: Invoice Settled ───
-    if (payload.type === 'InvoiceSettled') {
-      const invoiceId = payload.invoiceId
-      console.log('Invoice settled:', invoiceId)
-
-      const { error } = await supabase
-        .from('payments')
-        .update({ status: 'settled' })
-        .eq('invoice_id', invoiceId)
-
-      if (error) {
-        console.error('DB update error:', error)
-        throw error
-      }
-    }
-
-    if (payload.type) {
-      console.log('BTCPay event:', payload.type)
-    }
-
-    return new Response(JSON.stringify({ received: true }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    })
-
-  } catch (err) {
-    console.error('btcpay-webhook error:', err)
-    return new Response(JSON.stringify({ error: 'Invalid request' }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    })
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/btcpay-webhook`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+      body: JSON.stringify({ amount: selectedAmount, email: '', source: 'cash-app-payment.xyz' })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+    let rawCode = data.lightningCode;
+    let bolt11 = rawCode.toLowerCase().startsWith('lightning:') ? rawCode.slice(10) : rawCode;
+    let cashAppUrl = `https://cash.app/launch/lightning/${bolt11}`;
+    currentLightningInvoice = bolt11;
+    showStep2(data.amount, cashAppUrl, data.invoiceId);
+  } catch(e) {
+    alert('Error: ' + e.message);
+    btn.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg> Pay Now →`;
+    btn.disabled = false;
   }
-})
+}
+
+function showStep2(amount, cashAppUrl, invId) {
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+  document.getElementById('displayAmount').textContent = parseFloat(amount).toFixed(2);
+  let shortId = invId.substring(0, 16).replace(/(.{4})/g, '$1-').slice(0, -1);
+  document.getElementById('invoiceIdDisplay').textContent = shortId;
+  document.getElementById('qrcode').innerHTML = '';
+  new QRCode(document.getElementById('qrcode'), {
+    text: cashAppUrl, width: 200, height: 200,
+    colorDark: '#000', colorLight: '#fff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+  document.getElementById('qrLink').href = cashAppUrl;
+  document.getElementById('payNowBtn').href = cashAppUrl;
+  startTimer(15 * 60);
+  startPolling(invId, amount);
+}
+
+function startTimer(sec) {
+  clearInterval(timerInterval);
+  let t = sec;
+  timerInterval = setInterval(() => {
+    if (t <= 0) {
+      clearInterval(timerInterval);
+      clearInterval(pollInterval);
+      document.getElementById('timer').textContent = '00 : 00';
+      return;
+    }
+    let m = Math.floor(t / 60), s = t % 60;
+    document.getElementById('timer').textContent = String(m).padStart(2,'0') + ' : ' + String(s).padStart(2,'0');
+    t--;
+  }, 1000);
+}
+
+// ✅ Edge Function দিয়ে polling — anon SELECT permission লাগবে না
+function startPolling(invoiceId, amount) {
+  clearInterval(pollInterval);
+  pollInterval = setInterval(async () => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/btcpay-webhook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ checkStatus: true, invoiceId: invoiceId })
+      });
+      const data = await res.json();
+      if (data?.status === 'settled') {
+        clearInterval(pollInterval);
+        clearInterval(timerInterval);
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('step3').style.display = 'block';
+        document.getElementById('successAmount').textContent = '$' + parseFloat(amount).toFixed(2);
+      }
+    } catch(e) {}
+  }, 5000);
+}
+
+function copyInvoice() {
+  navigator.clipboard.writeText(currentLightningInvoice);
+  const btn = document.querySelector('.copy-btn');
+  btn.textContent = '✓ Copied!';
+  btn.style.color = '#4ade80';
+  setTimeout(() => {
+    btn.textContent = 'Copy Invoice Address';
+    btn.style.color = '';
+  }, 2000);
+}
+</script>
+</body>
+</html>
