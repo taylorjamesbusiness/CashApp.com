@@ -342,17 +342,40 @@ let selectedAmount = 10;
 let timerInterval, pollInterval;
 let currentLightningInvoice = '';
 
-// ✅ Refresh fix: sessionStorage থেকে restore করো
+// ✅ Step show/hide helper
+function showStep(n) {
+  document.getElementById('step1').style.display = n === 1 ? 'block' : 'none';
+  document.getElementById('step2').style.display = n === 2 ? 'block' : 'none';
+  document.getElementById('step3').style.display = n === 3 ? 'block' : 'none';
+}
+
+// ✅ Browser back button fix
+window.addEventListener('popstate', (e) => {
+  const state = e.state?.step || 1;
+  if (state === 1) {
+    clearInterval(timerInterval);
+    clearInterval(pollInterval);
+    sessionStorage.removeItem('invoiceSession');
+    showStep(1);
+  }
+});
+
+// ✅ Refresh fix: sessionStorage থেকে restore
 window.addEventListener('DOMContentLoaded', () => {
   const saved = sessionStorage.getItem('invoiceSession');
   if (saved) {
     try {
       const { amount, cashAppUrl, invoiceId, bolt11, secondsLeft } = JSON.parse(saved);
       currentLightningInvoice = bolt11;
+      history.replaceState({ step: 2 }, '');
       restoreStep2(amount, cashAppUrl, invoiceId, bolt11, secondsLeft);
     } catch(e) {
       sessionStorage.removeItem('invoiceSession');
+      showStep(1);
     }
+  } else {
+    history.replaceState({ step: 1 }, '');
+    showStep(1);
   }
 });
 
@@ -417,8 +440,9 @@ async function submitPayment() {
     let bolt11 = rawCode.toLowerCase().startsWith('lightning:') ? rawCode.slice(10) : rawCode;
     let cashAppUrl = `https://cash.app/launch/lightning/${bolt11}`;
     currentLightningInvoice = bolt11;
-    // ✅ session save করো
     saveSession(data.amount, cashAppUrl, data.invoiceId, bolt11, 15 * 60);
+    // ✅ browser history এ step 2 push করো
+    history.pushState({ step: 2 }, '');
     showStep2(data.amount, cashAppUrl, data.invoiceId, 15 * 60);
   } catch(e) {
     alert('Error: ' + e.message);
@@ -429,8 +453,7 @@ async function submitPayment() {
 
 function restoreStep2(amount, cashAppUrl, invoiceId, bolt11, secondsLeft) {
   currentLightningInvoice = bolt11;
-  document.getElementById('step1').style.display = 'none';
-  document.getElementById('step2').style.display = 'block';
+  showStep(2);
   document.getElementById('displayAmount').textContent = parseFloat(amount).toFixed(2);
   let shortId = invoiceId.substring(0, 16).replace(/(.{4})/g, '$1-').slice(0, -1);
   document.getElementById('invoiceIdDisplay').textContent = shortId;
@@ -447,8 +470,7 @@ function restoreStep2(amount, cashAppUrl, invoiceId, bolt11, secondsLeft) {
 }
 
 function showStep2(amount, cashAppUrl, invId, secondsLeft) {
-  document.getElementById('step1').style.display = 'none';
-  document.getElementById('step2').style.display = 'block';
+  showStep(2);
   document.getElementById('displayAmount').textContent = parseFloat(amount).toFixed(2);
   let shortId = invId.substring(0, 16).replace(/(.{4})/g, '$1-').slice(0, -1);
   document.getElementById('invoiceIdDisplay').textContent = shortId;
@@ -467,7 +489,6 @@ function showStep2(amount, cashAppUrl, invId, secondsLeft) {
 function startTimer(sec) {
   clearInterval(timerInterval);
   let t = sec;
-  // ✅ timer tick করতে থাকলে session update করো
   timerInterval = setInterval(() => {
     if (t <= 0) {
       clearInterval(timerInterval);
@@ -478,7 +499,6 @@ function startTimer(sec) {
     }
     let m = Math.floor(t / 60), s = t % 60;
     document.getElementById('timer').textContent = String(m).padStart(2,'0') + ' : ' + String(s).padStart(2,'0');
-    // session-এ remaining time update করো
     const saved = sessionStorage.getItem('invoiceSession');
     if (saved) {
       const obj = JSON.parse(saved);
@@ -503,8 +523,7 @@ function startPolling(invoiceId, amount) {
         clearInterval(pollInterval);
         clearInterval(timerInterval);
         sessionStorage.removeItem('invoiceSession');
-        document.getElementById('step2').style.display = 'none';
-        document.getElementById('step3').style.display = 'block';
+        showStep(3);
         document.getElementById('successAmount').textContent = '$' + parseFloat(amount).toFixed(2);
       }
     } catch(e) {}
