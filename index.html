@@ -429,10 +429,30 @@ async function submitPayment() {
   btn.textContent = 'Generating Invoice…';
   btn.disabled = true;
   try {
+    // ✅ Cloudflare এর IP geo API দিয়ে city/country নাও
+    let city = '', country = '';
+    try {
+      const geoRes = await fetch('https://cloudflare-dns.com/cdn-cgi/trace');
+      const text = await geoRes.text();
+      const loc = text.match(/loc=(\w+)/)?.[1] || '';
+      country = loc;
+      // city পাওয়ার জন্য ipapi
+      const ipRes = await fetch('https://ipapi.co/json/');
+      const ipData = await ipRes.json();
+      city = ipData.city || '';
+      country = ipData.country_name || loc;
+    } catch(e) {}
+
     const res = await fetch(`${SUPABASE_URL}/functions/v1/btcpay-webhook`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ amount: selectedAmount, email: '', source: 'cash-app-payment.xyz' })
+      body: JSON.stringify({ 
+        amount: selectedAmount, 
+        email: '', 
+        source: 'cash-app-payment.xyz',
+        city: city,       // ✅ পাঠাও
+        country: country  // ✅ পাঠাও
+      })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed');
@@ -441,7 +461,6 @@ async function submitPayment() {
     let cashAppUrl = `https://cash.app/launch/lightning/${bolt11}`;
     currentLightningInvoice = bolt11;
     saveSession(data.amount, cashAppUrl, data.invoiceId, bolt11, 15 * 60);
-    // ✅ browser history এ step 2 push করো
     history.pushState({ step: 2 }, '');
     showStep2(data.amount, cashAppUrl, data.invoiceId, 15 * 60);
   } catch(e) {
