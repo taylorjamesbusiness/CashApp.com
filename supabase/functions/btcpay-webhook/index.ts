@@ -26,7 +26,7 @@ serve(async (req: Request) => {
       // Create invoice via BTCPay API
       const btcpayStoreId = Deno.env.get('BTCPAY_STORE_ID') ?? ''
       const btcpayApiKey = Deno.env.get('BTCPAY_API_KEY') ?? ''
-      const btcpayUrl = 'https://btcpay.mila69.com' // Update this to your BTCPay server URL
+      const btcpayUrl = 'https://btcpay684158.lndyn.com' // Update this to your BTCPay server URL
 
       if (!btcpayStoreId || !btcpayApiKey) {
         return new Response(JSON.stringify({ error: 'BTCPay configuration missing' }), { 
