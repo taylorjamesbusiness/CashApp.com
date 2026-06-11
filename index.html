@@ -289,7 +289,25 @@ body {
   </div>
 
   <!-- STEP 2 -->
-  <div id="step2">
+<div id="step2">
+
+  <!-- ✅ Top bar: back button + how to pay -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 22px 0;">
+    <button onclick="goBack()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);padding:7px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Back
+    </button>
+    <button onclick="openHowToPay()" style="display:flex;align-items:center;gap:6px;background:rgba(0,200,81,0.1);border:1px solid rgba(0,200,81,0.3);color:#00C851;padding:7px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      How to Pay
+    </button>
+  </div>
+
+  <div style="padding:16px 22px 24px;">
     <div class="amount-due-label">Amount Due</div>
     <div class="amount-due-val">$<span id="displayAmount">0.00</span></div>
     <div class="scan-tip">Scan or tap to pay</div>
@@ -319,6 +337,7 @@ body {
     </a>
     <button class="copy-btn" onclick="copyInvoice()">Copy Invoice Address</button>
   </div>
+</div>
 
   <!-- STEP 3 -->
   <div id="step3">
@@ -331,6 +350,76 @@ body {
     <div class="success-sub">Thank you for your payment</div>
     <div class="success-amount" id="successAmount">$0.00</div>
     <button class="reload-btn" onclick="clearSession()">Make Another Payment</button>
+  </div>
+
+</div>
+
+<!-- How to Pay Modal -->
+<div id="howToPayModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:20px;">
+  <div style="width:100%;max-width:380px;background:#0a0a0a;border:1px solid rgba(0,200,81,0.25);border-radius:20px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:16px;font-weight:800;color:#fff;">How to Pay</div>
+      <button onclick="closeHowToPay()" style="background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.6);width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+    </div>
+
+    <!-- Steps -->
+<div style="display:flex;flex-direction:column;gap:16px;">
+
+  <!-- Step 1 -->
+  <div style="display:flex;gap:14px;align-items:flex-start;">
+    <div style="min-width:32px;height:32px;background:linear-gradient(135deg,#00C851,#00a040);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;">1</div>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">Open CashApp</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);">Open the CashApp on your phone and log in</div>
+    </div>
+  </div>
+
+  <!-- Step 2 — নতুন -->
+  <div style="display:flex;gap:14px;align-items:flex-start;">
+    <div style="min-width:32px;height:32px;background:linear-gradient(135deg,#00C851,#00a040);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;">2</div>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">Go to Crypto (Bitcoin) section</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);">Tap the <strong style="color:#ffc800;">Bitcoin ($)</strong> icon on the home screen</div>
+      <!-- Warning box -->
+      <div style="margin-top:8px;background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.25);border-radius:8px;padding:8px 10px;display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:14px;">⚠️</span>
+        <div style="font-size:11px;color:rgba(255,200,0,0.9);line-height:1.5;">
+          If your BTC balance is <strong>$0</strong>, you need to <strong>buy Bitcoin first</strong> before making a payment. Tap <em>"Buy"</em> and purchase at least the required amount.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div style="display:flex;gap:14px;align-items:flex-start;">
+    <div style="min-width:32px;height:32px;background:linear-gradient(135deg,#00C851,#00a040);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;">3</div>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">Tap "Pay Now" button</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);">Or scan the QR code using CashApp camera</div>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div style="display:flex;gap:14px;align-items:flex-start;">
+    <div style="min-width:32px;height:32px;background:linear-gradient(135deg,#00C851,#00a040);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;">4</div>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">Confirm Payment</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);">Review the amount carefully and confirm in CashApp</div>
+    </div>
+  </div>
+
+  <!-- Step 5 -->
+  <div style="display:flex;gap:14px;align-items:flex-start;">
+    <div style="min-width:32px;height:32px;background:linear-gradient(135deg,#00C851,#00a040);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;">5</div>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;">Done! 🎉</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);">Payment confirmed automatically — this page will update</div>
+    </div>
+  </div>
+
+</div>
+
+    <button onclick="closeHowToPay()" style="width:100%;margin-top:20px;background:linear-gradient(135deg,#00C851,#00a040);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">Got it!</button>
   </div>
 </div>
 
@@ -559,6 +648,32 @@ function copyInvoice() {
     btn.style.color = '';
   }, 2000);
 }
+
+// ✅ Back button
+function goBack() {
+  clearInterval(timerInterval);
+  clearInterval(pollInterval);
+  sessionStorage.removeItem('invoiceSession');
+  history.pushState({ step: 1 }, '');
+  showStep(1);
+}
+
+// ✅ How to Pay modal
+function openHowToPay() {
+  const modal = document.getElementById('howToPayModal');
+  modal.style.display = 'flex';
+}
+
+function closeHowToPay() {
+  const modal = document.getElementById('howToPayModal');
+  modal.style.display = 'none';
+}
+
+// Modal background click করলে close
+document.getElementById('howToPayModal').addEventListener('click', function(e) {
+  if (e.target === this) closeHowToPay();
+});
+
 </script>
 </body>
 </html>
