@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cioup — Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="pages.css"/>
+</head>
+<body class="auth-body">
+
+  <div class="auth-logo">
+    <div class="navbar__icon navbar__icon--lg">C</div>
+    <span class="navbar__brand navbar__brand--lg">Cioup</span>
+  </div>
+
+  <div class="auth-card">
+    <p class="auth-eyebrow">CREATE ACCOUNT</p>
+    <h1 class="auth-title">Start accepting payments</h1>
+    <p class="auth-sub">Launch your public payment profile in minutes with a clear, instant checkout experience.</p>
+
+    <ul class="auth-benefits">
+      <li>✓ Payment tracking</li>
+      <li>✓ Instant payment confirmation</li>
+      <li>✓ Public pay link and branded invoice pages</li>
+    </ul>
+
+    <form class="auth-form" onsubmit="return false;">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" placeholder="Your full name"/>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" placeholder="you@example.com"/>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Phone number</label>
+          <input type="tel" placeholder="+1 000 000 0000"/>
+        </div>
+        <div class="form-group">
+          <label>Telegram</label>
+          <input type="text" placeholder="@username"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Facebook profile</label>
+        <input type="url" placeholder="URL of your Facebook profile"/>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Public username</label>
+          <input type="text" placeholder="@your-username"/>
+        </div>
+        <div class="form-group">
+          <label>Public name</label>
+          <input type="text" placeholder="Shown on pay pages"/>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" placeholder="Password"/>
+        </div>
+        <div class="form-group">
+          <label>Confirm password</label>
+          <input type="password" placeholder="Confirm password"/>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-green btn-full btn-submit">Register</button>
+    </form>
+
+    <p class="auth-switch">Already registered? <a href="login.html">Login</a></p>
+
+    <div class="auth-telegram-note">
+      <p>⚡ <strong>Need fast approval?</strong></p>
+      <p>After registering, contact us on Telegram with your registered email for quick account approval.</p>
+      <a href="#" class="btn btn-outline-green" style="margin-top:10px;">Contact on Telegram</a>
+    </div>
+  </div>
+
+  <div class="auth-powered">
+    Powered by <strong>cioup</strong><br/>
+    <small>cpay-cash.app · Secure payments</small>
+  </div>
+
+</body>
+</html>
