@@ -4,282 +4,262 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cioup — Payment links & invoicing</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-  <!-- ── NAVBAR ── -->
-  <nav class="navbar">
-    <a href="https://cpay-cash.app" class="navbar__logo">cioup</a>
-    <ul class="navbar__links">
+  <!-- ══ NAVBAR ══ -->
+  <nav class="nav">
+    <a href="index.html" class="nav__logo">
+      <div class="logo-icon">C</div>
+      <span>Cioup</span>
+    </a>
+    <ul class="nav__links">
       <li><a href="#">Features</a></li>
-      <li><a href="#">Pricing</a></li>
-      <li><a href="#">Invoices</a></li>
-      <li><a href="#">Docs</a></li>
+      <li><a href="#">How it works</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="#">FAQ</a></li>
+      <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="navbar__actions">
-      <button class="btn btn-ghost">Log in</button>
-      <button class="btn btn-primary">Get started free →</button>
+    <div class="nav__actions">
+      <a href="login.html" class="nav__login">Log in</a>
+      <a href="register.html" class="btn-green">Get started</a>
     </div>
   </nav>
 
-  <!-- ── HERO ── -->
+  <!-- ══ HERO ══ -->
   <section class="hero">
-    <div class="hero__badge">
-      <span class="hero__badge-dot"></span>
-      Now with instant multi-currency payouts
+    <p class="hero__eyebrow">Payment links &amp; invoicing</p>
+    <h1 class="hero__title">Payment links and invoices, <em>simplified.</em></h1>
+    <p class="hero__sub">Create shareable payment links and professional invoices — customers pay on a clear page, you track status and payouts in one place.</p>
+    <div class="hero__cta">
+      <a href="register.html" class="btn-green btn-green--lg">Get started</a>
+      <a href="login.html" class="hero__login-link">Login</a>
     </div>
-    <h1 class="hero__title">
-      Get paid with a<br/><em>single link</em>
-    </h1>
-    <p class="hero__sub">
-      Create payment links and invoices, share one URL, and get paid — simple checkout for your customers, clear tracking for you.
-    </p>
-    <div class="hero__actions">
-      <button class="btn btn-primary btn-xl">Start for free →</button>
-      <button class="btn btn-outline btn-xl">See how it works</button>
-    </div>
-    <p class="hero__note">No credit card required · Free forever plan available</p>
   </section>
 
-  <!-- ── DASHBOARD MOCKUP ── -->
-  <div class="mockup">
-    <div class="mockup__glow"></div>
-    <div class="mockup__window">
-      <div class="mockup__titlebar">
-        <div class="mockup__dot mockup__dot--red"></div>
-        <div class="mockup__dot mockup__dot--yellow"></div>
-        <div class="mockup__dot mockup__dot--green"></div>
-        <div class="mockup__url">cpay-cash.app/dashboard</div>
-      </div>
-      <div class="mockup__body">
-        <!-- Sidebar -->
-        <div class="mockup__sidebar">
-          <div class="mockup__sidebar-logo">cioup</div>
-          <div class="mockup__nav-item active"><span class="icon">📊</span> Dashboard</div>
-          <div class="mockup__nav-item"><span class="icon">🔗</span> Payment Links</div>
-          <div class="mockup__nav-item"><span class="icon">🧾</span> Invoices</div>
-          <div class="mockup__nav-item"><span class="icon">👥</span> Customers</div>
-          <div class="mockup__nav-item"><span class="icon">⚙️</span> Settings</div>
-        </div>
-        <!-- Main -->
-        <div class="mockup__main">
-          <div class="mockup__greeting">Good morning, Alex 👋</div>
-          <div class="mockup__stats">
-            <div class="stat-card">
-              <div class="stat-card__label">Total Received</div>
-              <div class="stat-card__value">$12,480</div>
-              <div class="stat-card__change">↑ 24% this month</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-card__label">Active Links</div>
-              <div class="stat-card__value">8</div>
-              <div class="stat-card__change">2 invoices pending</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-card__label">Customers</div>
-              <div class="stat-card__value">143</div>
-              <div class="stat-card__change">↑ 11 new this week</div>
-            </div>
-          </div>
-          <div class="mockup__links-title">Recent Payment Links</div>
-          <div class="link-item">
-            <div>
-              <div class="link-item__url">cpay-cash.app/pay/your-store</div>
-              <div class="link-item__info">Created 2 days ago · 34 visits</div>
-            </div>
-            <span class="badge-pill badge-pill--green">Active</span>
-          </div>
-          <div class="link-item">
-            <div>
-              <div class="link-item__url">cpay-cash.app/inv/invoice-0041</div>
-              <div class="link-item__info">Sent to client@email.com</div>
-            </div>
-            <span class="badge-pill badge-pill--yellow">Pending</span>
-          </div>
-          <div class="link-item">
-            <div>
-              <div class="link-item__url">cpay-cash.app/pay/design-fee</div>
-              <div class="link-item__info">$350.00 · Paid 1 hour ago</div>
-            </div>
-            <span class="badge-pill badge-pill--blue">Paid</span>
-          </div>
-        </div>
-      </div>
+  <!-- ══ QUICK STATS BAR ══ -->
+  <div class="stats-bar">
+    <div class="stats-bar__item">
+      <span class="stats-bar__title">Quick</span>
+      <span class="stats-bar__sub">Setup</span>
+    </div>
+    <div class="stats-bar__item">
+      <span class="stats-bar__title">Branded</span>
+      <span class="stats-bar__sub">Invoices</span>
+    </div>
+    <div class="stats-bar__item">
+      <span class="stats-bar__title">Clear</span>
+      <span class="stats-bar__sub">Status</span>
     </div>
   </div>
 
-  <!-- ── SOCIAL PROOF ── -->
-  <div class="logos-section">
-    <p class="logos-section__label">Trusted by businesses worldwide</p>
-    <div class="logos-row">
-      <span>Freelance</span>
-      <span>Shopify</span>
-      <span>Notion</span>
-      <span>Stripe</span>
-      <span>Figma</span>
-      <span>Vercel</span>
+  <!-- ══ MOCKUP CARD ══ -->
+  <div class="mockup-section">
+    <div class="mockup-card">
+      <div class="mockup-card__topbar">
+        <span class="mockup-card__badge mockup-card__badge--green">Active</span>
+        <span class="mockup-card__badge mockup-card__badge--gray">LINK</span>
+        <div style="flex:1"></div>
+        <span class="mockup-card__copy-btn">Copy &amp; share →</span>
+      </div>
+      <div class="mockup-card__url">https://cpay-cash.app/pay/your-store</div>
+      <div class="mockup-card__row">
+        <div class="mockup-card__label">Description</div>
+        <div class="mockup-card__amount">$129.00</div>
+      </div>
+      <div class="mockup-card__detail">Design Retainer</div>
+      <div class="mockup-card__row2">
+        <span class="mockup-card__small">Username · Tax · Total</span>
+        <span class="mockup-card__badge mockup-card__badge--green">+ Paid</span>
+      </div>
+      <div class="mockup-card__stats-row">
+        <div>
+          <div class="mockup-card__stat-val">$1,847.20</div>
+          <div class="mockup-card__stat-label">This month</div>
+        </div>
+        <div>
+          <div class="mockup-card__stat-val">$540.00</div>
+          <div class="mockup-card__stat-label">Awaiting Apr 10</div>
+        </div>
+      </div>
+      <div class="mockup-card__footer-note">Customers see amount, details, and confirmation — nothing confusing, nothing extra.</div>
+    </div>
+    <div class="mockup-section__labels">
+      <span>Payment links</span>
+      <span>Invoices</span>
+      <span>Receipts &amp; tracking</span>
     </div>
   </div>
 
-  <!-- ── FEATURES ── -->
+  <!-- ══ EVERYTHING YOU NEED ══ -->
   <section class="features-section">
-    <p class="section-eyebrow">Why Cioup</p>
-    <h2 class="section-heading">Everything you need to get paid</h2>
-    <p class="section-subheading">No complex setup. Just create, share, and collect.</p>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-card__icon">🔗</div>
-        <h3 class="feature-card__title">Payment Links</h3>
-        <p class="feature-card__desc">Generate a shareable link in seconds. Send via WhatsApp, email, or social — customers pay instantly.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-card__icon">🧾</div>
-        <h3 class="feature-card__title">Smart Invoicing</h3>
-        <p class="feature-card__desc">Create professional invoices with your branding. Track status in real-time — sent, viewed, or paid.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-card__icon">📊</div>
-        <h3 class="feature-card__title">Clear Dashboard</h3>
-        <p class="feature-card__desc">See all payments, invoices, and customer activity in one clean, simple dashboard.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-card__icon">⚡</div>
-        <h3 class="feature-card__title">Instant Payouts</h3>
-        <p class="feature-card__desc">Money hits your account fast. No waiting days — get your funds when your customers pay.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-card__icon">🔒</div>
-        <h3 class="feature-card__title">Secure Checkout</h3>
-        <p class="feature-card__desc">Every payment is encrypted and protected. Your customers trust the checkout experience.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-card__icon">🌍</div>
-        <h3 class="feature-card__title">Multi-currency</h3>
-        <p class="feature-card__desc">Accept payments in multiple currencies. Perfect for freelancers and global businesses.</p>
-      </div>
-    </div>
-  </section>
+    <h2 class="features-section__title">Everything you need to <em>bill and collect.</em></h2>
+    <p class="features-section__sub">One place for links, invoices, and payment status — so you spend less time chasing payments.</p>
 
-  <!-- ── HOW IT WORKS ── -->
-  <section class="how-section">
-    <p class="section-eyebrow">How it works</p>
-    <h2 class="section-heading">Three steps to get paid</h2>
-    <p class="section-subheading">From setup to payment in minutes.</p>
-    <div class="steps-row">
-      <div class="step-item">
-        <div class="step-item__num">1</div>
-        <h3 class="step-item__title">Create</h3>
-        <p class="step-item__desc">Set up your payment link or invoice with amount, description, and branding.</p>
-      </div>
-      <div class="step-item">
-        <div class="step-item__num">2</div>
-        <h3 class="step-item__title">Share</h3>
-        <p class="step-item__desc">Copy your unique URL and send it via any channel to your customer.</p>
-      </div>
-      <div class="step-item">
-        <div class="step-item__num">3</div>
-        <h3 class="step-item__title">Get Paid</h3>
-        <p class="step-item__desc">Customer completes checkout and funds arrive in your account instantly.</p>
-      </div>
-    </div>
-  </section>
+    <div class="features-list">
 
-  <!-- ── TESTIMONIALS ── -->
-  <section class="testimonials-section">
-    <p class="section-eyebrow">Loved by users</p>
-    <h2 class="section-heading">What our customers say</h2>
-    <p class="section-subheading">Thousands of freelancers and businesses rely on Cioup every day.</p>
-    <div class="testimonials-grid">
-      <div class="testimonial-card">
-        <div class="testimonial-card__stars">★★★★★</div>
-        <p class="testimonial-card__text">"Cioup made collecting payments from clients incredibly simple. I just send a link and get paid — no fuss."</p>
-        <div class="testimonial-card__author">
-          <div class="testimonial-card__avatar">S</div>
-          <div>
-            <div class="testimonial-card__name">Sarah M.</div>
-            <div class="testimonial-card__role">Freelance Designer</div>
-          </div>
+      <div class="feature-item">
+        <div class="feature-item__icon">🔗</div>
+        <div>
+          <div class="feature-item__title">Payment links</div>
+          <div class="feature-item__desc">Create a link, set an amount and description, and share it anywhere your customers already are.</div>
         </div>
       </div>
-      <div class="testimonial-card">
-        <div class="testimonial-card__stars">★★★★★</div>
-        <p class="testimonial-card__text">"The invoice tracking feature alone is worth it. I always know who's paid and who hasn't."</p>
-        <div class="testimonial-card__author">
-          <div class="testimonial-card__avatar">J</div>
-          <div>
-            <div class="testimonial-card__name">James K.</div>
-            <div class="testimonial-card__role">Small Business Owner</div>
-          </div>
+
+      <div class="feature-item">
+        <div class="feature-item__icon">🧾</div>
+        <div>
+          <div class="feature-item__title">Invoices &amp; line items</div>
+          <div class="feature-item__desc">Build professional invoices with line items and totals, customers pay through the same link page.</div>
         </div>
       </div>
-      <div class="testimonial-card">
-        <div class="testimonial-card__stars">★★★★★</div>
-        <p class="testimonial-card__text">"Finally a payment tool that doesn't require a PhD to set up. Clean, fast, and just works."</p>
-        <div class="testimonial-card__author">
-          <div class="testimonial-card__avatar">A</div>
-          <div>
-            <div class="testimonial-card__name">Aisha R.</div>
-            <div class="testimonial-card__role">Agency Founder</div>
-          </div>
+
+      <div class="feature-item">
+        <div class="feature-item__icon">📆</div>
+        <div>
+          <div class="feature-item__title">Payouts on a schedule</div>
+          <div class="feature-item__desc">Funds move on a regular cadence so you can plan cash flow without surprises.</div>
         </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-item__icon">📊</div>
+        <div>
+          <div class="feature-item__title">Payout visibility</div>
+          <div class="feature-item__desc">Know what is pending, cleared, and on the way to your balance.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ FROM DRAFT TO PAID (DARK) ══ -->
+  <section class="steps-section">
+    <p class="steps-section__eyebrow">HOW IT WORKS</p>
+    <h2 class="steps-section__title">From draft to paid—in three steps.</h2>
+    <p class="steps-section__sub">Create a link or invoice, send it to your customer, and follow status until it is paid.</p>
+    <div class="steps-section__cta">
+      <a href="register.html" class="btn-green">Create account</a>
+      <a href="login.html" class="steps-section__login">Log in</a>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-card__num">STEP 1</div>
+        <div class="step-card__title">Create a link or invoice</div>
+        <div class="step-card__desc">Add amount, description, and any fields you need when you create them.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-card__num">STEP 2</div>
+        <div class="step-card__title">Share with your customer</div>
+        <div class="step-card__desc">Send by message, email, or embed in your proposal or info.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-card__num">STEP 3</div>
+        <div class="step-card__title">Get paid &amp; track payouts</div>
+        <div class="step-card__desc">See when payment clears and when funds are available to you.</div>
       </div>
     </div>
   </section>
 
-  <!-- ── CTA ── -->
-  <section class="cta-section">
-    <h2 class="cta-section__title">Ready to get paid faster?</h2>
-    <p class="cta-section__sub">Join thousands of businesses using Cioup to simplify payments. Free to start.</p>
-    <div class="cta-section__actions">
-      <button class="btn btn-white btn-xl">Create free account →</button>
-      <button class="btn btn-outline-white btn-xl">View pricing</button>
+  <!-- ══ USE CASES ══ -->
+  <section class="usecases-section">
+    <p class="usecases-section__eyebrow">USE CASES</p>
+    <h2 class="usecases-section__title">Services, deposits &amp; one-offs</h2>
+    <p class="usecases-section__sub">Describe your product/service, take deposits, or make a simple payment request.</p>
+    <div class="usecases-grid">
+      <div class="usecase-card">
+        <div class="usecase-card__icon">🧾</div>
+        <div class="usecase-card__title">Invoices &amp; receipts</div>
+        <div class="usecase-card__desc">Send in rendered form, customers keep a clear receipt.</div>
+      </div>
+      <div class="usecase-card">
+        <div class="usecase-card__icon">🔗</div>
+        <div class="usecase-card__title">Pay links</div>
+        <div class="usecase-card__desc">Share one URL — no plugin or custom storefront required.</div>
+      </div>
+      <div class="usecase-card">
+        <div class="usecase-card__icon">📊</div>
+        <div class="usecase-card__title">Payout visibility</div>
+        <div class="usecase-card__desc">Know what is pending, cleared, and on the way to your balance.</div>
+      </div>
     </div>
   </section>
 
-  <!-- ── FOOTER ── -->
+  <!-- ══ PRICING ══ -->
+  <section class="pricing-inline-section">
+    <div class="pricing-inline-section__left">
+      <p class="pricing-inline-section__eyebrow">PRICING</p>
+      <h2 class="pricing-inline-section__title">Simple, transparent pricing.</h2>
+      <p class="pricing-inline-section__sub">Start free and scale when you need higher limits or more volume.</p>
+    </div>
+    <div class="pricing-inline-plan">
+      <div class="pricing-inline-plan__name">Starter</div>
+      <div class="pricing-inline-plan__desc">For trying it out</div>
+      <div class="pricing-inline-plan__price">Free</div>
+    </div>
+    <div class="pricing-inline-plan pricing-inline-plan--highlight">
+      <div class="pricing-inline-plan__name">Pro</div>
+      <div class="pricing-inline-plan__desc">For growing teams</div>
+      <div class="pricing-inline-plan__price">Contact</div>
+    </div>
+  </section>
+
+  <!-- ══ FAQ ══ -->
+  <section class="faq-section-main">
+    <p class="faq-section-main__eyebrow">FAQ</p>
+    <h2 class="faq-section-main__title">Common questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-item__q">Do customers need an account?</div>
+        <div class="faq-item__a">No. They can pay from the link you send without signing up.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Can I customize invoices?</div>
+        <div class="faq-item__a">Yes. Use clear templates so your business looks professional.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-item__q">Is my data secure?</div>
+        <div class="faq-item__a">We use secure sessions and process like limits to keep accounts and payments safe.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CONTACT ══ -->
+  <section class="contact-inline">
+    <div class="contact-inline__card">
+      <p class="contact-inline__eyebrow">CONTACT</p>
+      <h2 class="contact-inline__title">Contact us</h2>
+      <p class="contact-inline__sub">Questions about invoices, payment links, or your account? Message us — we respond quickly.</p>
+      <a href="mailto:support@cpay-cash.app" class="btn-outline-white">Email</a>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
   <footer class="footer">
-    <div class="footer__top">
-      <div>
-        <div class="footer__brand-name">cioup</div>
-        <p class="footer__brand-desc">Simple payment links and invoicing for freelancers and modern businesses.</p>
+    <div class="footer__brand">
+      <div class="footer__logo">
+        <div class="logo-icon">C</div>
+        <span>Cioup</span>
       </div>
-      <div>
+      <p class="footer__brand-desc">Payment links and invoicing for businesses and creators.</p>
+    </div>
+    <div class="footer__cols">
+      <div class="footer__col">
         <div class="footer__col-title">Product</div>
-        <ul class="footer__links">
-          <li><a href="#">Features</a></li>
-          <li><a href="#">Pricing</a></li>
-          <li><a href="#">Changelog</a></li>
-          <li><a href="#">Roadmap</a></li>
-        </ul>
+        <a href="#">Features</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="#">FAQ</a>
       </div>
-      <div>
-        <div class="footer__col-title">Company</div>
-        <ul class="footer__links">
-          <li><a href="#">About</a></li>
-          <li><a href="#">Blog</a></li>
-          <li><a href="#">Careers</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer__col-title">Legal</div>
-        <ul class="footer__links">
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms of Service</a></li>
-          <li><a href="#">Cookie Policy</a></li>
-        </ul>
+      <div class="footer__col">
+        <div class="footer__col-title">Account</div>
+        <a href="login.html">Login</a>
+        <a href="register.html">Register</a>
+        <a href="contact.html">Contact</a>
       </div>
     </div>
-    <div class="footer__bottom">
-      <span class="footer__copy">© 2024 Cioup · cpay-cash.app</span>
-      <div class="footer__legal">
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-        <a href="#">Support</a>
-      </div>
-    </div>
+    <div class="footer__bottom">© 2024 cpay-cash.app · All rights reserved</div>
   </footer>
 
 </body>
