@@ -113,10 +113,11 @@ a { text-decoration: none; color: inherit; }
   padding: 48px 16px 40px;
 }
 
-.auth-logo {
+a.auth-logo {
   display: flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
   margin-bottom: 28px;
 }
 
