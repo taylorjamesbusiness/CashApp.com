@@ -1,546 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cioup — Payment links & invoicing</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f9fafb;
-      color: #111827;
-    }
-
-    /* ── NAVBAR ── */
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 64px;
-      background: #ffffff;
-      border-bottom: 1px solid #e5e7eb;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .logo {
-      font-size: 22px;
-      font-weight: 800;
-      color: #4f46e5;
-      letter-spacing: -0.5px;
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 32px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: #374151;
-      font-size: 15px;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: #4f46e5; }
-
-    .nav-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: none;
-      font-size: 15px;
-      font-weight: 500;
-      color: #374151;
-      cursor: pointer;
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: background 0.2s;
-    }
-
-    .btn-ghost:hover { background: #f3f4f6; }
-
-    .btn-primary {
-      background: #4f46e5;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-primary:hover { background: #4338ca; }
-
-    /* ── HERO ── */
-    .hero {
-      text-align: center;
-      padding: 100px 24px 60px;
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    .badge {
-      display: inline-block;
-      background: #eef2ff;
-      color: #4f46e5;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 5px 14px;
-      border-radius: 999px;
-      margin-bottom: 20px;
-      letter-spacing: 0.3px;
-    }
-
-    .hero h1 {
-      font-size: 54px;
-      font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -1.5px;
-      color: #111827;
-      margin-bottom: 20px;
-    }
-
-    .hero h1 span { color: #4f46e5; }
-
-    .hero p {
-      font-size: 18px;
-      color: #6b7280;
-      line-height: 1.7;
-      margin-bottom: 36px;
-    }
-
-    .hero-actions {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .btn-large {
-      padding: 14px 28px;
-      font-size: 16px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-    }
-
-    .btn-large.primary {
-      background: #4f46e5;
-      color: #fff;
-    }
-
-    .btn-large.primary:hover { background: #4338ca; }
-
-    .btn-large.secondary {
-      background: #fff;
-      color: #374151;
-      border: 1.5px solid #d1d5db;
-    }
-
-    .btn-large.secondary:hover { background: #f9fafb; border-color: #9ca3af; }
-
-    /* ── MOCKUP / DEMO AREA ── */
-    .mockup-wrapper {
-      max-width: 900px;
-      margin: 48px auto 80px;
-      padding: 0 24px;
-    }
-
-    .mockup-box {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 32px;
-      box-shadow: 0 8px 40px rgba(79,70,229,0.08);
-    }
-
-    .mockup-topbar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    .dot { width: 12px; height: 12px; border-radius: 50%; }
-    .dot.red   { background: #ef4444; }
-    .dot.yellow{ background: #f59e0b; }
-    .dot.green { background: #10b981; }
-
-    .mockup-inner {
-      background: #f3f4f6;
-      border-radius: 10px;
-      padding: 24px;
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      flex: 1;
-      min-width: 200px;
-      border: 1px solid #e5e7eb;
-    }
-
-    .card-label {
-      font-size: 12px;
-      color: #9ca3af;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .card-value {
-      font-size: 26px;
-      font-weight: 700;
-      color: #111827;
-    }
-
-    .card-sub {
-      font-size: 13px;
-      color: #10b981;
-      margin-top: 4px;
-      font-weight: 500;
-    }
-
-    .link-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-top: 16px;
-    }
-
-    .link-url { font-size: 14px; color: #4f46e5; font-weight: 500; }
-    .link-status {
-      background: #d1fae5;
-      color: #065f46;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 999px;
-    }
-
-    /* ── FEATURES ── */
-    .features {
-      max-width: 1100px;
-      margin: 0 auto 100px;
-      padding: 0 24px;
-    }
-
-    .section-label {
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      color: #4f46e5;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      text-align: center;
-      font-size: 36px;
-      font-weight: 800;
-      letter-spacing: -0.8px;
-      margin-bottom: 12px;
-    }
-
-    .section-sub {
-      text-align: center;
-      font-size: 17px;
-      color: #6b7280;
-      margin-bottom: 56px;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
-
-    .feature-card {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 28px;
-      transition: box-shadow 0.2s;
-    }
-
-    .feature-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.07); }
-
-    .feature-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: #eef2ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      margin-bottom: 16px;
-    }
-
-    .feature-card h3 {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .feature-card p {
-      font-size: 14px;
-      color: #6b7280;
-      line-height: 1.6;
-    }
-
-    /* ── STEPS ── */
-    .steps-section {
-      background: #4f46e5;
-      padding: 80px 24px;
-      text-align: center;
-      color: #fff;
-    }
-
-    .steps-section .section-label { color: #a5b4fc; }
-    .steps-section .section-title { color: #fff; }
-    .steps-section .section-sub   { color: #c7d2fe; }
-
-    .steps-grid {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      flex-wrap: wrap;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .step {
-      flex: 1;
-      min-width: 200px;
-      max-width: 240px;
-    }
-
-    .step-number {
-      width: 48px;
-      height: 48px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 50%;
-      font-size: 20px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      color: #fff;
-    }
-
-    .step h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-    .step p  { font-size: 14px; color: #c7d2fe; line-height: 1.6; }
-
-    /* ── CTA ── */
-    .cta-section {
-      text-align: center;
-      padding: 100px 24px;
-      background: #fff;
-    }
-
-    .cta-section h2 {
-      font-size: 40px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      margin-bottom: 16px;
-    }
-
-    .cta-section p {
-      font-size: 17px;
-      color: #6b7280;
-      margin-bottom: 36px;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      background: #111827;
-      color: #9ca3af;
-      text-align: center;
-      padding: 32px 24px;
-      font-size: 14px;
-    }
-
-    footer a { color: #9ca3af; text-decoration: none; margin: 0 12px; }
-    footer a:hover { color: #fff; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      nav { padding: 16px 20px; }
-      .nav-links { display: none; }
-      .hero h1 { font-size: 36px; }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-  <!-- NAVBAR -->
-  <nav>
-    <a href="https://cpay-cash.app" class="logo">cioup</a>
-    <ul class="nav-links">
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar">
+    <a href="https://cpay-cash.app" class="navbar__logo">cioup</a>
+    <ul class="navbar__links">
       <li><a href="#">Features</a></li>
       <li><a href="#">Pricing</a></li>
       <li><a href="#">Invoices</a></li>
       <li><a href="#">Docs</a></li>
     </ul>
-    <div class="nav-actions">
-      <button class="btn-ghost">Log in</button>
-      <button class="btn-primary">Get started free</button>
+    <div class="navbar__actions">
+      <button class="btn btn-ghost">Log in</button>
+      <button class="btn btn-primary">Get started free →</button>
     </div>
   </nav>
 
-  <!-- HERO -->
+  <!-- ── HERO ── -->
   <section class="hero">
-    <span class="badge">✦ Simple. Fast. Reliable.</span>
-    <h1>Get paid with a <span>single link</span></h1>
-    <p>Create payment links and invoices, share one URL, and get paid — simple checkout for your customers, clear tracking for you.</p>
-    <div class="hero-actions">
-      <button class="btn-large primary">Start for free →</button>
-      <button class="btn-large secondary">See how it works</button>
+    <div class="hero__badge">
+      <span class="hero__badge-dot"></span>
+      Now with instant multi-currency payouts
     </div>
+    <h1 class="hero__title">
+      Get paid with a<br/><em>single link</em>
+    </h1>
+    <p class="hero__sub">
+      Create payment links and invoices, share one URL, and get paid — simple checkout for your customers, clear tracking for you.
+    </p>
+    <div class="hero__actions">
+      <button class="btn btn-primary btn-xl">Start for free →</button>
+      <button class="btn btn-outline btn-xl">See how it works</button>
+    </div>
+    <p class="hero__note">No credit card required · Free forever plan available</p>
   </section>
 
-  <!-- MOCKUP -->
-  <div class="mockup-wrapper">
-    <div class="mockup-box">
-      <div class="mockup-topbar">
-        <div class="dot red"></div>
-        <div class="dot yellow"></div>
-        <div class="dot green"></div>
+  <!-- ── DASHBOARD MOCKUP ── -->
+  <div class="mockup">
+    <div class="mockup__glow"></div>
+    <div class="mockup__window">
+      <div class="mockup__titlebar">
+        <div class="mockup__dot mockup__dot--red"></div>
+        <div class="mockup__dot mockup__dot--yellow"></div>
+        <div class="mockup__dot mockup__dot--green"></div>
+        <div class="mockup__url">cpay-cash.app/dashboard</div>
       </div>
-      <div class="mockup-inner">
-        <div class="card">
-          <div class="card-label">Total Received</div>
-          <div class="card-value">$12,480</div>
-          <div class="card-sub">↑ 24% this month</div>
+      <div class="mockup__body">
+        <!-- Sidebar -->
+        <div class="mockup__sidebar">
+          <div class="mockup__sidebar-logo">cioup</div>
+          <div class="mockup__nav-item active"><span class="icon">📊</span> Dashboard</div>
+          <div class="mockup__nav-item"><span class="icon">🔗</span> Payment Links</div>
+          <div class="mockup__nav-item"><span class="icon">🧾</span> Invoices</div>
+          <div class="mockup__nav-item"><span class="icon">👥</span> Customers</div>
+          <div class="mockup__nav-item"><span class="icon">⚙️</span> Settings</div>
         </div>
-        <div class="card">
-          <div class="card-label">Active Links</div>
-          <div class="card-value">8</div>
-          <div class="card-sub">2 invoices pending</div>
+        <!-- Main -->
+        <div class="mockup__main">
+          <div class="mockup__greeting">Good morning, Alex 👋</div>
+          <div class="mockup__stats">
+            <div class="stat-card">
+              <div class="stat-card__label">Total Received</div>
+              <div class="stat-card__value">$12,480</div>
+              <div class="stat-card__change">↑ 24% this month</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__label">Active Links</div>
+              <div class="stat-card__value">8</div>
+              <div class="stat-card__change">2 invoices pending</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__label">Customers</div>
+              <div class="stat-card__value">143</div>
+              <div class="stat-card__change">↑ 11 new this week</div>
+            </div>
+          </div>
+          <div class="mockup__links-title">Recent Payment Links</div>
+          <div class="link-item">
+            <div>
+              <div class="link-item__url">cpay-cash.app/pay/your-store</div>
+              <div class="link-item__info">Created 2 days ago · 34 visits</div>
+            </div>
+            <span class="badge-pill badge-pill--green">Active</span>
+          </div>
+          <div class="link-item">
+            <div>
+              <div class="link-item__url">cpay-cash.app/inv/invoice-0041</div>
+              <div class="link-item__info">Sent to client@email.com</div>
+            </div>
+            <span class="badge-pill badge-pill--yellow">Pending</span>
+          </div>
+          <div class="link-item">
+            <div>
+              <div class="link-item__url">cpay-cash.app/pay/design-fee</div>
+              <div class="link-item__info">$350.00 · Paid 1 hour ago</div>
+            </div>
+            <span class="badge-pill badge-pill--blue">Paid</span>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-label">Customers</div>
-          <div class="card-value">143</div>
-          <div class="card-sub">↑ 11 new this week</div>
-        </div>
-      </div>
-      <div class="link-row">
-        <span class="link-url">cpay-cash.app/pay/your-store</span>
-        <span class="link-status">Active</span>
-      </div>
-      <div class="link-row">
-        <span class="link-url">cpay-cash.app/inv/invoice-2024</span>
-        <span class="link-status">Paid</span>
       </div>
     </div>
   </div>
 
-  <!-- FEATURES -->
-  <section class="features">
-    <div class="section-label">Why Cioup</div>
-    <h2 class="section-title">Everything you need to get paid</h2>
-    <p class="section-sub">No complex setup. Just create, share, and collect.</p>
+  <!-- ── SOCIAL PROOF ── -->
+  <div class="logos-section">
+    <p class="logos-section__label">Trusted by businesses worldwide</p>
+    <div class="logos-row">
+      <span>Freelance</span>
+      <span>Shopify</span>
+      <span>Notion</span>
+      <span>Stripe</span>
+      <span>Figma</span>
+      <span>Vercel</span>
+    </div>
+  </div>
+
+  <!-- ── FEATURES ── -->
+  <section class="features-section">
+    <p class="section-eyebrow">Why Cioup</p>
+    <h2 class="section-heading">Everything you need to get paid</h2>
+    <p class="section-subheading">No complex setup. Just create, share, and collect.</p>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">🔗</div>
-        <h3>Payment Links</h3>
-        <p>Generate a shareable link in seconds. Send via WhatsApp, email, or social media — customers pay instantly.</p>
+        <div class="feature-card__icon">🔗</div>
+        <h3 class="feature-card__title">Payment Links</h3>
+        <p class="feature-card__desc">Generate a shareable link in seconds. Send via WhatsApp, email, or social — customers pay instantly.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🧾</div>
-        <h3>Smart Invoicing</h3>
-        <p>Create professional invoices with your branding. Track status in real-time — sent, viewed, or paid.</p>
+        <div class="feature-card__icon">🧾</div>
+        <h3 class="feature-card__title">Smart Invoicing</h3>
+        <p class="feature-card__desc">Create professional invoices with your branding. Track status in real-time — sent, viewed, or paid.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <h3>Clear Dashboard</h3>
-        <p>See all your payments, outstanding invoices, and customer activity in one clean, simple dashboard.</p>
+        <div class="feature-card__icon">📊</div>
+        <h3 class="feature-card__title">Clear Dashboard</h3>
+        <p class="feature-card__desc">See all payments, invoices, and customer activity in one clean, simple dashboard.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3>Instant Payouts</h3>
-        <p>Money hits your account fast. No waiting days — get your funds when your customers pay.</p>
+        <div class="feature-card__icon">⚡</div>
+        <h3 class="feature-card__title">Instant Payouts</h3>
+        <p class="feature-card__desc">Money hits your account fast. No waiting days — get your funds when your customers pay.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🔒</div>
-        <h3>Secure Checkout</h3>
-        <p>Every payment is encrypted and protected. Your customers trust the checkout experience.</p>
+        <div class="feature-card__icon">🔒</div>
+        <h3 class="feature-card__title">Secure Checkout</h3>
+        <p class="feature-card__desc">Every payment is encrypted and protected. Your customers trust the checkout experience.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🌍</div>
-        <h3>Multi-currency</h3>
-        <p>Accept payments in multiple currencies. Perfect for freelancers and businesses with global clients.</p>
+        <div class="feature-card__icon">🌍</div>
+        <h3 class="feature-card__title">Multi-currency</h3>
+        <p class="feature-card__desc">Accept payments in multiple currencies. Perfect for freelancers and global businesses.</p>
       </div>
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="steps-section">
-    <div class="section-label">How it works</div>
-    <h2 class="section-title">Three steps to get paid</h2>
-    <p class="section-sub">From setup to payment in minutes.</p>
-    <div class="steps-grid">
-      <div class="step">
-        <div class="step-number">1</div>
-        <h3>Create</h3>
-        <p>Set up your payment link or invoice with amount, description, and your branding.</p>
+  <!-- ── HOW IT WORKS ── -->
+  <section class="how-section">
+    <p class="section-eyebrow">How it works</p>
+    <h2 class="section-heading">Three steps to get paid</h2>
+    <p class="section-subheading">From setup to payment in minutes.</p>
+    <div class="steps-row">
+      <div class="step-item">
+        <div class="step-item__num">1</div>
+        <h3 class="step-item__title">Create</h3>
+        <p class="step-item__desc">Set up your payment link or invoice with amount, description, and branding.</p>
       </div>
-      <div class="step">
-        <div class="step-number">2</div>
-        <h3>Share</h3>
-        <p>Copy your unique URL and send it to your customer via any channel.</p>
+      <div class="step-item">
+        <div class="step-item__num">2</div>
+        <h3 class="step-item__title">Share</h3>
+        <p class="step-item__desc">Copy your unique URL and send it via any channel to your customer.</p>
       </div>
-      <div class="step">
-        <div class="step-number">3</div>
-        <h3>Get Paid</h3>
-        <p>Your customer completes the checkout and you receive funds instantly.</p>
+      <div class="step-item">
+        <div class="step-item__num">3</div>
+        <h3 class="step-item__title">Get Paid</h3>
+        <p class="step-item__desc">Customer completes checkout and funds arrive in your account instantly.</p>
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
+  <!-- ── TESTIMONIALS ── -->
+  <section class="testimonials-section">
+    <p class="section-eyebrow">Loved by users</p>
+    <h2 class="section-heading">What our customers say</h2>
+    <p class="section-subheading">Thousands of freelancers and businesses rely on Cioup every day.</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">★★★★★</div>
+        <p class="testimonial-card__text">"Cioup made collecting payments from clients incredibly simple. I just send a link and get paid — no fuss."</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar">S</div>
+          <div>
+            <div class="testimonial-card__name">Sarah M.</div>
+            <div class="testimonial-card__role">Freelance Designer</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">★★★★★</div>
+        <p class="testimonial-card__text">"The invoice tracking feature alone is worth it. I always know who's paid and who hasn't."</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar">J</div>
+          <div>
+            <div class="testimonial-card__name">James K.</div>
+            <div class="testimonial-card__role">Small Business Owner</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">★★★★★</div>
+        <p class="testimonial-card__text">"Finally a payment tool that doesn't require a PhD to set up. Clean, fast, and just works."</p>
+        <div class="testimonial-card__author">
+          <div class="testimonial-card__avatar">A</div>
+          <div>
+            <div class="testimonial-card__name">Aisha R.</div>
+            <div class="testimonial-card__role">Agency Founder</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
   <section class="cta-section">
-    <h2>Ready to get paid faster?</h2>
-    <p>Join thousands of businesses using Cioup to simplify payments.</p>
-    <button class="btn-large primary">Create your free account →</button>
+    <h2 class="cta-section__title">Ready to get paid faster?</h2>
+    <p class="cta-section__sub">Join thousands of businesses using Cioup to simplify payments. Free to start.</p>
+    <div class="cta-section__actions">
+      <button class="btn btn-white btn-xl">Create free account →</button>
+      <button class="btn btn-outline-white btn-xl">View pricing</button>
+    </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer>
-    <p style="margin-bottom: 12px;">
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Support</a>
-      <a href="#">Blog</a>
-    </p>
-    <p>© 2024 Cioup. All rights reserved.</p>
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <div class="footer__top">
+      <div>
+        <div class="footer__brand-name">cioup</div>
+        <p class="footer__brand-desc">Simple payment links and invoicing for freelancers and modern businesses.</p>
+      </div>
+      <div>
+        <div class="footer__col-title">Product</div>
+        <ul class="footer__links">
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Company</div>
+        <ul class="footer__links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Legal</div>
+        <ul class="footer__links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="footer__copy">© 2024 Cioup · cpay-cash.app</span>
+      <div class="footer__legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Support</a>
+      </div>
+    </div>
   </footer>
 
 </body>
