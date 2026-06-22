@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venmo Payment Request</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:#ffffff;color:#0d0d0d;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+
+/* TOP BAR */
+.vn-topbar{width:100%;background:#fff;border-bottom:1px solid #e8eaf0;padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:10px;position:sticky;top:0;z-index:10;box-shadow:0 1px 5px rgba(0,0,0,0.05);}
+.vn-logo-wrap{display:flex;align-items:center;gap:8px;}
+.vn-logo-icon{width:36px;height:36px;background:#008CFF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.vn-logo-text{font-size:20px;font-weight:900;color:#008CFF;letter-spacing:-0.5px;}
+
+/* CARD */
+.vn-card{width:100%;max-width:440px;padding:20px 16px 40px;}
+
+/* HERO */
+.vn-hero{background:linear-gradient(135deg,#008CFF,#0066cc);border-radius:24px;padding:28px 24px;text-align:center;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 6px 24px rgba(0,140,255,0.25);}
+.vn-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:rgba(255,255,255,0.08);border-radius:50%;}
+.vn-hero::after{content:'';position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;background:rgba(255,255,255,0.05);border-radius:50%;}
+.vn-hero-label{font-size:12px;color:rgba(255,255,255,0.7);font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;}
+.vn-amount{font-size:52px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1;}
+.vn-amount-sub{font-size:13px;color:rgba(255,255,255,0.65);margin-top:8px;font-weight:500;}
+.vn-divider{height:1px;background:rgba(255,255,255,0.15);margin:16px 0;}
+.vn-timer-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.vn-timer-label{font-size:12px;color:rgba(255,255,255,0.65);font-weight:600;}
+.vn-timer-val{font-size:14px;font-weight:800;color:#ffe066;font-variant-numeric:tabular-nums;}
+.vn-progress{width:100%;height:4px;background:rgba(255,255,255,0.2);border-radius:99px;overflow:hidden;}
+.vn-progress-bar{height:100%;background:linear-gradient(90deg,#ffe066,#ffad33);border-radius:99px;width:100%;transition:width 1s linear;}
+
+/* META */
+.vn-meta-card{background:#fff;border:1px solid #f0f2f6;border-radius:18px;padding:16px 20px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,0.04);}
+.vn-section-title{font-size:11px;font-weight:700;color:#8a94a6;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;}
+.vn-meta-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f3f4f7;}
+.vn-meta-row:last-child{border-bottom:none;padding-bottom:0;}
+.vn-meta-row:first-child{padding-top:0;}
+.vn-meta-key{font-size:13px;color:#8a94a6;font-weight:600;}
+.vn-meta-val{font-size:13px;color:#0d0d0d;font-weight:700;font-family:monospace;}
+.vn-chip{background:#e3f2fd;color:#0277bd;border-radius:999px;padding:4px 11px;font-size:11px;font-weight:700;}
+
+/* WALLET */
+.vn-wallet-card{background:#fff;border:1px solid #f0f2f6;border-radius:18px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,0.04);}
+.vn-network-chip{display:inline-flex;align-items:center;gap:6px;background:#e3f7ff;border-radius:999px;padding:5px 13px;font-size:12px;font-weight:700;color:#008CFF;margin-bottom:12px;}
+.vn-net-dot{width:6px;height:6px;background:#008CFF;border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.vn-addr-box{background:#f7f9fc;border:1px solid #e8eaf0;border-radius:12px;padding:12px 14px;font-family:monospace;font-size:11.5px;color:#4a5568;word-break:break-all;line-height:1.65;margin-bottom:14px;}
+.vn-copy-btn{width:100%;background:linear-gradient(135deg,#008CFF,#0066cc);color:#fff;border:none;border-radius:13px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(0,140,255,0.25);transition:all 0.25s;}
+.vn-copy-btn:hover{transform:translateY(-1px);}
+.vn-copy-btn:disabled{opacity:0.7;transform:none;}
+
+/* QR */
+.vn-qr-card{background:#fff;border:1px solid #f0f2f6;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,0.04);text-align:center;}
+.vn-qr-img{width:160px;height:160px;border-radius:12px;border:3px solid #e3f2fd;}
+.vn-qr-label{font-size:12px;color:#8a94a6;margin-top:10px;font-weight:600;}
+
+/* STEPS */
+.vn-steps-card{background:#fff;border:1px solid #f0f2f6;border-radius:18px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 8px rgba(0,0,0,0.04);}
+.vn-step{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid #f3f4f7;}
+.vn-step:last-child{border-bottom:none;padding-bottom:0;}
+.vn-step:first-child{padding-top:0;}
+.vn-step-num{width:26px;height:26px;background:#008CFF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px;}
+.vn-step-text{font-size:13px;color:#4a5568;line-height:1.55;}
+.vn-step-text b{color:#0d0d0d;}
+
+/* PAID */
+#paidState{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px 20px;}
+.vn-paid-icon{width:80px;height:80px;background:linear-gradient(135deg,#008CFF,#0066cc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff;margin:0 auto 20px;box-shadow:0 8px 28px rgba(0,140,255,0.25);}
+.vn-paid-title{font-size:24px;font-weight:900;color:#008CFF;margin-bottom:8px;}
+.vn-paid-sub{font-size:14px;color:#8a94a6;}
+
+#expiredState{display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;text-align:center;}
+#invoiceError{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;color:#8a94a6;font-size:15px;}
+</style>
+</head>
+<body>
+
+<div class="vn-topbar">
+  <div class="vn-logo-wrap">
+    <div class="vn-logo-icon">💙</div>
+    <div class="vn-logo-text">venmo</div>
+  </div>
+</div>
+
+<div class="vn-card" id="payingState">
+
+  <div class="vn-hero">
+    <div class="vn-hero-label">Payment Requested</div>
+    <div class="vn-amount" id="invoiceAmount">$0.00</div>
+    <div class="vn-amount-sub">PYUSD · Solana Network</div>
+    <div class="vn-divider"></div>
+    <div class="vn-timer-row">
+      <span class="vn-timer-label">⏳ Expires in</span>
+      <span class="vn-timer-val" id="countdownTimer">15:00</span>
+    </div>
+    <div class="vn-progress"><div class="vn-progress-bar" id="countdownBar"></div></div>
+  </div>
+
+  <div class="vn-meta-card">
+    <div class="vn-section-title">Request Details</div>
+    <div class="vn-meta-row"><span class="vn-meta-key">Invoice ID</span><span class="vn-meta-val" id="invoiceId">—</span></div>
+    <div class="vn-meta-row"><span class="vn-meta-key">Date</span><span class="vn-meta-val" id="invoiceDate">—</span></div>
+    <div class="vn-meta-row"><span class="vn-meta-key">Network</span><span class="vn-chip">Solana</span></div>
+    <div class="vn-meta-row"><span class="vn-meta-key">Token</span><span class="vn-chip">PYUSD</span></div>
+  </div>
+
+  <div class="vn-wallet-card">
+    <div class="vn-section-title">Send Payment To</div>
+    <div class="vn-network-chip"><span class="vn-net-dot"></span>Solana · PYUSD</div>
+    <div class="vn-addr-box" id="walletDisplay">Loading...</div>
+    <button class="vn-copy-btn" id="copyBtn" onclick="copyWallet()">Copy Wallet Address</button>
+  </div>
+
+  <div class="vn-qr-card">
+    <div class="vn-section-title" style="margin-bottom:14px;">Scan QR Code</div>
+    <img class="vn-qr-img" id="walletQr" src="" alt="QR">
+    <div class="vn-qr-label">Scan with any Solana wallet app</div>
+  </div>
+
+  <div class="vn-steps-card">
+    <div class="vn-section-title" style="margin-bottom:12px;">How to Complete Payment</div>
+    <div class="vn-step"><div class="vn-step-num">1</div><div class="vn-step-text">Open your <b>Solana wallet</b> (Phantom, Solflare, etc.)</div></div>
+    <div class="vn-step"><div class="vn-step-num">2</div><div class="vn-step-text">Send exactly <b id="stepAmount">the shown amount</b> in <b>PYUSD</b></div></div>
+    <div class="vn-step"><div class="vn-step-num">3</div><div class="vn-step-text">Copy or scan the wallet address above</div></div>
+    <div class="vn-step"><div class="vn-step-num">4</div><div class="vn-step-text">Page <b>auto-confirms</b> once payment detected ✓</div></div>
+  </div>
+
+</div>
+
+<div id="paidState">
+  <div class="vn-paid-icon">✓</div>
+  <div class="vn-paid-title">Payment Complete!</div>
+  <div style="font-size:30px;font-weight:900;color:#008CFF;margin:10px 0;" id="paidAmount"></div>
+  <div class="vn-paid-sub">Your PYUSD payment has been received.</div>
+</div>
+
+<div id="expiredState">
+  <div style="font-size:44px;margin-bottom:16px;">⏰</div>
+  <div style="font-size:20px;font-weight:800;color:#e53935;margin-bottom:8px;">Request Expired</div>
+  <div style="font-size:14px;color:#8a94a6;">Please request a new payment link.</div>
+</div>
+
+<div id="invoiceError"><span>Invoice not found or invalid link.</span></div>
+
+<script>
+const SUPABASE_URL_INV = 'https://pbxpdppibnmtyxfoyydr.supabase.co';
+const SUPABASE_ANON_INV = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo';
+const WALLET_ADDRESS   = 'Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa';
+const EXPIRE_MINUTES   = 15;
+const VERIFY_INTERVAL  = 8000; // ms
+
+function getInvoiceId() {
+  return new URLSearchParams(location.search).get('id') || new URLSearchParams(location.search).get('invoice_id');
+}
+
+async function fetchInvoice(id) {
+  const res = await fetch(`${SUPABASE_URL_INV}/rest/v1/invoices?id=eq.${id}&select=*`, {
+    headers: { apikey: SUPABASE_ANON_INV, Authorization: `Bearer ${SUPABASE_ANON_INV}` }
+  });
+  const d = await res.json();
+  return d[0] || null;
+}
+
+async function verifyPayment(id) {
+  try {
+    const res = await fetch(`${SUPABASE_URL_INV}/functions/v1/verify-invoice`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SUPABASE_ANON_INV}` },
+      body: JSON.stringify({ invoice_id: id })
+    });
+    return await res.json();
+  } catch { return null; }
+}
+
+function fmtAmount(v) { return parseFloat(v).toFixed(2); }
+
+function startExpireCountdown(createdAt, onExpired) {
+  const expireAt = new Date(new Date(createdAt).getTime() + EXPIRE_MINUTES * 60000);
+  const el = document.getElementById('countdownTimer');
+  const bar = document.getElementById('countdownBar');
+  const total = EXPIRE_MINUTES * 60;
+  function tick() {
+    const diff = Math.max(0, Math.floor((expireAt - new Date()) / 1000));
+    const m = Math.floor(diff / 60), s = diff % 60;
+    if (el) el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (bar) bar.style.width = ((diff / total) * 100) + '%';
+    if (diff === 0) { onExpired && onExpired(); return; }
+    setTimeout(tick, 1000);
+  }
+  tick();
+}
+
+async function copyWallet() {
+  try {
+    await navigator.clipboard.writeText(WALLET_ADDRESS);
+    const btn = document.getElementById('copyBtn');
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1600);
+  } catch {}
+}
+
+function showPaidState(amount) {
+  document.getElementById('payingState')?.remove();
+  document.getElementById('expiredState')?.remove();
+  const el = document.getElementById('paidState');
+  if (el) { el.style.display = 'flex'; }
+  document.getElementById('paidAmount') && (document.getElementById('paidAmount').textContent = '$' + fmtAmount(amount));
+}
+
+function showExpiredState() {
+  document.getElementById('payingState')?.remove();
+  const el = document.getElementById('expiredState');
+  if (el) el.style.display = 'flex';
+}
+
+async function initInvoicePage() {
+  const id = getInvoiceId();
+  const errorEl = document.getElementById('invoiceError');
+  if (!id) { if(errorEl) errorEl.style.display='flex'; return; }
+
+  const invoice = await fetchInvoice(id);
+  if (!invoice) { if(errorEl) errorEl.style.display='flex'; return; }
+
+  // Already paid
+  if (invoice.status === 'paid') { showPaidState(invoice.amount); return; }
+
+  // Populate UI
+  document.getElementById('invoiceAmount') && (document.getElementById('invoiceAmount').textContent = '$' + fmtAmount(invoice.amount));
+  document.getElementById('invoiceId') && (document.getElementById('invoiceId').textContent = invoice.id?.substring(0,20) + '...');
+  document.getElementById('invoiceDate') && (document.getElementById('invoiceDate').textContent = new Date(invoice.created_at).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}));
+  document.getElementById('walletDisplay') && (document.getElementById('walletDisplay').textContent = WALLET_ADDRESS);
+  const qrEl = document.getElementById('walletQr');
+  if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(WALLET_ADDRESS)}&bgcolor=ffffff&color=000000&margin=12`;
+
+  // Countdown
+  startExpireCountdown(invoice.created_at, showExpiredState);
+
+  // Verify polling
+  const poller = setInterval(async () => {
+    const result = await verifyPayment(id);
+    if (result?.status === 'paid') {
+      clearInterval(poller);
+      showPaidState(invoice.amount);
+    }
+  }, VERIFY_INTERVAL);
+}
+
+window.addEventListener('DOMContentLoaded', initInvoicePage);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const id = getInvoiceId();
+  if (!id) return;
+  fetchInvoice(id).then(inv => {
+    if (inv) { const el=document.getElementById('stepAmount'); if(el) el.textContent='$'+fmtAmount(inv.amount); }
+  });
+});
+</script>
+</body>
+</html>
