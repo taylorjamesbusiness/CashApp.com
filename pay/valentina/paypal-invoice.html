@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayPal Invoice</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:#f5f7fa;color:#1a1a2e;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+
+/* TOP BAR */
+.pp-topbar{width:100%;background:#fff;border-bottom:1px solid #e8eaf0;padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:10px;position:sticky;top:0;z-index:10;box-shadow:0 1px 6px rgba(0,0,0,0.06);}
+.pp-logo{display:flex;align-items:center;gap:2px;}
+.pp-logo span:first-child{font-size:20px;font-weight:900;color:#003087;}
+.pp-logo span:last-child{font-size:20px;font-weight:900;color:#009cde;}
+
+/* CARD */
+.pp-card{width:100%;max-width:440px;padding:20px 16px 40px;}
+
+/* HEADER BLOCK */
+.pp-header{background:#fff;border-radius:20px;padding:24px 22px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;}
+.pp-header-label{font-size:12px;color:#8a94a6;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+.pp-amount{font-size:48px;font-weight:900;color:#003087;letter-spacing:-2px;line-height:1;}
+.pp-amount-token{font-size:14px;color:#8a94a6;margin-top:6px;font-weight:600;}
+.pp-divider{height:1px;background:#f0f2f6;margin:16px 0;}
+.pp-timer-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.pp-timer-label{font-size:12px;color:#8a94a6;font-weight:600;}
+.pp-timer-val{font-size:14px;font-weight:800;color:#e8990c;font-variant-numeric:tabular-nums;}
+.pp-progress{width:100%;height:5px;background:#f0f2f6;border-radius:99px;overflow:hidden;}
+.pp-progress-bar{height:100%;background:linear-gradient(90deg,#e8990c,#f5c842);border-radius:99px;width:100%;transition:width 1s linear;}
+
+/* META CARD */
+.pp-meta-card{background:#fff;border-radius:18px;padding:16px 20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.pp-meta-title{font-size:11px;font-weight:700;color:#8a94a6;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;}
+.pp-meta-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f3f4f7;}
+.pp-meta-row:last-child{border-bottom:none;padding-bottom:0;}
+.pp-meta-row:first-child{padding-top:0;}
+.pp-meta-key{font-size:13px;color:#8a94a6;font-weight:600;}
+.pp-meta-val{font-size:13px;color:#1a1a2e;font-weight:700;font-family:monospace;}
+.pp-badge{background:#e8f5e9;color:#2e7d32;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;}
+
+/* WALLET CARD */
+.pp-wallet-card{background:#fff;border-radius:18px;padding:18px 20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.pp-wallet-title{font-size:11px;font-weight:700;color:#8a94a6;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;}
+.pp-network-chip{display:inline-flex;align-items:center;gap:6px;background:#e3f2fd;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:#0277bd;margin-bottom:12px;}
+.pp-net-dot{width:6px;height:6px;background:#00b0ff;border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.pp-addr-box{background:#f7f9fc;border:1px solid #e8eaf0;border-radius:12px;padding:12px 14px;font-family:monospace;font-size:11.5px;color:#4a5568;word-break:break-all;line-height:1.65;margin-bottom:14px;}
+.pp-copy-btn{width:100%;background:linear-gradient(135deg,#003087,#0057d9);color:#fff;border:none;border-radius:13px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(0,48,135,0.22);transition:all 0.25s;}
+.pp-copy-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(0,48,135,0.3);}
+.pp-copy-btn:disabled{opacity:0.7;transform:none;}
+
+/* QR */
+.pp-qr-card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.05);text-align:center;}
+.pp-qr-img{width:160px;height:160px;border-radius:12px;border:3px solid #e8eaf0;}
+.pp-qr-label{font-size:12px;color:#8a94a6;margin-top:10px;font-weight:600;}
+
+/* STEPS */
+.pp-steps-card{background:#fff;border-radius:18px;padding:18px 20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.pp-step{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid #f3f4f7;}
+.pp-step:last-child{border-bottom:none;padding-bottom:0;}
+.pp-step:first-child{padding-top:0;}
+.pp-step-num{width:26px;height:26px;background:#003087;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px;}
+.pp-step-text{font-size:13px;color:#4a5568;line-height:1.55;}
+.pp-step-text b{color:#1a1a2e;}
+
+/* PAID */
+#paidState{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px 20px;}
+.pp-paid-icon{width:80px;height:80px;background:linear-gradient(135deg,#003087,#009cde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff;margin:0 auto 20px;box-shadow:0 8px 28px rgba(0,48,135,0.25);}
+.pp-paid-title{font-size:24px;font-weight:900;color:#003087;margin-bottom:8px;}
+.pp-paid-sub{font-size:14px;color:#8a94a6;}
+
+/* EXPIRED */
+#expiredState{display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;text-align:center;}
+#invoiceError{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;color:#8a94a6;font-size:15px;}
+</style>
+</head>
+<body>
+
+<div class="pp-topbar">
+  <div class="pp-logo">
+    <span>Pay</span><span>Pal</span>
+  </div>
+</div>
+
+<div class="pp-card" id="payingState">
+
+  <div class="pp-header">
+    <div class="pp-header-label">Invoice Amount</div>
+    <div class="pp-amount" id="invoiceAmount">$0.00</div>
+    <div class="pp-amount-token">PYUSD · Solana Network</div>
+    <div class="pp-divider"></div>
+    <div class="pp-timer-row">
+      <span class="pp-timer-label">⏳ Expires in</span>
+      <span class="pp-timer-val" id="countdownTimer">15:00</span>
+    </div>
+    <div class="pp-progress"><div class="pp-progress-bar" id="countdownBar"></div></div>
+  </div>
+
+  <div class="pp-meta-card">
+    <div class="pp-meta-title">Invoice Details</div>
+    <div class="pp-meta-row"><span class="pp-meta-key">Invoice ID</span><span class="pp-meta-val" id="invoiceId">—</span></div>
+    <div class="pp-meta-row"><span class="pp-meta-key">Date</span><span class="pp-meta-val" id="invoiceDate">—</span></div>
+    <div class="pp-meta-row"><span class="pp-meta-key">Network</span><span class="pp-badge">Solana</span></div>
+    <div class="pp-meta-row"><span class="pp-meta-key">Token</span><span class="pp-badge">PYUSD</span></div>
+  </div>
+
+  <div class="pp-wallet-card">
+    <div class="pp-wallet-title">Send Payment To</div>
+    <div class="pp-network-chip"><span class="pp-net-dot"></span>Solana · PYUSD Active</div>
+    <div class="pp-addr-box" id="walletDisplay">Loading wallet address...</div>
+    <button class="pp-copy-btn" id="copyBtn" onclick="copyWallet()">Copy Wallet Address</button>
+  </div>
+
+  <div class="pp-qr-card">
+    <div class="pp-meta-title" style="margin-bottom:14px;">Scan to Pay</div>
+    <img class="pp-qr-img" id="walletQr" src="" alt="QR Code">
+    <div class="pp-qr-label">Scan with any Solana-compatible wallet</div>
+  </div>
+
+  <div class="pp-steps-card">
+    <div class="pp-meta-title" style="margin-bottom:12px;">Payment Instructions</div>
+    <div class="pp-step"><div class="pp-step-num">1</div><div class="pp-step-text">Open your <b>Solana wallet</b> (Phantom, Solflare, etc.)</div></div>
+    <div class="pp-step"><div class="pp-step-num">2</div><div class="pp-step-text">Send exactly <b id="stepAmount">the shown amount</b> in <b>PYUSD token</b></div></div>
+    <div class="pp-step"><div class="pp-step-num">3</div><div class="pp-step-text">Copy or scan the wallet address</div></div>
+    <div class="pp-step"><div class="pp-step-num">4</div><div class="pp-step-text">This page <b>auto-confirms</b> when payment is detected ✓</div></div>
+  </div>
+
+</div>
+
+<div id="paidState">
+  <div class="pp-paid-icon">✓</div>
+  <div class="pp-paid-title">Payment Received!</div>
+  <div style="font-size:30px;font-weight:900;color:#003087;margin:10px 0;" id="paidAmount"></div>
+  <div class="pp-paid-sub">Your PYUSD payment has been successfully confirmed.</div>
+</div>
+
+<div id="expiredState" style="padding:48px 20px;text-align:center;">
+  <div style="font-size:44px;margin-bottom:16px;">⏰</div>
+  <div style="font-size:20px;font-weight:800;color:#e53935;margin-bottom:8px;">Invoice Expired</div>
+  <div style="font-size:14px;color:#8a94a6;">Please request a new payment link.</div>
+</div>
+
+<div id="invoiceError"><span>Invoice not found or invalid link.</span></div>
+
+<script>
+const SUPABASE_URL_INV = 'https://pbxpdppibnmtyxfoyydr.supabase.co';
+const SUPABASE_ANON_INV = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo';
+const WALLET_ADDRESS   = 'Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa';
+const EXPIRE_MINUTES   = 15;
+const VERIFY_INTERVAL  = 8000; // ms
+
+function getInvoiceId() {
+  return new URLSearchParams(location.search).get('id') || new URLSearchParams(location.search).get('invoice_id');
+}
+
+async function fetchInvoice(id) {
+  const res = await fetch(`${SUPABASE_URL_INV}/rest/v1/invoices?id=eq.${id}&select=*`, {
+    headers: { apikey: SUPABASE_ANON_INV, Authorization: `Bearer ${SUPABASE_ANON_INV}` }
+  });
+  const d = await res.json();
+  return d[0] || null;
+}
+
+async function verifyPayment(id) {
+  try {
+    const res = await fetch(`${SUPABASE_URL_INV}/functions/v1/verify-invoice`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SUPABASE_ANON_INV}` },
+      body: JSON.stringify({ invoice_id: id })
+    });
+    return await res.json();
+  } catch { return null; }
+}
+
+function fmtAmount(v) { return parseFloat(v).toFixed(2); }
+
+function startExpireCountdown(createdAt, onExpired) {
+  const expireAt = new Date(new Date(createdAt).getTime() + EXPIRE_MINUTES * 60000);
+  const el = document.getElementById('countdownTimer');
+  const bar = document.getElementById('countdownBar');
+  const total = EXPIRE_MINUTES * 60;
+  function tick() {
+    const diff = Math.max(0, Math.floor((expireAt - new Date()) / 1000));
+    const m = Math.floor(diff / 60), s = diff % 60;
+    if (el) el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (bar) bar.style.width = ((diff / total) * 100) + '%';
+    if (diff === 0) { onExpired && onExpired(); return; }
+    setTimeout(tick, 1000);
+  }
+  tick();
+}
+
+async function copyWallet() {
+  try {
+    await navigator.clipboard.writeText(WALLET_ADDRESS);
+    const btn = document.getElementById('copyBtn');
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1600);
+  } catch {}
+}
+
+function showPaidState(amount) {
+  document.getElementById('payingState')?.remove();
+  document.getElementById('expiredState')?.remove();
+  const el = document.getElementById('paidState');
+  if (el) { el.style.display = 'flex'; }
+  document.getElementById('paidAmount') && (document.getElementById('paidAmount').textContent = '$' + fmtAmount(amount));
+}
+
+function showExpiredState() {
+  document.getElementById('payingState')?.remove();
+  const el = document.getElementById('expiredState');
+  if (el) el.style.display = 'flex';
+}
+
+async function initInvoicePage() {
+  const id = getInvoiceId();
+  const errorEl = document.getElementById('invoiceError');
+  if (!id) { if(errorEl) errorEl.style.display='flex'; return; }
+
+  const invoice = await fetchInvoice(id);
+  if (!invoice) { if(errorEl) errorEl.style.display='flex'; return; }
+
+  // Already paid
+  if (invoice.status === 'paid') { showPaidState(invoice.amount); return; }
+
+  // Populate UI
+  document.getElementById('invoiceAmount') && (document.getElementById('invoiceAmount').textContent = '$' + fmtAmount(invoice.amount));
+  document.getElementById('invoiceId') && (document.getElementById('invoiceId').textContent = invoice.id?.substring(0,20) + '...');
+  document.getElementById('invoiceDate') && (document.getElementById('invoiceDate').textContent = new Date(invoice.created_at).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}));
+  document.getElementById('walletDisplay') && (document.getElementById('walletDisplay').textContent = WALLET_ADDRESS);
+  const qrEl = document.getElementById('walletQr');
+  if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(WALLET_ADDRESS)}&bgcolor=ffffff&color=000000&margin=12`;
+
+  // Countdown
+  startExpireCountdown(invoice.created_at, showExpiredState);
+
+  // Verify polling
+  const poller = setInterval(async () => {
+    const result = await verifyPayment(id);
+    if (result?.status === 'paid') {
+      clearInterval(poller);
+      showPaidState(invoice.amount);
+    }
+  }, VERIFY_INTERVAL);
+}
+
+window.addEventListener('DOMContentLoaded', initInvoicePage);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const id = getInvoiceId();
+  if (!id) return;
+  fetchInvoice(id).then(inv => {
+    if (inv) { const el=document.getElementById('stepAmount'); if(el) el.textContent='$'+fmtAmount(inv.amount); }
+  });
+});
+</script>
+</body>
+</html>
