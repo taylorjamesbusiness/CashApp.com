@@ -1,264 +1,664 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PayPal Invoice</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'DM Sans',sans-serif;background:#f5f7fa;color:#1a1a2e;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice · Pay Valentina · PayPal</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    /* === SAME STYLE AS YOUR TEMPLATE (only tiny branding tweaks) === */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
 
-/* TOP BAR */
-.pp-topbar{width:100%;background:#fff;border-bottom:1px solid #e8eaf0;padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:10px;position:sticky;top:0;z-index:10;box-shadow:0 1px 6px rgba(0,0,0,0.06);}
-.pp-logo{display:flex;align-items:center;gap:2px;}
-.pp-logo span:first-child{font-size:20px;font-weight:900;color:#003087;}
-.pp-logo span:last-child{font-size:20px;font-weight:900;color:#009cde;}
+    :root {
+      --bg: #050508;
+      --card: #101018;
+      --border: rgba(255,255,255,0.07);
+      --solana: #14F195;
+      --pp-blue: #003087;
+      --pp-light: #5BA4F5;
+      --text: #fff;
+      --dim: #555;
+      --red: #ef4444;
+      --green: #14F195;
+    }
 
-/* CARD */
-.pp-card{width:100%;max-width:440px;padding:20px 16px 40px;}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* HEADER BLOCK */
-.pp-header{background:#fff;border-radius:20px;padding:24px 22px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);text-align:center;}
-.pp-header-label{font-size:12px;color:#8a94a6;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
-.pp-amount{font-size:48px;font-weight:900;color:#003087;letter-spacing:-2px;line-height:1;}
-.pp-amount-token{font-size:14px;color:#8a94a6;margin-top:6px;font-weight:600;}
-.pp-divider{height:1px;background:#f0f2f6;margin:16px 0;}
-.pp-timer-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.pp-timer-label{font-size:12px;color:#8a94a6;font-weight:600;}
-.pp-timer-val{font-size:14px;font-weight:800;color:#e8990c;font-variant-numeric:tabular-nums;}
-.pp-progress{width:100%;height:5px;background:#f0f2f6;border-radius:99px;overflow:hidden;}
-.pp-progress-bar{height:100%;background:linear-gradient(90deg,#e8990c,#f5c842);border-radius:99px;width:100%;transition:width 1s linear;}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
 
-/* META CARD */
-.pp-meta-card{background:#fff;border-radius:18px;padding:16px 20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
-.pp-meta-title{font-size:11px;font-weight:700;color:#8a94a6;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;}
-.pp-meta-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f3f4f7;}
-.pp-meta-row:last-child{border-bottom:none;padding-bottom:0;}
-.pp-meta-row:first-child{padding-top:0;}
-.pp-meta-key{font-size:13px;color:#8a94a6;font-weight:600;}
-.pp-meta-val{font-size:13px;color:#1a1a2e;font-weight:700;font-family:monospace;}
-.pp-badge{background:#e8f5e9;color:#2e7d32;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;}
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 500px;
+      background: radial-gradient(ellipse, rgba(0,140,255,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
 
-/* WALLET CARD */
-.pp-wallet-card{background:#fff;border-radius:18px;padding:18px 20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
-.pp-wallet-title{font-size:11px;font-weight:700;color:#8a94a6;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;}
-.pp-network-chip{display:inline-flex;align-items:center;gap:6px;background:#e3f2fd;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:#0277bd;margin-bottom:12px;}
-.pp-net-dot{width:6px;height:6px;background:#00b0ff;border-radius:50%;animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.pp-addr-box{background:#f7f9fc;border:1px solid #e8eaf0;border-radius:12px;padding:12px 14px;font-family:monospace;font-size:11.5px;color:#4a5568;word-break:break-all;line-height:1.65;margin-bottom:14px;}
-.pp-copy-btn{width:100%;background:linear-gradient(135deg,#003087,#0057d9);color:#fff;border:none;border-radius:13px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(0,48,135,0.22);transition:all 0.25s;}
-.pp-copy-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(0,48,135,0.3);}
-.pp-copy-btn:disabled{opacity:0.7;transform:none;}
+    .container { max-width: 420px; margin: 0 auto; padding: 12px 16px 48px; }
 
-/* QR */
-.pp-qr-card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.05);text-align:center;}
-.pp-qr-img{width:160px;height:160px;border-radius:12px;border:3px solid #e8eaf0;}
-.pp-qr-label{font-size:12px;color:#8a94a6;margin-top:10px;font-weight:600;}
+    /* TOP BAR */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0 18px; gap: 10px;
+    }
 
-/* STEPS */
-.pp-steps-card{background:#fff;border-radius:18px;padding:18px 20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
-.pp-step{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid #f3f4f7;}
-.pp-step:last-child{border-bottom:none;padding-bottom:0;}
-.pp-step:first-child{padding-top:0;}
-.pp-step-num{width:26px;height:26px;background:#003087;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;margin-top:1px;}
-.pp-step-text{font-size:13px;color:#4a5568;line-height:1.55;}
-.pp-step-text b{color:#1a1a2e;}
+    .back-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; color: #888;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; padding: 7px 12px;
+      display: flex; align-items: center; gap: 5px;
+      transition: all 0.2s; font-family: inherit;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { color: #fff; border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); }
 
-/* PAID */
-#paidState{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px 20px;}
-.pp-paid-icon{width:80px;height:80px;background:linear-gradient(135deg,#003087,#009cde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff;margin:0 auto 20px;box-shadow:0 8px 28px rgba(0,48,135,0.25);}
-.pp-paid-title{font-size:24px;font-weight:900;color:#003087;margin-bottom:8px;}
-.pp-paid-sub{font-size:14px;color:#8a94a6;}
+    .topbar-brand {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .topbar-pp-logo { height: 18px; width: auto; }
+    .topbar-sep {
+      width: 1px; height: 16px;
+      background: rgba(255,255,255,0.12);
+    }
+    .topbar-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e5e7eb;
+    }
 
-/* EXPIRED */
-#expiredState{display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;text-align:center;}
-#invoiceError{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;color:#8a94a6;font-size:15px;}
-</style>
+    .how-btn {
+      background: rgba(0,112,186,0.1);
+      border: 1.5px solid rgba(0,112,186,0.35);
+      border-radius: 20px; color: #5BA4F5;
+      font-size: 11px; font-weight: 700;
+      padding: 7px 13px; cursor: pointer;
+      display: flex; align-items: center; gap: 5px;
+      transition: all 0.2s; font-family: inherit;
+      flex-shrink: 0; letter-spacing: 0.3px;
+    }
+    .how-btn:hover { border-color: rgba(0,140,255,0.6); background: rgba(0,112,186,0.18); }
+
+    /* AMOUNT */
+    .amount-section { text-align: center; margin-bottom: 4px; }
+    .amount-label {
+      font-size: 9px; color: var(--dim); letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 6px; font-weight: 600;
+    }
+    .amount {
+      font-size: 48px; font-weight: 900; letter-spacing: -2px;
+      background: linear-gradient(135deg, #fff 40%, #7db8f7);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .scan-hint { font-size: 11px; color: #444; margin-top: 5px; letter-spacing: 0.5px; }
+
+    /* QR */
+    .qr-section { display: flex; flex-direction: column; align-items: center; margin: 18px 0 16px; }
+    .qr-outer {
+      background: #fff; border-radius: 22px; padding: 14px;
+      position: relative; display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 40px rgba(0,112,186,0.25);
+      animation: qrGlow 4s ease-in-out infinite;
+    }
+    @keyframes qrGlow {
+      0%,100% { box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 30px rgba(0,112,186,0.2); }
+      50% { box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 8px 50px rgba(0,112,186,0.45); }
+    }
+    #qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
+
+    /* PayPal/PYUSD logo in middle of QR */
+    .qr-logo {
+      position: absolute;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: #fff; border: 3px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      overflow: hidden; animation: logoPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes logoPulse {
+      0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,102,204,0.4); }
+      50% { transform: scale(1.06); box-shadow: 0 0 0 5px rgba(0,102,204,0); }
+    }
+    .qr-logo-inner {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #0066CC, #0047AB);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .pyusd-p {
+      font-size: 20px; font-weight: 900; color: #fff;
+      font-family: 'Inter', sans-serif; letter-spacing: -1px;
+      position: relative; line-height: 1;
+    }
+    .pyusd-p::after {
+      content: 'P';
+      position: absolute; top: 1.5px; left: 1.5px;
+      font-size: 20px; font-weight: 900; color: rgba(255,255,255,0.35);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* TIMER / DETAILS / ADDRESS / BUTTONS — unchanged from template */
+    .timer-box {
+      background: linear-gradient(160deg, #101018, #0c0c14);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 14px 20px; margin-bottom: 14px; text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .timer-label {
+      font-size: 9px; color: var(--dim); letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 6px; font-weight: 600;
+    }
+    .timer-value {
+      font-family: 'Inter', monospace; font-size: 32px; font-weight: 900;
+      color: #fff; letter-spacing: 6px;
+    }
+    .timer-value.urgent { color: var(--red); animation: urgentBlink 0.8s ease-in-out infinite; }
+    @keyframes urgentBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .details-card {
+      background: linear-gradient(160deg, #101018, #0c0c14);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 14px 16px; margin-bottom: 14px;
+    }
+    .detail-row {
+      display: flex; justify-content: space-between; align-items: center; padding: 7px 0;
+    }
+    .detail-row + .detail-row { border-top: 1px solid rgba(255,255,255,0.04); }
+    .detail-label { font-size: 11px; color: #555; font-weight: 600; }
+    .detail-value { font-size: 11px; color: #ccc; font-family: monospace; font-weight: 500; }
+    .status-pill {
+      background: rgba(0,196,140,0.12); color: #00c48c;
+      border-radius: 999px; padding: 3px 10px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+      border: 1px solid rgba(0,196,140,0.2);
+    }
+    .status-pill.expired {
+      background: rgba(239,68,68,0.12); color: var(--red);
+      border-color: rgba(239,68,68,0.2);
+    }
+
+    .address-box {
+      background: linear-gradient(160deg, #101018, #0c0c14);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 14px 16px; margin-bottom: 16px;
+    }
+    .address-label {
+      font-size: 9px; color: #555; letter-spacing: 1.5px;
+      text-transform: uppercase; margin-bottom: 8px; font-weight: 700;
+    }
+    .address-text {
+      font-size: 11px; font-family: monospace; color: #666;
+      word-break: break-all; line-height: 1.6; margin-bottom: 10px;
+    }
+    .copy-btn {
+      width: 100%; padding: 11px;
+      border: 1.5px solid rgba(0,112,186,0.3); border-radius: 12px;
+      background: rgba(0,82,165,0.1); color: #5BA4F5;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .copy-btn:hover { border-color: rgba(0,140,255,0.5); background: rgba(0,82,165,0.18); }
+    .copy-btn.copied { border-color: rgba(0,196,140,0.4); color: #00c48c; background: rgba(0,196,140,0.08); }
+
+    .expired-banner {
+      text-align: center; color: var(--red); font-size: 13px; font-weight: 600;
+      padding: 12px; background: rgba(239,68,68,0.08); border-radius: 12px;
+      border: 1px solid rgba(239,68,68,0.2); margin-bottom: 12px; display: none;
+    }
+
+    .send-btn-wrap { margin-bottom: 12px; }
+    .send-btn {
+      width: 100%; padding: 0;
+      border: 1.5px solid rgba(0,112,186,0.35);
+      border-radius: 18px;
+      background: linear-gradient(160deg, #0e1624 0%, #0a1020 100%);
+      cursor: pointer; transition: all 0.25s;
+      font-family: inherit; overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,80,180,0.15);
+      display: flex; align-items: stretch;
+    }
+    .send-btn:hover:not(:disabled) {
+      border-color: rgba(0,140,255,0.55);
+      box-shadow: 0 6px 28px rgba(0,100,220,0.3);
+      transform: translateY(-1px);
+    }
+    .send-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
+
+    .send-btn-icon {
+      width: 54px; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,80,160,0.25); border-right: 1px solid rgba(0,112,186,0.2);
+      flex-shrink: 0;
+    }
+    .send-arrow-circle {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #1a3a6e, #003087);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 12px rgba(0,112,186,0.5);
+      animation: arrowPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes arrowPulse {
+      0%,100% { box-shadow: 0 0 8px rgba(0,112,186,0.4); }
+      50% { box-shadow: 0 0 18px rgba(0,112,186,0.75); }
+    }
+
+    .send-btn-body {
+      flex: 1; padding: 14px 14px 14px 12px;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+      text-align: left;
+    }
+    .send-btn-title {
+      font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -0.2px;
+    }
+    .send-btn-sub {
+      font-size: 11px; color: #5BA4F5; font-weight: 600; line-height: 1.4;
+    }
+    .send-btn-sub .dim-text { color: #334; font-weight: 600; }
+    .send-btn-sub .bright-text { color: #5BA4F5; font-weight: 700; }
+    .send-btn-arrow {
+      display: flex; align-items: center; padding-right: 14px;
+      color: #446; font-size: 16px;
+    }
+
+    .loading { text-align: center; padding: 80px 20px; color: #444; font-size: 14px; }
+
+    /* HOW TO PAY MODAL – text slightly changed for “buy PYUSD then send” */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.88);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: #0d0d16; border-radius: 28px 28px 0 0;
+      border: 1px solid rgba(255,255,255,0.07); border-bottom: none;
+      padding: 0 0 40px; width: 100%; max-width: 420px;
+      transform: translateY(50px); transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      max-height: 90dvh; overflow-y: auto;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      position: sticky; top: 0; z-index: 2;
+      background: #0d0d16; padding: 16px 24px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .modal-handle {
+      width: 36px; height: 4px; background: #2a2a2a;
+      border-radius: 99px; margin: 0 auto 14px;
+    }
+    .modal-title-row { display: flex; align-items: center; justify-content: space-between; }
+    .modal h2 { font-size: 17px; font-weight: 900; }
+    .modal-x {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; color: #666; font-size: 14px;
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .modal-x:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+    .modal-body { padding: 20px 24px 0; }
+    .step {
+      display: flex; gap: 14px; margin-bottom: 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px; padding: 14px;
+      transition: all 0.2s;
+    }
+    .step:hover { border-color: rgba(0,112,186,0.25); background: rgba(0,80,160,0.06); }
+
+    .step-left { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+    .step-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(0,112,186,0.15); border: 1.5px solid rgba(0,112,186,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: #5BA4F5;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .step-desc { font-size: 11px; color: #666; line-height: 1.6; }
+    .step-desc b { color: #999; font-weight: 700; }
+    .step-desc .highlight { color: #5BA4F5; font-weight: 700; }
+    .step-connector {
+      width: 1px; height: 12px; background: rgba(255,255,255,0.06);
+      margin: -8px auto; position: relative; z-index: 1; left: 19px;
+    }
+    .modal-close {
+      width: calc(100% - 48px); margin: 20px 24px 0;
+      padding: 14px; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;
+      background: rgba(255,255,255,0.04); color: #888;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  </style>
 </head>
 <body>
 
-<div class="pp-topbar">
-  <div class="pp-logo">
-    <span>Pay</span><span>Pal</span>
-  </div>
-</div>
-
-<div class="pp-card" id="payingState">
-
-  <div class="pp-header">
-    <div class="pp-header-label">Invoice Amount</div>
-    <div class="pp-amount" id="invoiceAmount">$0.00</div>
-    <div class="pp-amount-token">PYUSD · Solana Network</div>
-    <div class="pp-divider"></div>
-    <div class="pp-timer-row">
-      <span class="pp-timer-label">⏳ Expires in</span>
-      <span class="pp-timer-val" id="countdownTimer">15:00</span>
+<!-- How to Pay Modal (PayPal + PYUSD) -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-handle"></div>
+      <div class="modal-title-row">
+        <h2>💡 How to pay with PYUSD</h2>
+        <div class="modal-x" onclick="closeModal()">✕</div>
+      </div>
     </div>
-    <div class="pp-progress"><div class="pp-progress-bar" id="countdownBar"></div></div>
-  </div>
 
-  <div class="pp-meta-card">
-    <div class="pp-meta-title">Invoice Details</div>
-    <div class="pp-meta-row"><span class="pp-meta-key">Invoice ID</span><span class="pp-meta-val" id="invoiceId">—</span></div>
-    <div class="pp-meta-row"><span class="pp-meta-key">Date</span><span class="pp-meta-val" id="invoiceDate">—</span></div>
-    <div class="pp-meta-row"><span class="pp-meta-key">Network</span><span class="pp-badge">Solana</span></div>
-    <div class="pp-meta-row"><span class="pp-meta-key">Token</span><span class="pp-badge">PYUSD</span></div>
-  </div>
+    <div class="modal-body">
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">1</div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Open PayPal app</div>
+          <div class="step-desc">
+            If your <b>PYUSD balance is 0</b>, go to <b>Finances → Crypto</b>, tap <span class="highlight">PayPal USD (PYUSD)</span> and buy PYUSD using your normal PayPal balance, bank or card. [web:23][web:28]
+          </div>
+        </div>
+      </div>
 
-  <div class="pp-wallet-card">
-    <div class="pp-wallet-title">Send Payment To</div>
-    <div class="pp-network-chip"><span class="pp-net-dot"></span>Solana · PYUSD Active</div>
-    <div class="pp-addr-box" id="walletDisplay">Loading wallet address...</div>
-    <button class="pp-copy-btn" id="copyBtn" onclick="copyWallet()">Copy Wallet Address</button>
-  </div>
+      <div class="step-connector"></div>
 
-  <div class="pp-qr-card">
-    <div class="pp-meta-title" style="margin-bottom:14px;">Scan to Pay</div>
-    <img class="pp-qr-img" id="walletQr" src="" alt="QR Code">
-    <div class="pp-qr-label">Scan with any Solana-compatible wallet</div>
-  </div>
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">2</div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Send PYUSD on Solana</div>
+          <div class="step-desc">
+            In the PYUSD screen choose <span class="highlight">Send</span> → <b>Send on chain</b> → select <b>Solana network</b>. Paste the wallet address from this invoice.
+          </div>
+        </div>
+      </div>
 
-  <div class="pp-steps-card">
-    <div class="pp-meta-title" style="margin-bottom:12px;">Payment Instructions</div>
-    <div class="pp-step"><div class="pp-step-num">1</div><div class="pp-step-text">Open your <b>Solana wallet</b> (Phantom, Solflare, etc.)</div></div>
-    <div class="pp-step"><div class="pp-step-num">2</div><div class="pp-step-text">Send exactly <b id="stepAmount">the shown amount</b> in <b>PYUSD token</b></div></div>
-    <div class="pp-step"><div class="pp-step-num">3</div><div class="pp-step-text">Copy or scan the wallet address</div></div>
-    <div class="pp-step"><div class="pp-step-num">4</div><div class="pp-step-text">This page <b>auto-confirms</b> when payment is detected ✓</div></div>
-  </div>
+      <div class="step-connector"></div>
 
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">3</div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Enter exact amount</div>
+          <div class="step-desc">
+            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly as shown above, review the network fee and tap <b>Send now</b>. Solana confirms in a few minutes.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="modal-close" onclick="closeModal()">Got it ✓</button>
+  </div>
 </div>
 
-<div id="paidState">
-  <div class="pp-paid-icon">✓</div>
-  <div class="pp-paid-title">Payment Received!</div>
-  <div style="font-size:30px;font-weight:900;color:#003087;margin:10px 0;" id="paidAmount"></div>
-  <div class="pp-paid-sub">Your PYUSD payment has been successfully confirmed.</div>
-</div>
+<div class="container">
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back
+    </button>
 
-<div id="expiredState" style="padding:48px 20px;text-align:center;">
-  <div style="font-size:44px;margin-bottom:16px;">⏰</div>
-  <div style="font-size:20px;font-weight:800;color:#e53935;margin-bottom:8px;">Invoice Expired</div>
-  <div style="font-size:14px;color:#8a94a6;">Please request a new payment link.</div>
-</div>
+    <div class="topbar-brand">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
+           class="topbar-pp-logo" alt="PayPal">
+      <div class="topbar-sep"></div>
+      <div class="topbar-title">Pay Valentina · PayPal</div>
+    </div>
 
-<div id="invoiceError"><span>Invoice not found or invalid link.</span></div>
+    <button class="how-btn" onclick="openModal()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      How to pay
+    </button>
+  </div>
+
+  <div id="loading" class="loading">Loading invoice…</div>
+
+  <div id="content" style="display:none">
+
+    <div class="amount-section">
+      <div class="amount-label">Amount Due</div>
+      <div class="amount" id="inv-amount">$0.00</div>
+      <div class="scan-hint">Scan QR with PayPal app or copy PYUSD address</div>
+    </div>
+
+    <div class="qr-section">
+      <div class="qr-outer">
+        <div id="qrcode"></div>
+        <!-- PayPal/PYUSD logo in middle -->
+        <div class="qr-logo">
+          <div class="qr-logo-inner">
+            <span class="pyusd-p">P</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="timer-box">
+      <div class="timer-label">Time Remaining</div>
+      <div class="timer-value" id="countdown">60 : 00</div>
+    </div>
+
+    <div class="details-card">
+      <div class="detail-row">
+        <span class="detail-label">Reference</span>
+        <span class="detail-value" id="inv-code">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Network</span>
+        <span class="detail-value" id="inv-network">Solana • PYUSD</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="status-pill" id="inv-status">AWAITING PAYMENT</span>
+      </div>
+    </div>
+
+    <div class="address-box">
+      <div class="address-label">PYUSD wallet address (Solana)</div>
+      <div class="address-text" id="inv-address">—</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyAddress()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Copy address
+      </button>
+    </div>
+
+    <div class="expired-banner" id="expired-banner">⚠️ This invoice has expired</div>
+
+    <div class="send-btn-wrap">
+      <button class="send-btn" id="btn-send" onclick="goToPayment()">
+        <div class="send-btn-icon">
+          <div class="send-arrow-circle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M22 2L11 13" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="send-btn-body">
+          <div class="send-btn-title">Open PayPal → Send PYUSD</div>
+          <div class="send-btn-sub">
+            <span class="dim-text">Use </span>
+            <span class="bright-text">Finances → Crypto → PayPal USD</span>
+          </div>
+        </div>
+        <div class="send-btn-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </button>
+    </div>
+
+  </div>
+</div>
 
 <script>
-const SUPABASE_URL_INV = 'https://pbxpdppibnmtyxfoyydr.supabase.co';
-const SUPABASE_ANON_INV = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo';
-const WALLET_ADDRESS   = 'Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa';
-const EXPIRE_MINUTES   = 15;
-const VERIFY_INTERVAL  = 8000; // ms
+  const params    = new URLSearchParams(window.location.search);
+  const invoiceId = params.get("id");
+  const amountParam = params.get("amount");
+  const EDGE_URL  = "https://dkmgvtfkffovimoupnwe.supabase.co/functions/v1";
+  const CHECK_API = EDGE_URL + "/check-payment";
 
-function getInvoiceId() {
-  return new URLSearchParams(location.search).get('id') || new URLSearchParams(location.search).get('invoice_id');
-}
+  let invoice      = null;
+  let timerInterval = null;
+  let payCheckTimer = null;
 
-async function fetchInvoice(id) {
-  const res = await fetch(`${SUPABASE_URL_INV}/rest/v1/invoices?id=eq.${id}&select=*`, {
-    headers: { apikey: SUPABASE_ANON_INV, Authorization: `Bearer ${SUPABASE_ANON_INV}` }
-  });
-  const d = await res.json();
-  return d[0] || null;
-}
-
-async function verifyPayment(id) {
-  try {
-    const res = await fetch(`${SUPABASE_URL_INV}/functions/v1/verify-invoice`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SUPABASE_ANON_INV}` },
-      body: JSON.stringify({ invoice_id: id })
-    });
-    return await res.json();
-  } catch { return null; }
-}
-
-function fmtAmount(v) { return parseFloat(v).toFixed(2); }
-
-function startExpireCountdown(createdAt, onExpired) {
-  const expireAt = new Date(new Date(createdAt).getTime() + EXPIRE_MINUTES * 60000);
-  const el = document.getElementById('countdownTimer');
-  const bar = document.getElementById('countdownBar');
-  const total = EXPIRE_MINUTES * 60;
-  function tick() {
-    const diff = Math.max(0, Math.floor((expireAt - new Date()) / 1000));
-    const m = Math.floor(diff / 60), s = diff % 60;
-    if (el) el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    if (bar) bar.style.width = ((diff / total) * 100) + '%';
-    if (diff === 0) { onExpired && onExpired(); return; }
-    setTimeout(tick, 1000);
-  }
-  tick();
-}
-
-async function copyWallet() {
-  try {
-    await navigator.clipboard.writeText(WALLET_ADDRESS);
-    const btn = document.getElementById('copyBtn');
-    if (!btn) return;
-    const orig = btn.textContent;
-    btn.textContent = 'Copied!';
-    btn.disabled = true;
-    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1600);
-  } catch {}
-}
-
-function showPaidState(amount) {
-  document.getElementById('payingState')?.remove();
-  document.getElementById('expiredState')?.remove();
-  const el = document.getElementById('paidState');
-  if (el) { el.style.display = 'flex'; }
-  document.getElementById('paidAmount') && (document.getElementById('paidAmount').textContent = '$' + fmtAmount(amount));
-}
-
-function showExpiredState() {
-  document.getElementById('payingState')?.remove();
-  const el = document.getElementById('expiredState');
-  if (el) el.style.display = 'flex';
-}
-
-async function initInvoicePage() {
-  const id = getInvoiceId();
-  const errorEl = document.getElementById('invoiceError');
-  if (!id) { if(errorEl) errorEl.style.display='flex'; return; }
-
-  const invoice = await fetchInvoice(id);
-  if (!invoice) { if(errorEl) errorEl.style.display='flex'; return; }
-
-  // Already paid
-  if (invoice.status === 'paid') { showPaidState(invoice.amount); return; }
-
-  // Populate UI
-  document.getElementById('invoiceAmount') && (document.getElementById('invoiceAmount').textContent = '$' + fmtAmount(invoice.amount));
-  document.getElementById('invoiceId') && (document.getElementById('invoiceId').textContent = invoice.id?.substring(0,20) + '...');
-  document.getElementById('invoiceDate') && (document.getElementById('invoiceDate').textContent = new Date(invoice.created_at).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}));
-  document.getElementById('walletDisplay') && (document.getElementById('walletDisplay').textContent = WALLET_ADDRESS);
-  const qrEl = document.getElementById('walletQr');
-  if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(WALLET_ADDRESS)}&bgcolor=ffffff&color=000000&margin=12`;
-
-  // Countdown
-  startExpireCountdown(invoice.created_at, showExpiredState);
-
-  // Verify polling
-  const poller = setInterval(async () => {
-    const result = await verifyPayment(id);
-    if (result?.status === 'paid') {
-      clearInterval(poller);
-      showPaidState(invoice.amount);
+  async function loadInvoice() {
+    if (!invoiceId) {
+      document.getElementById("loading").textContent = "Invalid invoice link.";
+      return;
     }
-  }, VERIFY_INTERVAL);
-}
 
-window.addEventListener('DOMContentLoaded', initInvoicePage);
+    // If you already have Supabase invoice API, keep this.
+    try {
+      const res = await fetch(`${EDGE_URL}/get-invoice?id=${invoiceId}`);
+      if (!res.ok) throw new Error("Not found");
+      invoice = await res.json();
+    } catch (e) {
+      // Fallback: basic invoice with URL params only
+      invoice = {
+        invoice_code: invoiceId,
+        amount_usd: amountParam || 0,
+        expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+      };
+    }
+    renderInvoice();
+  }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const id = getInvoiceId();
-  if (!id) return;
-  fetchInvoice(id).then(inv => {
-    if (inv) { const el=document.getElementById('stepAmount'); if(el) el.textContent='$'+fmtAmount(inv.amount); }
-  });
-});
+  function renderInvoice() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("content").style.display = "block";
+
+    const amount = Number(invoice.amount_usd || invoice.amount || amountParam || 0).toFixed(2);
+    document.getElementById("inv-amount").textContent = `$${amount}`;
+    document.getElementById("modal-amount-inline").textContent = `$${amount} PYUSD`;
+    document.getElementById("inv-code").textContent = invoice.invoice_code || invoiceId;
+    document.getElementById("inv-network").textContent = "Solana · PYUSD";
+
+    const addr = "YOUR_PYUSD_SOL_ADDRESS_HERE"; // <- replace with your Solana PYUSD address
+    document.getElementById("inv-address").textContent = addr;
+
+    new QRCode(document.getElementById("qrcode"), {
+      text: addr,
+      width: 200, height: 200,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    startTimer();
+    pollPaymentStatus();
+    payCheckTimer = setInterval(pollPaymentStatus, 30000);
+  }
+
+  function startTimer() {
+    const expiresAt = new Date(invoice.expires_at || (Date.now() + 60 * 60 * 1000)).getTime();
+    function tick() {
+      const diff = expiresAt - Date.now();
+      const cd = document.getElementById("countdown");
+      if (diff <= 0) {
+        cd.textContent = "00 : 00";
+        cd.classList.add("urgent");
+        document.getElementById("expired-banner").style.display = "block";
+        document.getElementById("btn-send").disabled = true;
+        const st = document.getElementById("inv-status");
+        st.textContent = "EXPIRED";
+        st.classList.add("expired");
+        clearInterval(timerInterval);
+        return;
+      }
+      if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
+      const m = String(Math.floor(diff / 60000)).padStart(2, "0");
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+      cd.textContent = `${m} : ${s}`;
+    }
+    tick();
+    timerInterval = setInterval(tick, 1000);
+  }
+
+  function setPaidUI() {
+    const st = document.getElementById("inv-status");
+    st.textContent = "PAID";
+    st.classList.remove("expired");
+    st.style.background = "rgba(20,241,149,0.12)";
+    st.style.color      = "#14F195";
+    document.getElementById("expired-banner").style.display = "none";
+    if (timerInterval) clearInterval(timerInterval);
+    if (payCheckTimer) clearInterval(payCheckTimer);
+    const cd = document.getElementById("countdown");
+    cd.classList.remove("urgent");
+    cd.style.color = "#14F195";
+  }
+
+  async function pollPaymentStatus() {
+    if (!invoiceId) return;
+    try {
+      const res = await fetch(CHECK_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoice_id: invoiceId })
+      });
+      const data = await res.json();
+      if (data.status === "paid" || (data.success && data.status === "paid")) {
+        setPaidUI();
+        if (payCheckTimer) clearInterval(payCheckTimer);
+      }
+    } catch (e) {
+      console.log("check-payment error", e);
+    }
+  }
+
+  function copyAddress() {
+    const addr = document.getElementById("inv-address").textContent.trim();
+    if (!addr) return;
+    navigator.clipboard.writeText(addr).then(() => {
+      const btn = document.getElementById("copyBtn");
+      btn.innerHTML = "✓ Copied";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
+        </svg> Copy address`;
+        btn.classList.remove("copied");
+      }, 2500);
+    });
+  }
+
+  // Open PayPal app or web crypto page
+  function goToPayment() {
+    // Deep-link to PayPal app web fallback. [web:28]
+    window.location.href = "https://www.paypal.com/myaccount/crypto";
+  }
+
+  function openModal() {
+    document.getElementById("modalOverlay").classList.add("open");
+  }
+  function closeModal(e) {
+    if (!e || e.target === document.getElementById("modalOverlay")) {
+      document.getElementById("modalOverlay").classList.remove("open");
+    }
+  }
+
+  loadInvoice();
 </script>
 </body>
 </html>
