@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cash App Payment</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+
+/* TOPBAR */
+.ca-topbar{width:100%;background:rgba(10,10,10,0.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.07);padding:13px 20px;display:flex;align-items:center;justify-content:center;gap:10px;position:sticky;top:0;z-index:50;}
+.ca-logo{width:34px;height:34px;background:linear-gradient(135deg,#00C851,#00a040);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;box-shadow:0 3px 14px rgba(0,200,81,0.4);}
+.ca-brand{font-size:17px;font-weight:800;letter-spacing:-0.3px;}
+
+/* WRAP */
+.ca-wrap{width:100%;max-width:420px;padding:20px 16px 48px;}
+
+/* AMOUNT HERO */
+.ca-hero{background:#0d0d0d;border:1px solid rgba(0,200,81,0.18);border-radius:24px;padding:28px 22px 22px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;}
+.ca-hero-glow{position:absolute;top:-50px;right:-50px;width:140px;height:140px;background:radial-gradient(circle,rgba(0,200,81,0.13) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.ca-hero-glow2{position:absolute;bottom:-40px;left:-40px;width:100px;height:100px;background:radial-gradient(circle,rgba(0,200,81,0.07) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.ca-hero-label{font-size:11px;color:rgba(255,255,255,0.35);font-weight:700;text-transform:uppercase;letter-spacing:0.13em;margin-bottom:10px;}
+.ca-amount{font-size:54px;font-weight:900;color:#00C851;letter-spacing:-2.5px;line-height:1;}
+.ca-amount-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:8px;font-weight:500;}
+.ca-usdc-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(39,117,255,0.12);border:1px solid rgba(39,117,255,0.25);border-radius:999px;padding:4px 12px;font-size:11px;font-weight:700;color:#5a9fff;margin-top:10px;}
+.ca-usdc-dot{width:6px;height:6px;background:#2775ff;border-radius:50%;}
+.ca-divider{height:1px;background:rgba(255,255,255,0.06);margin:18px 0;}
+.ca-timer-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.ca-timer-label{font-size:11px;color:rgba(255,255,255,0.35);font-weight:600;}
+.ca-timer-val{font-size:14px;font-weight:800;color:#ffc800;font-variant-numeric:tabular-nums;}
+.ca-bar{width:100%;height:4px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;}
+.ca-bar-fill{height:100%;background:linear-gradient(90deg,#ffc800,#ff9500);border-radius:99px;width:100%;transition:width 1s linear;}
+
+/* META */
+.ca-meta{background:#0d0d0d;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:16px 18px;margin-bottom:14px;}
+.ca-section-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:0.13em;margin-bottom:12px;}
+.ca-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.ca-row:first-of-type{padding-top:0;}
+.ca-row:last-child{border-bottom:none;padding-bottom:0;}
+.ca-rkey{font-size:12px;color:rgba(255,255,255,0.35);font-weight:600;}
+.ca-rval{font-size:12px;color:rgba(255,255,255,0.75);font-weight:700;font-family:monospace;}
+.ca-chip{background:rgba(0,200,81,0.1);border:1px solid rgba(0,200,81,0.22);color:#00C851;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;}
+.ca-chip-blue{background:rgba(39,117,255,0.1);border:1px solid rgba(39,117,255,0.22);color:#5a9fff;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;}
+
+/* WALLET BOX */
+.ca-wallet{background:#0d0d0d;border:1px solid rgba(0,200,81,0.18);border-radius:18px;padding:18px;margin-bottom:14px;}
+.ca-addr{font-family:monospace;font-size:11.5px;color:rgba(255,255,255,0.6);word-break:break-all;line-height:1.65;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 14px;margin:12px 0 14px;}
+.ca-copy-btn{width:100%;background:linear-gradient(135deg,#00C851,#00a040);color:#fff;border:none;border-radius:13px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 20px rgba(0,200,81,0.28);transition:all 0.25s;letter-spacing:0.01em;}
+.ca-copy-btn:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(0,200,81,0.38);}
+.ca-copy-btn:active{transform:translateY(0);}
+.ca-copy-btn:disabled{opacity:0.7;transform:none;}
+
+/* CASHAPP HOW-TO NOTICE */
+.ca-notice{background:rgba(39,117,255,0.07);border:1px solid rgba(39,117,255,0.2);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;gap:12px;align-items:flex-start;}
+.ca-notice-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.ca-notice-text{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;}
+.ca-notice-text b{color:rgba(255,255,255,0.85);}
+
+/* QR */
+.ca-qr{background:#0d0d0d;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px;margin-bottom:14px;text-align:center;}
+.ca-qr img{width:164px;height:164px;border-radius:14px;border:3px solid rgba(0,200,81,0.2);display:block;margin:0 auto;}
+.ca-qr-note{font-size:11px;color:rgba(255,255,255,0.28);margin-top:10px;font-weight:600;}
+
+/* STEPS */
+.ca-steps{background:#0d0d0d;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px;margin-bottom:14px;}
+.ca-step{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.ca-step:first-child{padding-top:0;}
+.ca-step:last-child{border-bottom:none;padding-bottom:0;}
+.ca-step-num{width:26px;height:26px;background:rgba(0,200,81,0.12);border:1px solid rgba(0,200,81,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#00C851;flex-shrink:0;margin-top:1px;}
+.ca-step-txt{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.55;}
+.ca-step-txt b{color:rgba(255,255,255,0.9);}
+
+/* PAID */
+#paidState{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px 20px;}
+.ca-paid-ring{width:88px;height:88px;background:linear-gradient(135deg,#00C851,#00a040);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 22px;box-shadow:0 8px 36px rgba(0,200,81,0.45);}
+.ca-paid-title{font-size:26px;font-weight:900;color:#00C851;letter-spacing:-0.5px;margin-bottom:8px;}
+.ca-paid-amt{font-size:36px;font-weight:900;color:#fff;letter-spacing:-1px;margin:8px 0;}
+.ca-paid-sub{font-size:14px;color:rgba(255,255,255,0.35);}
+
+/* EXPIRED */
+#expiredState{display:none;flex-direction:column;align-items:center;text-align:center;padding:56px 24px;}
+.ca-exp-icon{font-size:52px;margin-bottom:16px;}
+.ca-exp-title{font-size:22px;font-weight:800;color:#ff5050;margin-bottom:8px;}
+.ca-exp-sub{font-size:14px;color:rgba(255,255,255,0.3);}
+
+/* ERROR */
+#invoiceError{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;color:rgba(255,255,255,0.3);font-size:15px;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:99px;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="ca-topbar">
+  <div class="ca-logo">$</div>
+  <div class="ca-brand">Cash App</div>
+</div>
+
+<!-- PAYING STATE -->
+<div class="ca-wrap" id="payingState">
+
+  <!-- HERO -->
+  <div class="ca-hero">
+    <div class="ca-hero-glow"></div>
+    <div class="ca-hero-glow2"></div>
+    <div class="ca-hero-label">Amount Due</div>
+    <div class="ca-amount" id="invoiceAmount">$0.00</div>
+    <div class="ca-amount-sub">Send via Cash App</div>
+    <div class="ca-usdc-badge"><span class="ca-usdc-dot"></span>USDC · Solana Network</div>
+    <div class="ca-divider"></div>
+    <div class="ca-timer-row">
+      <span class="ca-timer-label">⏳ Expires in</span>
+      <span class="ca-timer-val" id="countdownTimer">15:00</span>
+    </div>
+    <div class="ca-bar"><div class="ca-bar-fill" id="countdownBar"></div></div>
+  </div>
+
+  <!-- INVOICE META -->
+  <div class="ca-meta">
+    <div class="ca-section-label">Invoice Details</div>
+    <div class="ca-row"><span class="ca-rkey">Invoice ID</span><span class="ca-rval" id="invoiceId">—</span></div>
+    <div class="ca-row"><span class="ca-rkey">Created</span><span class="ca-rval" id="invoiceDate">—</span></div>
+    <div class="ca-row"><span class="ca-rkey">Network</span><span class="ca-chip">Solana</span></div>
+    <div class="ca-row"><span class="ca-rkey">Token</span><span class="ca-chip-blue">USDC</span></div>
+  </div>
+
+  <!-- CASHAPP NOTICE -->
+  <div class="ca-notice">
+    <div class="ca-notice-icon">💡</div>
+    <div class="ca-notice-text">
+      In Cash App: go to <b>Money Tab → Deposit USDC</b>, select <b>Solana</b> network, then send to the wallet address below.
+    </div>
+  </div>
+
+  <!-- WALLET -->
+  <div class="ca-wallet">
+    <div class="ca-section-label">Send Payment To</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+      <div class="ca-usdc-badge" style="margin-top:0;"><span class="ca-usdc-dot" style="animation:pulse 2s infinite;"></span>Solana · USDC Active</div>
+    </div>
+    <div class="ca-addr" id="walletDisplay">Loading...</div>
+    <button class="ca-copy-btn" id="copyBtn" onclick="copyWallet()">📋 Copy Wallet Address</button>
+  </div>
+
+  <!-- QR -->
+  <div class="ca-qr">
+    <div class="ca-section-label" style="margin-bottom:14px;">Scan to Pay</div>
+    <img id="walletQr" src="" alt="Wallet QR">
+    <div class="ca-qr-note">Scan with Cash App or any Solana wallet</div>
+  </div>
+
+  <!-- HOW TO PAY STEPS -->
+  <div class="ca-steps">
+    <div class="ca-section-label" style="margin-bottom:10px;">How to Pay via Cash App</div>
+    <div class="ca-step"><div class="ca-step-num">1</div><div class="ca-step-txt">Open <b>Cash App</b> → tap <b>Money Tab</b> (bottom bar)</div></div>
+    <div class="ca-step"><div class="ca-step-num">2</div><div class="ca-step-txt">Tap <b>USDC</b> → select <b>Send USDC</b></div></div>
+    <div class="ca-step"><div class="ca-step-num">3</div><div class="ca-step-txt">Choose <b>Solana</b> as the network</div></div>
+    <div class="ca-step"><div class="ca-step-num">4</div><div class="ca-step-txt">Paste the wallet address and enter <b id="stepAmount">the exact amount</b> in USDC</div></div>
+    <div class="ca-step"><div class="ca-step-num">5</div><div class="ca-step-txt">This page <b>auto-confirms</b> once payment is detected ✓</div></div>
+  </div>
+
+</div>
+
+<!-- PAID STATE -->
+<div id="paidState">
+  <div class="ca-paid-ring">✓</div>
+  <div class="ca-paid-title">Payment Confirmed!</div>
+  <div class="ca-paid-amt" id="paidAmount"></div>
+  <div class="ca-paid-sub">Your USDC payment has been received</div>
+</div>
+
+<!-- EXPIRED STATE -->
+<div id="expiredState">
+  <div class="ca-exp-icon">⏰</div>
+  <div class="ca-exp-title">Invoice Expired</div>
+  <div class="ca-exp-sub">This invoice has expired.<br>Please request a new payment link.</div>
+</div>
+
+<!-- ERROR STATE -->
+<div id="invoiceError"><span>Invoice not found or invalid link.</span></div>
+
+<style>
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+</style>
+
+<script>
+const SUPABASE_URL_INV = 'https://pbxpdppibnmtyxfoyydr.supabase.co';
+const SUPABASE_ANON_INV = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo';
+const WALLET_ADDRESS   = 'Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa';
+const EXPIRE_MINUTES   = 15;
+const VERIFY_INTERVAL  = 8000;
+
+function getInvoiceId() {
+  return new URLSearchParams(location.search).get('id') || new URLSearchParams(location.search).get('invoice_id');
+}
+async function fetchInvoice(id) {
+  const res = await fetch(`${SUPABASE_URL_INV}/rest/v1/invoices?id=eq.${id}&select=*`, {
+    headers: { apikey: SUPABASE_ANON_INV, Authorization: `Bearer ${SUPABASE_ANON_INV}` }
+  });
+  const d = await res.json();
+  return d[0] || null;
+}
+async function verifyPayment(id) {
+  try {
+    const res = await fetch(`${SUPABASE_URL_INV}/functions/v1/verify-invoice`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SUPABASE_ANON_INV}` },
+      body: JSON.stringify({ invoice_id: id })
+    });
+    return await res.json();
+  } catch { return null; }
+}
+function fmtAmount(v) { return parseFloat(v).toFixed(2); }
+function startExpireCountdown(createdAt, onExpired) {
+  const expireAt = new Date(new Date(createdAt).getTime() + EXPIRE_MINUTES * 60000);
+  const el = document.getElementById('countdownTimer');
+  const bar = document.getElementById('countdownBar');
+  const total = EXPIRE_MINUTES * 60;
+  function tick() {
+    const diff = Math.max(0, Math.floor((expireAt - new Date()) / 1000));
+    const m = Math.floor(diff/60), s = diff%60;
+    if (el) el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (bar) bar.style.width = ((diff/total)*100)+'%';
+    if (diff === 0) { onExpired && onExpired(); return; }
+    setTimeout(tick, 1000);
+  }
+  tick();
+}
+async function copyWallet() {
+  try {
+    await navigator.clipboard.writeText(WALLET_ADDRESS);
+    const btn = document.getElementById('copyBtn');
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1600);
+  } catch {}
+}
+function showPaidState(amount) {
+  document.getElementById('payingState')?.remove();
+  document.getElementById('expiredState')?.remove();
+  const el = document.getElementById('paidState');
+  if (el) el.style.display = 'flex';
+  const pa = document.getElementById('paidAmount');
+  if (pa) pa.textContent = '$' + fmtAmount(amount);
+}
+function showExpiredState() {
+  document.getElementById('payingState')?.remove();
+  const el = document.getElementById('expiredState');
+  if (el) el.style.display = 'flex';
+}
+async function initInvoicePage() {
+  const id = getInvoiceId();
+  const errorEl = document.getElementById('invoiceError');
+  if (!id) { if(errorEl) errorEl.style.display='flex'; return; }
+  const invoice = await fetchInvoice(id);
+  if (!invoice) { if(errorEl) errorEl.style.display='flex'; return; }
+  if (invoice.status === 'paid') { showPaidState(invoice.amount); return; }
+  document.getElementById('invoiceAmount') && (document.getElementById('invoiceAmount').textContent = '$' + fmtAmount(invoice.amount));
+  document.getElementById('invoiceId') && (document.getElementById('invoiceId').textContent = invoice.id?.substring(0,20) + '...');
+  document.getElementById('invoiceDate') && (document.getElementById('invoiceDate').textContent = new Date(invoice.created_at).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}));
+  document.getElementById('walletDisplay') && (document.getElementById('walletDisplay').textContent = WALLET_ADDRESS);
+  const qrEl = document.getElementById('walletQr');
+  if (qrEl) qrEl.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(WALLET_ADDRESS)}&bgcolor=ffffff&color=000000&margin=14`;
+  const sa = document.getElementById('stepAmount');
+  if (sa) sa.textContent = '$' + fmtAmount(invoice.amount);
+  startExpireCountdown(invoice.created_at, showExpiredState);
+  const poller = setInterval(async () => {
+    const result = await verifyPayment(id);
+    if (result?.status === 'paid') { clearInterval(poller); showPaidState(invoice.amount); }
+  }, VERIFY_INTERVAL);
+}
+window.addEventListener('DOMContentLoaded', initInvoicePage);
+</script>
+</body>
+</html>
