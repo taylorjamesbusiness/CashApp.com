@@ -416,7 +416,7 @@
     <div class="topbar-brand">
       <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
            class="topbar-pp-logo" alt="PayPal">
-      <span class="topbar-title">Pay Valentina · PayPal</span>
+      <span class="topbar-title"></span>
     </div>
 
     <button class="how-btn" onclick="openModal()">
@@ -615,16 +615,6 @@ let payCheckTimer = null;
 
   tick();
   timerInterval = setInterval(tick, 1000);
-}
-
-      if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
-      const m = String(Math.floor(diff / 60000)).padStart(2, "0");
-      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
-      cd.textContent = `${m} : ${s}`;
-    }
-
-    tick();
-    timerInterval = setInterval(tick, 1000);
   }
 
   function setPaidUI() {
