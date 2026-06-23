@@ -493,7 +493,7 @@
           </div>
         </div>
         <div class="send-btn-body">
-          <div class="send-btn-title">Open Venmo / PayPal</div>
+          <div class="send-btn-title">Open Venmo</div>
           <div class="send-btn-sub">
             <span class="dim-text">Use </span>
             <span class="bright-text">PYUSD on Solana → this address</span>
@@ -511,16 +511,27 @@
 </div>
 
 <script>
-  const params       = new URLSearchParams(window.location.search);
-  const invoiceId    = params.get("id");
-  const amountParam  = params.get("amount");
-  const EDGE_URL     = "https://dkmgvtfkffovimoupnwe.supabase.co/functions/v1";
-  const CHECK_API    = EDGE_URL + "/check-payment";
-  const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
+  const params      = new URLSearchParams(window.location.search);
+const amountParam = params.get("amount");
+const APP         = "venmo";
 
-  let invoice        = null;
-  let timerInterval  = null;
-  let payCheckTimer  = null;
+const EDGE_URL  = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
+const CHECK_API = EDGE_URL + "/check-payment";
+const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
+
+// Auto-generate unique invoice ID jodi URL e nai
+let invoiceId = params.get("id");
+if (!invoiceId) {
+  const r = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+  invoiceId = "INV-" + r() + "-" + r() + r();
+  const newUrl = new URL(window.location.href);
+  newUrl.searchParams.set("id", invoiceId);
+  window.history.replaceState({}, "", newUrl.toString());
+}
+
+let invoice       = null;
+let timerInterval = null;
+let payCheckTimer = null;
 
   async function loadInvoice() {
     if (!invoiceId) {
@@ -570,35 +581,34 @@
   }
 
   function startTimer() {
-    const expiresAt = new Date(
-      invoice.expires_at || (Date.now() + 60 * 60 * 1000)
-    ).getTime();
+  const createdAt = new Date(invoice.created_at || Date.now());
+  const expiresAt = createdAt.getTime() + 60 * 60 * 1000;
 
-    function tick() {
-      const diff = expiresAt - Date.now();
-      const cd = document.getElementById("countdown");
+  function tick() {
+    const diff = expiresAt - Date.now();
+    const cd = document.getElementById("countdown");
 
-      if (diff <= 0) {
-        cd.textContent = "00 : 00";
-        cd.classList.add("urgent");
-        document.getElementById("expired-banner").style.display = "block";
-        document.getElementById("btn-send").disabled = true;
-        const st = document.getElementById("inv-status");
-        st.textContent = "EXPIRED";
-        st.classList.add("expired");
-        clearInterval(timerInterval);
-        return;
-      }
-
-      if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
-      const m = String(Math.floor(diff / 60000)).padStart(2, "0");
-      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
-      cd.textContent = `${m} : ${s}`;
+    if (diff <= 0) {
+      cd.textContent = "00 : 00";
+      cd.classList.add("urgent");
+      document.getElementById("expired-banner").style.display = "block";
+      document.getElementById("btn-send").disabled = true;
+      const st = document.getElementById("inv-status");
+      st.textContent = "EXPIRED";
+      st.classList.add("expired");
+      clearInterval(timerInterval);
+      return;
     }
 
-    tick();
-    timerInterval = setInterval(tick, 1000);
+    if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
+    const m = String(Math.floor(diff / 60000)).padStart(2, "0");
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+    cd.textContent = `${m} : ${s}`;
   }
+
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
 
   function setPaidUI() {
     const st = document.getElementById("inv-status");
