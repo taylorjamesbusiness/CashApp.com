@@ -290,7 +290,7 @@
     .modal-x {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
       border-radius: 8px; color: #666; font-size: 14px;
-      width: 30px; height: 30px; display:flex;align-items:center;justify-content:center;
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: all 0.2s;
     }
     .modal-x:hover { color: #fff; background: rgba(255,255,255,0.1); }
@@ -309,7 +309,7 @@
     .step-num {
       width: 26px; height: 26px; border-radius: 50%;
       background: rgba(0,112,186,0.15); border: 1.5px solid rgba(0,112,186,0.3);
-      display:flex;align-items:center;justify-content:center;
+      display: flex; align-items: center; justify-content: center;
       font-size: 11px; font-weight: 800; color: #5BA4F5;
     }
     .step-body { flex: 1; }
@@ -508,9 +508,31 @@
   let timerInterval = null;
   let payCheckTimer = null;
 
+  function getSavedInvoice() {
+    try {
+      const raw = localStorage.getItem("venmo_invoice");
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveInvoice(data) {
+    try {
+      localStorage.setItem("venmo_invoice", JSON.stringify(data));
+    } catch (e) {}
+  }
+
   async function loadInvoice() {
     if (!invoiceId) {
       document.getElementById("loading").textContent = "Invalid invoice link.";
+      return;
+    }
+
+    const saved = getSavedInvoice();
+    if (saved && saved.invoice_code === invoiceId) {
+      invoice = saved;
+      renderInvoice();
       return;
     }
 
@@ -529,11 +551,13 @@
       };
     }
 
+    if (!invoice.created_at) invoice.created_at = new Date().toISOString();
     if (!invoice.expires_at) {
-      const createdAt = invoice.created_at ? new Date(invoice.created_at) : new Date();
+      const createdAt = new Date(invoice.created_at);
       invoice.expires_at = new Date(createdAt.getTime() + 60 * 60 * 1000).toISOString();
     }
 
+    saveInvoice(invoice);
     renderInvoice();
   }
 
@@ -640,7 +664,8 @@
         btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
           <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
-        </svg> Copy address`;
+        </svg>
+        Copy address`;
         btn.classList.remove("copied");
       }, 2500);
     });
