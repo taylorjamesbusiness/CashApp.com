@@ -581,35 +581,28 @@ let payCheckTimer = null;
   }
 
   function startTimer() {
-  const createdAt = new Date(invoice.created_at || Date.now());
-  const expiresAt = createdAt.getTime() + 60 * 60 * 1000;
+  const params      = new URLSearchParams(window.location.search);
+const amountParam = params.get("amount");
+const APP         = "paypal";
 
-  function tick() {
-    const diff = expiresAt - Date.now();
-    const cd = document.getElementById("countdown");
+const EDGE_URL  = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
+const CHECK_API = EDGE_URL + "/check-payment";
+const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
-    if (diff <= 0) {
-      cd.textContent = "00 : 00";
-      cd.classList.add("urgent");
-      document.getElementById("expired-banner").style.display = "block";
-      document.getElementById("btn-send").disabled = true;
-      const st = document.getElementById("inv-status");
-      st.textContent = "EXPIRED";
-      st.classList.add("expired");
-      clearInterval(timerInterval);
-      return;
-    }
+// Auto-generate unique invoice ID jodi URL e nai
+let invoiceId = params.get("id");
+if (!invoiceId) {
+  const r = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+  invoiceId = "INV-" + r() + "-" + r() + r();
+  const newUrl = new URL(window.location.href);
+  newUrl.searchParams.set("id", invoiceId);
+  window.history.replaceState({}, "", newUrl.toString());
+}
 
-    if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
-    const m = String(Math.floor(diff / 60000)).padStart(2, "0");
-    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
-    cd.textContent = `${m} : ${s}`;
-  }
-
-  tick();
-  timerInterval = setInterval(tick, 1000);
-  }
-
+let invoice       = null;
+let timerInterval = null;
+let payCheckTimer = null;
+    
   function setPaidUI() {
     const st = document.getElementById("inv-status");
     st.textContent = "PAID";
