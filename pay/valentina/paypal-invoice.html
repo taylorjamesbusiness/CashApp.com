@@ -6,7 +6,6 @@
   <title>Invoice · Pay Valentina · PayPal</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    /* === SAME STYLE AS YOUR TEMPLATE (only tiny branding tweaks) === */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
 
     :root {
@@ -66,10 +65,6 @@
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .topbar-pp-logo { height: 18px; width: auto; }
-    .topbar-sep {
-      width: 1px; height: 16px;
-      background: rgba(255,255,255,0.12);
-    }
     .topbar-title {
       font-size: 13px;
       font-weight: 700;
@@ -115,7 +110,7 @@
     }
     #qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
 
-    /* PayPal/PYUSD logo in middle of QR */
+    /* PayPal/PYUSD logo in middle */
     .qr-logo {
       position: absolute;
       width: 42px; height: 42px; border-radius: 50%;
@@ -146,7 +141,7 @@
       font-family: 'Inter', sans-serif;
     }
 
-    /* TIMER / DETAILS / ADDRESS / BUTTONS — unchanged from template */
+    /* TIMER */
     .timer-box {
       background: linear-gradient(160deg, #101018, #0c0c14);
       border: 1px solid var(--border); border-radius: 18px;
@@ -164,6 +159,7 @@
     .timer-value.urgent { color: var(--red); animation: urgentBlink 0.8s ease-in-out infinite; }
     @keyframes urgentBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 
+    /* DETAILS */
     .details-card {
       background: linear-gradient(160deg, #101018, #0c0c14);
       border: 1px solid var(--border); border-radius: 18px;
@@ -175,6 +171,7 @@
     .detail-row + .detail-row { border-top: 1px solid rgba(255,255,255,0.04); }
     .detail-label { font-size: 11px; color: #555; font-weight: 600; }
     .detail-value { font-size: 11px; color: #ccc; font-family: monospace; font-weight: 500; }
+
     .status-pill {
       background: rgba(0,196,140,0.12); color: #00c48c;
       border-radius: 999px; padding: 3px 10px;
@@ -186,6 +183,7 @@
       border-color: rgba(239,68,68,0.2);
     }
 
+    /* ADDRESS */
     .address-box {
       background: linear-gradient(160deg, #101018, #0c0c14);
       border: 1px solid var(--border); border-radius: 18px;
@@ -216,6 +214,7 @@
       border: 1px solid rgba(239,68,68,0.2); margin-bottom: 12px; display: none;
     }
 
+    /* SEND BUTTON */
     .send-btn-wrap { margin-bottom: 12px; }
     .send-btn {
       width: 100%; padding: 0;
@@ -271,7 +270,7 @@
 
     .loading { text-align: center; padding: 80px 20px; color: #444; font-size: 14px; }
 
-    /* HOW TO PAY MODAL – text slightly changed for “buy PYUSD then send” */
+    /* HOW TO PAY MODAL */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.88);
       display: flex; align-items: flex-end; justify-content: center;
@@ -344,7 +343,7 @@
 </head>
 <body>
 
-<!-- How to Pay Modal (PayPal + PYUSD) -->
+<!-- How to Pay Modal -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-header">
@@ -363,7 +362,8 @@
         <div class="step-body">
           <div class="step-title">Open PayPal app</div>
           <div class="step-desc">
-            If your <b>PYUSD balance is 0</b>, go to <b>Finances → Crypto</b>, tap <span class="highlight">PayPal USD (PYUSD)</span> and buy PYUSD using your normal PayPal balance, bank or card. [web:23][web:28]
+            Go to <b>Finances → Crypto</b> and tap <span class="highlight">PayPal USD (PYUSD)</span>.  
+            If your <b>PYUSD balance is 0</b>, buy PYUSD using your PayPal balance, bank or card. [web:23][web:28]
           </div>
         </div>
       </div>
@@ -377,7 +377,8 @@
         <div class="step-body">
           <div class="step-title">Send PYUSD on Solana</div>
           <div class="step-desc">
-            In the PYUSD screen choose <span class="highlight">Send</span> → <b>Send on chain</b> → select <b>Solana network</b>. Paste the wallet address from this invoice.
+            In the PYUSD screen choose <span class="highlight">Send</span> → <b>Send on chain</b> → pick <b>Solana</b>.  
+            Paste the wallet address from this invoice and confirm network = Solana.
           </div>
         </div>
       </div>
@@ -391,7 +392,8 @@
         <div class="step-body">
           <div class="step-title">Enter exact amount</div>
           <div class="step-desc">
-            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly as shown above, review the network fee and tap <b>Send now</b>. Solana confirms in a few minutes.
+            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly as shown above, review fees and tap <b>Send now</b>.  
+            Solana confirmations typically take a few minutes.
           </div>
         </div>
       </div>
@@ -401,6 +403,7 @@
   </div>
 </div>
 
+<!-- Main page -->
 <div class="container">
   <div class="topbar">
     <button class="back-btn" onclick="history.back()">
@@ -413,8 +416,7 @@
     <div class="topbar-brand">
       <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
            class="topbar-pp-logo" alt="PayPal">
-      <div class="topbar-sep"></div>
-      <div class="topbar-title">Pay Valentina · PayPal</div>
+      <span class="topbar-title">Pay Valentina · PayPal</span>
     </div>
 
     <button class="how-btn" onclick="openModal()">
@@ -460,7 +462,7 @@
       </div>
       <div class="detail-row">
         <span class="detail-label">Network</span>
-        <span class="detail-value" id="inv-network">Solana • PYUSD</span>
+        <span class="detail-value" id="inv-network">Solana · PYUSD</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">Status</span>
@@ -469,8 +471,8 @@
     </div>
 
     <div class="address-box">
-      <div class="address-label">PYUSD wallet address (Solana)</div>
-      <div class="address-text" id="inv-address">—</div>
+      <div class="address-label">PYUSD WALLET ADDRESS (SOLANA)</div>
+      <div class="address-text" id="inv-address">Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa</div>
       <button class="copy-btn" id="copyBtn" onclick="copyAddress()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
@@ -511,15 +513,16 @@
 </div>
 
 <script>
-  const params    = new URLSearchParams(window.location.search);
-  const invoiceId = params.get("id");
-  const amountParam = params.get("amount");
-  const EDGE_URL  = "https://dkmgvtfkffovimoupnwe.supabase.co/functions/v1";
-  const CHECK_API = EDGE_URL + "/check-payment";
+  const params       = new URLSearchParams(window.location.search);
+  const invoiceId    = params.get("id");
+  const amountParam  = params.get("amount");
+  const EDGE_URL     = "https://dkmgvtfkffovimoupnwe.supabase.co/functions/v1";
+  const CHECK_API    = EDGE_URL + "/check-payment";
+  const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
-  let invoice      = null;
-  let timerInterval = null;
-  let payCheckTimer = null;
+  let invoice        = null;
+  let timerInterval  = null;
+  let payCheckTimer  = null;
 
   async function loadInvoice() {
     if (!invoiceId) {
@@ -527,13 +530,12 @@
       return;
     }
 
-    // If you already have Supabase invoice API, keep this.
     try {
       const res = await fetch(`${EDGE_URL}/get-invoice?id=${invoiceId}`);
       if (!res.ok) throw new Error("Not found");
       invoice = await res.json();
     } catch (e) {
-      // Fallback: basic invoice with URL params only
+      // Fallback if Supabase invoice not found: use URL params only
       invoice = {
         invoice_code: invoiceId,
         amount_usd: amountParam || 0,
@@ -553,12 +555,13 @@
     document.getElementById("inv-code").textContent = invoice.invoice_code || invoiceId;
     document.getElementById("inv-network").textContent = "Solana · PYUSD";
 
-    const addr = "YOUR_PYUSD_SOL_ADDRESS_HERE"; // <- replace with your Solana PYUSD address
+    const addr = FIXED_PYUSD_ADDRESS;
     document.getElementById("inv-address").textContent = addr;
 
     new QRCode(document.getElementById("qrcode"), {
       text: addr,
-      width: 200, height: 200,
+      width: 200,
+      height: 200,
       colorDark: "#000000",
       colorLight: "#ffffff",
       correctLevel: QRCode.CorrectLevel.H
@@ -570,10 +573,14 @@
   }
 
   function startTimer() {
-    const expiresAt = new Date(invoice.expires_at || (Date.now() + 60 * 60 * 1000)).getTime();
+    const expiresAt = new Date(
+      invoice.expires_at || (Date.now() + 60 * 60 * 1000)
+    ).getTime();
+
     function tick() {
       const diff = expiresAt - Date.now();
       const cd = document.getElementById("countdown");
+
       if (diff <= 0) {
         cd.textContent = "00 : 00";
         cd.classList.add("urgent");
@@ -585,11 +592,13 @@
         clearInterval(timerInterval);
         return;
       }
+
       if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
       const m = String(Math.floor(diff / 60000)).padStart(2, "0");
       const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
       cd.textContent = `${m} : ${s}`;
     }
+
     tick();
     timerInterval = setInterval(tick, 1000);
   }
@@ -599,10 +608,13 @@
     st.textContent = "PAID";
     st.classList.remove("expired");
     st.style.background = "rgba(20,241,149,0.12)";
-    st.style.color      = "#14F195";
+    st.style.color = "#14F195";
+
     document.getElementById("expired-banner").style.display = "none";
+
     if (timerInterval) clearInterval(timerInterval);
     if (payCheckTimer) clearInterval(payCheckTimer);
+
     const cd = document.getElementById("countdown");
     cd.classList.remove("urgent");
     cd.style.color = "#14F195";
@@ -627,8 +639,7 @@
   }
 
   function copyAddress() {
-    const addr = document.getElementById("inv-address").textContent.trim();
-    if (!addr) return;
+    const addr = FIXED_PYUSD_ADDRESS;
     navigator.clipboard.writeText(addr).then(() => {
       const btn = document.getElementById("copyBtn");
       btn.innerHTML = "✓ Copied";
@@ -643,9 +654,8 @@
     });
   }
 
-  // Open PayPal app or web crypto page
+  // Open PayPal crypto screen (mobile‑e app, desktop‑e web) [web:28]
   function goToPayment() {
-    // Deep-link to PayPal app web fallback. [web:28]
     window.location.href = "https://www.paypal.com/myaccount/crypto";
   }
 
