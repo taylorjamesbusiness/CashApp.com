@@ -12,13 +12,12 @@
       --bg: #050508;
       --card: #101018;
       --border: rgba(255,255,255,0.07);
-      --solana: #14F195;
-      --venmo-blue: #008CFF;
-      --venmo-dark: #0059FF;
       --text: #fff;
       --dim: #555;
       --red: #ef4444;
       --green: #14F195;
+      --venmo-blue: #008CFF;
+      --venmo-dark: #0059FF;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -346,14 +345,12 @@
 
     <div class="modal-body">
       <div class="step">
-        <div class="step-left">
-          <div class="step-num">1</div>
-        </div>
+        <div class="step-left"><div class="step-num">1</div></div>
         <div class="step-body">
           <div class="step-title">Check your PYUSD balance</div>
           <div class="step-desc">
-            Open <b>venmo</b> or your supported wallet and look for <span class="highlight">PayPal USD (PYUSD)</span>.
-            If balance is <b>0</b>, buy PYUSD using your main balance, bank or card.
+            Open <b>Venmo</b> and look for <span class="highlight">PayPal USD (PYUSD)</span>.
+            If balance is <b>0</b>, buy PYUSD first.
           </div>
         </div>
       </div>
@@ -361,14 +358,11 @@
       <div class="step-connector"></div>
 
       <div class="step">
-        <div class="step-left">
-          <div class="step-num">2</div>
-        </div>
+        <div class="step-left"><div class="step-num">2</div></div>
         <div class="step-body">
           <div class="step-title">Send PYUSD on Solana</div>
           <div class="step-desc">
-            Choose <span class="highlight">Send on chain</span>, select <b>Solana</b> as the network and paste the wallet address from this invoice.
-            Confirm the network is <b>Solana</b> before sending.
+            Choose <span class="highlight">Send on chain</span>, select <b>Solana</b>, then paste the wallet address from this invoice.
           </div>
         </div>
       </div>
@@ -376,14 +370,11 @@
       <div class="step-connector"></div>
 
       <div class="step">
-        <div class="step-left">
-          <div class="step-num">3</div>
-        </div>
+        <div class="step-left"><div class="step-num">3</div></div>
         <div class="step-body">
           <div class="step-title">Enter exact amount</div>
           <div class="step-desc">
-            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly as shown on this invoice, approve the network fee and tap <b>Send</b>.
-            Solana confirmations usually take a few minutes.
+            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly, then tap <b>Send</b>.
           </div>
         </div>
       </div>
@@ -524,7 +515,7 @@
     }
 
     try {
-      const res = await fetch(`${EDGE_URL}/get-invoice?id=${invoiceId}`);
+      const res = await fetch(`${EDGE_URL}/get-invoice?id=${encodeURIComponent(invoiceId)}`);
       if (!res.ok) throw new Error("Not found");
       invoice = await res.json();
     } catch (e) {
@@ -629,7 +620,7 @@
       const res = await fetch(CHECK_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoice_id: invoiceId })
+        body: JSON.stringify({ invoice_id: invoiceId, app: "venmo" })
       });
       const data = await res.json();
       if (data.status === "paid" || (data.success && data.status === "paid")) {
@@ -649,8 +640,7 @@
         btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
           <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        Copy address`;
+        </svg> Copy address`;
         btn.classList.remove("copied");
       }, 2500);
     });
@@ -659,7 +649,9 @@
   function goToPayment() {
     const amount = Number(invoice?.amount_usd || invoice?.amount || amountParam || 0).toFixed(2);
     const username = "YOUR_USERNAME";
-    const deepLink = `venmo://paycharge?txn=pay&recipients=${encodeURIComponent(username)}&amount=${encodeURIComponent(amount)}&note=${encodeURIComponent("Invoice " + (invoiceId || ""))}`;
+    const note = `Invoice ${invoiceId || ""}`;
+
+    const deepLink = `venmo://paycharge?txn=pay&recipients=${encodeURIComponent(username)}&amount=${encodeURIComponent(amount)}&note=${encodeURIComponent(note)}`;
     const fallback = "https://venmo.com/";
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
