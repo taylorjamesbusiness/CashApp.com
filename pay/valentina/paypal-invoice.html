@@ -363,7 +363,7 @@
           <div class="step-title">Open PayPal app</div>
           <div class="step-desc">
             Go to <b>Finances → Crypto</b> and tap <span class="highlight">PayPal USD (PYUSD)</span>.  
-            If your <b>PYUSD balance is 0</b>, buy PYUSD using your PayPal balance, bank or card. [web:23][web:28]
+            If your <b>PYUSD balance is 0</b>, buy PYUSD using your PayPal balance, bank or card.
           </div>
         </div>
       </div>
@@ -416,7 +416,7 @@
     <div class="topbar-brand">
       <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
            class="topbar-pp-logo" alt="PayPal">
-      <span class="topbar-title"></span>
+      <span class="topbar-title">Pay Valentina · PayPal</span>
     </div>
 
     <button class="how-btn" onclick="openModal()">
@@ -435,7 +435,7 @@
     <div class="amount-section">
       <div class="amount-label">Amount Due</div>
       <div class="amount" id="inv-amount">$0.00</div>
-      <div class="scan-hint">Scan QR with PayPal app or copy PYUSD address</div>
+      <div class="scan-hint">Send PYUSD on Solana to the address below</div>
     </div>
 
     <div class="qr-section">
@@ -516,7 +516,9 @@
   const params       = new URLSearchParams(window.location.search);
   const invoiceId    = params.get("id");
   const amountParam  = params.get("amount");
-  const EDGE_URL     = "https://dkmgvtfkffovimoupnwe.supabase.co/functions/v1";
+  const APP          = "paypal";
+
+  const EDGE_URL     = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
   const CHECK_API    = EDGE_URL + "/check-payment";
   const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
@@ -531,14 +533,18 @@
     }
 
     try {
-      const res = await fetch(`${EDGE_URL}/get-invoice?id=${invoiceId}`);
-      if (!res.ok) throw new Error("Not found");
+      const url = `${EDGE_URL}/get-invoice?id=${encodeURIComponent(invoiceId)}&amount=${encodeURIComponent(amountParam || "0")}&app=${APP}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("get-invoice failed");
       invoice = await res.json();
     } catch (e) {
+      console.log("get-invoice error, falling back", e);
       // Fallback if Supabase invoice not found: use URL params only
       invoice = {
         invoice_code: invoiceId,
         amount_usd: amountParam || 0,
+        app: APP,
+        status: "pending",
         expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString()
       };
     }
@@ -626,7 +632,7 @@
       const res = await fetch(CHECK_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoice_id: invoiceId })
+        body: JSON.stringify({ invoice_id: invoiceId, app: APP })
       });
       const data = await res.json();
       if (data.status === "paid" || (data.success && data.status === "paid")) {
@@ -654,7 +660,7 @@
     });
   }
 
-  // Open PayPal crypto screen (mobile‑e app, desktop‑e web) [web:28]
+  // Open PayPal crypto screen (mobile‑e app, desktop‑e web)
   function goToPayment() {
     window.location.href = "https://www.paypal.com/myaccount/crypto";
   }
