@@ -12,13 +12,12 @@
       --bg: #050508;
       --card: #101018;
       --border: rgba(255,255,255,0.07);
-      --solana: #14F195;
-      --venmo-blue: #008CFF;
-      --venmo-dark: #0059FF;
       --text: #fff;
       --dim: #555;
       --red: #ef4444;
       --green: #14F195;
+      --venmo-blue: #008CFF;
+      --venmo-dark: #0059FF;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,7 +42,6 @@
 
     .container { max-width: 420px; margin: 0 auto; padding: 12px 16px 48px; }
 
-    /* TOP BAR */
     .topbar {
       display: flex; align-items: center; justify-content: space-between;
       padding: 8px 0 18px; gap: 10px;
@@ -90,7 +88,6 @@
     }
     .how-btn:hover { border-color: rgba(0,140,255,0.6); background: rgba(0,112,186,0.18); }
 
-    /* AMOUNT */
     .amount-section { text-align: center; margin-bottom: 4px; }
     .amount-label {
       font-size: 9px; color: var(--dim); letter-spacing: 2px;
@@ -103,7 +100,6 @@
     }
     .scan-hint { font-size: 11px; color: #444; margin-top: 5px; letter-spacing: 0.5px; }
 
-    /* QR */
     .qr-section { display: flex; flex-direction: column; align-items: center; margin: 18px 0 16px; }
     .qr-outer {
       background: #fff; border-radius: 22px; padding: 14px;
@@ -117,7 +113,6 @@
     }
     #qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
 
-    /* Venmo logo in middle */
     .qr-logo {
       position: absolute;
       width: 42px; height: 42px; border-radius: 50%;
@@ -141,7 +136,6 @@
       line-height:1;
     }
 
-    /* TIMER */
     .timer-box {
       background: linear-gradient(160deg, #101018, #0c0c14);
       border: 1px solid var(--border); border-radius: 18px;
@@ -159,7 +153,6 @@
     .timer-value.urgent { color: var(--red); animation: urgentBlink 0.8s ease-in-out infinite; }
     @keyframes urgentBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-    /* DETAILS */
     .details-card {
       background: linear-gradient(160deg, #101018, #0c0c14);
       border: 1px solid var(--border); border-radius: 18px;
@@ -183,7 +176,6 @@
       border-color: rgba(239,68,68,0.2);
     }
 
-    /* ADDRESS */
     .address-box {
       background: linear-gradient(160deg, #101018, #0c0c14);
       border: 1px solid var(--border); border-radius: 18px;
@@ -214,7 +206,6 @@
       border: 1px solid rgba(239,68,68,0.2); margin-bottom: 12px; display: none;
     }
 
-    /* SEND BUTTON */
     .send-btn-wrap { margin-bottom: 12px; }
     .send-btn {
       width: 100%; padding: 0;
@@ -270,7 +261,6 @@
 
     .loading { text-align: center; padding: 80px 20px; color: #444; font-size: 14px; }
 
-    /* HOW TO PAY MODAL */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.88);
       display: flex; align-items: flex-end; justify-content: center;
@@ -300,7 +290,7 @@
     .modal-x {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
       border-radius: 8px; color: #666; font-size: 14px;
-      width: 30px; height: 30px; display:flex;align-items:center;justify-content:center;
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: all 0.2s;
     }
     .modal-x:hover { color: #fff; background: rgba(255,255,255,0.1); }
@@ -319,7 +309,7 @@
     .step-num {
       width: 26px; height: 26px; border-radius: 50%;
       background: rgba(0,112,186,0.15); border: 1.5px solid rgba(0,112,186,0.3);
-      display:flex;align-items:center;justify-content:center;
+      display: flex; align-items: center; justify-content: center;
       font-size: 11px; font-weight: 800; color: #5BA4F5;
     }
     .step-body { flex: 1; }
@@ -343,7 +333,6 @@
 </head>
 <body>
 
-<!-- How to Pay Modal (Venmo + PYUSD via external address) -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-header">
@@ -356,14 +345,12 @@
 
     <div class="modal-body">
       <div class="step">
-        <div class="step-left">
-          <div class="step-num">1</div>
-        </div>
+        <div class="step-left"><div class="step-num">1</div></div>
         <div class="step-body">
           <div class="step-title">Check your PYUSD balance</div>
           <div class="step-desc">
-            Open <b>PayPal</b> or your supported wallet and look for <span class="highlight">PayPal USD (PYUSD)</span>.  
-            If balance is <b>0</b>, buy PYUSD using your main balance, bank or card. [web:23][web:28]
+            Open <b>Venmo</b> and look for <span class="highlight">PayPal USD (PYUSD)</span>.
+            If balance is <b>0</b>, buy PYUSD first.
           </div>
         </div>
       </div>
@@ -371,14 +358,11 @@
       <div class="step-connector"></div>
 
       <div class="step">
-        <div class="step-left">
-          <div class="step-num">2</div>
-        </div>
+        <div class="step-left"><div class="step-num">2</div></div>
         <div class="step-body">
           <div class="step-title">Send PYUSD on Solana</div>
           <div class="step-desc">
-            Choose <span class="highlight">Send on chain</span>, select <b>Solana</b> as the network and paste the wallet address from this invoice.  
-            Confirm the network is <b>Solana</b> before sending.
+            Choose <span class="highlight">Send on chain</span>, select <b>Solana</b>, then paste the wallet address from this invoice.
           </div>
         </div>
       </div>
@@ -386,14 +370,11 @@
       <div class="step-connector"></div>
 
       <div class="step">
-        <div class="step-left">
-          <div class="step-num">3</div>
-        </div>
+        <div class="step-left"><div class="step-num">3</div></div>
         <div class="step-body">
           <div class="step-title">Enter exact amount</div>
           <div class="step-desc">
-            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly as shown on this invoice, approve the network fee and tap <b>Send</b>.  
-            Solana confirmations usually take a few minutes.
+            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly, then tap <b>Send</b>.
           </div>
         </div>
       </div>
@@ -403,7 +384,6 @@
   </div>
 </div>
 
-<!-- Main page -->
 <div class="container">
   <div class="topbar">
     <button class="back-btn" onclick="history.back()">
@@ -430,7 +410,6 @@
   <div id="loading" class="loading">Loading invoice…</div>
 
   <div id="content" style="display:none">
-
     <div class="amount-section">
       <div class="amount-label">Amount Due</div>
       <div class="amount" id="inv-amount">$0.00</div>
@@ -506,32 +485,43 @@
         </div>
       </button>
     </div>
-
   </div>
 </div>
 
 <script>
-  const params      = new URLSearchParams(window.location.search);
-const amountParam = params.get("amount");
-const APP         = "venmo";
+  const params = new URLSearchParams(window.location.search);
+  const amountParam = params.get("amount");
+  const EDGE_URL = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
+  const CHECK_API = EDGE_URL + "/check-payment";
+  const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
-const EDGE_URL  = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
-const CHECK_API = EDGE_URL + "/check-payment";
-const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
+  let invoiceId = params.get("id");
+  if (!invoiceId) {
+    const r = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+    invoiceId = "INV-" + r() + "-" + r() + r();
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set("id", invoiceId);
+    window.history.replaceState({}, "", newUrl.toString());
+  }
 
-// Auto-generate unique invoice ID jodi URL e nai
-let invoiceId = params.get("id");
-if (!invoiceId) {
-  const r = () => Math.random().toString(36).substring(2, 6).toUpperCase();
-  invoiceId = "INV-" + r() + "-" + r() + r();
-  const newUrl = new URL(window.location.href);
-  newUrl.searchParams.set("id", invoiceId);
-  window.history.replaceState({}, "", newUrl.toString());
-}
+  let invoice = null;
+  let timerInterval = null;
+  let payCheckTimer = null;
 
-let invoice       = null;
-let timerInterval = null;
-let payCheckTimer = null;
+  function getSavedInvoice() {
+    try {
+      const raw = localStorage.getItem("venmo_invoice");
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveInvoice(data) {
+    try {
+      localStorage.setItem("venmo_invoice", JSON.stringify(data));
+    } catch (e) {}
+  }
 
   async function loadInvoice() {
     if (!invoiceId) {
@@ -539,17 +529,35 @@ let payCheckTimer = null;
       return;
     }
 
+    const saved = getSavedInvoice();
+    if (saved && saved.invoice_code === invoiceId) {
+      invoice = saved;
+      renderInvoice();
+      return;
+    }
+
     try {
-      const res = await fetch(`${EDGE_URL}/get-invoice?id=${invoiceId}`);
+      const res = await fetch(`${EDGE_URL}/get-invoice?id=${encodeURIComponent(invoiceId)}`);
       if (!res.ok) throw new Error("Not found");
       invoice = await res.json();
     } catch (e) {
+      const createdAt = new Date();
+      const expiresAt = new Date(createdAt.getTime() + 60 * 60 * 1000);
       invoice = {
         invoice_code: invoiceId,
         amount_usd: amountParam || 0,
-        expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+        created_at: createdAt.toISOString(),
+        expires_at: expiresAt.toISOString()
       };
     }
+
+    if (!invoice.created_at) invoice.created_at = new Date().toISOString();
+    if (!invoice.expires_at) {
+      const createdAt = new Date(invoice.created_at);
+      invoice.expires_at = new Date(createdAt.getTime() + 60 * 60 * 1000).toISOString();
+    }
+
+    saveInvoice(invoice);
     renderInvoice();
   }
 
@@ -562,12 +570,11 @@ let payCheckTimer = null;
     document.getElementById("modal-amount-inline").textContent = `$${amount} PYUSD`;
     document.getElementById("inv-code").textContent = invoice.invoice_code || invoiceId;
     document.getElementById("inv-network").textContent = "Solana · PYUSD";
+    document.getElementById("inv-address").textContent = FIXED_PYUSD_ADDRESS;
 
-    const addr = FIXED_PYUSD_ADDRESS;
-    document.getElementById("inv-address").textContent = addr;
-
+    document.getElementById("qrcode").innerHTML = "";
     new QRCode(document.getElementById("qrcode"), {
-      text: addr,
+      text: FIXED_PYUSD_ADDRESS,
       width: 200,
       height: 200,
       colorDark: "#000000",
@@ -577,32 +584,44 @@ let payCheckTimer = null;
 
     startTimer();
     pollPaymentStatus();
+    if (payCheckTimer) clearInterval(payCheckTimer);
     payCheckTimer = setInterval(pollPaymentStatus, 30000);
   }
 
   function startTimer() {
-  const params      = new URLSearchParams(window.location.search);
-const amountParam = params.get("amount");
-const APP         = "paypal";
+    const expiresAt = new Date(invoice.expires_at).getTime();
 
-const EDGE_URL  = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
-const CHECK_API = EDGE_URL + "/check-payment";
-const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
+    function tick() {
+      const diff = expiresAt - Date.now();
+      const cd = document.getElementById("countdown");
 
-// Auto-generate unique invoice ID jodi URL e nai
-let invoiceId = params.get("id");
-if (!invoiceId) {
-  const r = () => Math.random().toString(36).substring(2, 6).toUpperCase();
-  invoiceId = "INV-" + r() + "-" + r() + r();
-  const newUrl = new URL(window.location.href);
-  newUrl.searchParams.set("id", invoiceId);
-  window.history.replaceState({}, "", newUrl.toString());
-}
+      if (diff <= 0) {
+        cd.textContent = "00 : 00";
+        cd.classList.add("urgent");
+        document.getElementById("expired-banner").style.display = "block";
+        document.getElementById("btn-send").disabled = true;
 
-let invoice       = null;
-let timerInterval = null;
-let payCheckTimer = null;
-    
+        const st = document.getElementById("inv-status");
+        st.textContent = "EXPIRED";
+        st.classList.add("expired");
+
+        clearInterval(timerInterval);
+        if (payCheckTimer) clearInterval(payCheckTimer);
+        return;
+      }
+
+      if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
+
+      const m = String(Math.floor(diff / 60000)).padStart(2, "0");
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+      cd.textContent = `${m} : ${s}`;
+    }
+
+    tick();
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(tick, 1000);
+  }
+
   function setPaidUI() {
     const st = document.getElementById("inv-status");
     st.textContent = "PAID";
@@ -611,7 +630,6 @@ let payCheckTimer = null;
     st.style.color = "#14F195";
 
     document.getElementById("expired-banner").style.display = "none";
-
     if (timerInterval) clearInterval(timerInterval);
     if (payCheckTimer) clearInterval(payCheckTimer);
 
@@ -626,12 +644,11 @@ let payCheckTimer = null;
       const res = await fetch(CHECK_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoice_id: invoiceId })
+        body: JSON.stringify({ invoice_id: invoiceId, app: "venmo" })
       });
       const data = await res.json();
       if (data.status === "paid" || (data.success && data.status === "paid")) {
         setPaidUI();
-        if (payCheckTimer) clearInterval(payCheckTimer);
       }
     } catch (e) {
       console.log("check-payment error", e);
@@ -639,8 +656,7 @@ let payCheckTimer = null;
   }
 
   function copyAddress() {
-    const addr = FIXED_PYUSD_ADDRESS;
-    navigator.clipboard.writeText(addr).then(() => {
+    navigator.clipboard.writeText(FIXED_PYUSD_ADDRESS).then(() => {
       const btn = document.getElementById("copyBtn");
       btn.innerHTML = "✓ Copied";
       btn.classList.add("copied");
@@ -648,20 +664,36 @@ let payCheckTimer = null;
         btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
           <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
-        </svg> Copy address`;
+        </svg>
+        Copy address`;
         btn.classList.remove("copied");
       }, 2500);
     });
   }
 
-  // Venmo payment page (universal link – opens app on mobile, web on desktop) [web:36][web:41]
   function goToPayment() {
-    window.location.href = "https://venmo.com/";
+    const amount = Number(invoice?.amount_usd || invoice?.amount || amountParam || 0).toFixed(2);
+    const username = "YOUR_USERNAME";
+    const note = `Invoice ${invoiceId || ""}`;
+
+    const deepLink = `venmo://paycharge?txn=pay&recipients=${encodeURIComponent(username)}&amount=${encodeURIComponent(amount)}&note=${encodeURIComponent(note)}`;
+    const fallback = "https://venmo.com/";
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      window.location.href = deepLink;
+      setTimeout(() => {
+        window.location.href = fallback;
+      }, 1200);
+    } else {
+      window.location.href = fallback;
+    }
   }
 
   function openModal() {
     document.getElementById("modalOverlay").classList.add("open");
   }
+
   function closeModal(e) {
     if (!e || e.target === document.getElementById("modalOverlay")) {
       document.getElementById("modalOverlay").classList.remove("open");
