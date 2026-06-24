@@ -70,11 +70,7 @@
       font-size:12px;font-weight:900;color:#fff;
     }
 
-    .topbar-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #e5e7eb;
-    }
+    .topbar-title { font-size: 13px; font-weight: 700; color: #e5e7eb; }
 
     .how-btn {
       background: rgba(0,112,186,0.1);
@@ -130,11 +126,7 @@
       background: linear-gradient(135deg,#00A8FF,#006DFF);
       display:flex;align-items:center;justify-content:center;
     }
-    .venmo-v {
-      font-size: 21px; font-weight: 900; color: #fff;
-      font-family: 'Inter', sans-serif; letter-spacing: -1px;
-      line-height:1;
-    }
+    .venmo-v { font-size: 21px; font-weight: 900; color: #fff; line-height:1; }
 
     .timer-box {
       background: linear-gradient(160deg, #101018, #0c0c14);
@@ -332,7 +324,6 @@
   </style>
 </head>
 <body>
-
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-header">
@@ -342,44 +333,31 @@
         <div class="modal-x" onclick="closeModal()">✕</div>
       </div>
     </div>
-
     <div class="modal-body">
       <div class="step">
         <div class="step-left"><div class="step-num">1</div></div>
         <div class="step-body">
           <div class="step-title">Check your PYUSD balance</div>
-          <div class="step-desc">
-            Open <b>Venmo</b> and look for <span class="highlight">PayPal USD (PYUSD)</span>.
-            If balance is <b>0</b>, buy PYUSD first.
-          </div>
+          <div class="step-desc">Open <b>PayPal</b> or <b>Venmo</b> and look for <span class="highlight">PayPal USD (PYUSD)</span>. If balance is <b>0</b>, buy PYUSD first.</div>
         </div>
       </div>
-
       <div class="step-connector"></div>
-
       <div class="step">
         <div class="step-left"><div class="step-num">2</div></div>
         <div class="step-body">
           <div class="step-title">Send PYUSD on Solana</div>
-          <div class="step-desc">
-            Choose <span class="highlight">Send on chain</span>, select <b>Solana</b>, then paste the wallet address from this invoice.
-          </div>
+          <div class="step-desc">Choose <span class="highlight">Send on chain</span>, select <b>Solana</b>, then paste the wallet address from this invoice.</div>
         </div>
       </div>
-
       <div class="step-connector"></div>
-
       <div class="step">
         <div class="step-left"><div class="step-num">3</div></div>
         <div class="step-body">
           <div class="step-title">Enter exact amount</div>
-          <div class="step-desc">
-            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly, then tap <b>Send</b>.
-          </div>
+          <div class="step-desc">Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly, then tap <b>Send</b>.</div>
         </div>
       </div>
     </div>
-
     <button class="modal-close" onclick="closeModal()">Got it ✓</button>
   </div>
 </div>
@@ -392,12 +370,10 @@
       </svg>
       Back
     </button>
-
     <div class="topbar-brand">
       <div class="topbar-venmo-circle">V</div>
       <span class="topbar-title">Pay Valentina · Venmo</span>
     </div>
-
     <button class="how-btn" onclick="openModal()">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
@@ -472,11 +448,8 @@
           </div>
         </div>
         <div class="send-btn-body">
-          <div class="send-btn-title">Open Venmo</div>
-          <div class="send-btn-sub">
-            <span class="dim-text">Use </span>
-            <span class="bright-text">PYUSD on Solana → this address</span>
-          </div>
+          <div class="send-btn-title">Open Venmo → Send PYUSD</div>
+          <div class="send-btn-sub"><span class="dim-text">Use </span><span class="bright-text">PYUSD on Solana → this address</span></div>
         </div>
         <div class="send-btn-arrow">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -509,18 +482,12 @@
   let payCheckTimer = null;
 
   function getSavedInvoice() {
-    try {
-      const raw = localStorage.getItem("venmo_invoice");
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
-    }
+    try { return JSON.parse(localStorage.getItem("pyusd_invoice") || "null"); }
+    catch (e) { return null; }
   }
 
   function saveInvoice(data) {
-    try {
-      localStorage.setItem("venmo_invoice", JSON.stringify(data));
-    } catch (e) {}
+    try { localStorage.setItem("pyusd_invoice", JSON.stringify(data)); } catch (e) {}
   }
 
   async function loadInvoice() {
@@ -542,12 +509,11 @@
       invoice = await res.json();
     } catch (e) {
       const createdAt = new Date();
-      const expiresAt = new Date(createdAt.getTime() + 60 * 60 * 1000);
       invoice = {
         invoice_code: invoiceId,
         amount_usd: amountParam || 0,
         created_at: createdAt.toISOString(),
-        expires_at: expiresAt.toISOString()
+        expires_at: new Date(createdAt.getTime() + 60 * 60 * 1000).toISOString()
       };
     }
 
@@ -582,9 +548,9 @@
       correctLevel: QRCode.CorrectLevel.H
     });
 
+    saveInvoice(invoice);
     startTimer();
     pollPaymentStatus();
-    if (payCheckTimer) clearInterval(payCheckTimer);
     payCheckTimer = setInterval(pollPaymentStatus, 30000);
   }
 
@@ -600,18 +566,15 @@
         cd.classList.add("urgent");
         document.getElementById("expired-banner").style.display = "block";
         document.getElementById("btn-send").disabled = true;
-
         const st = document.getElementById("inv-status");
         st.textContent = "EXPIRED";
         st.classList.add("expired");
-
         clearInterval(timerInterval);
         if (payCheckTimer) clearInterval(payCheckTimer);
         return;
       }
 
       if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
-
       const m = String(Math.floor(diff / 60000)).padStart(2, "0");
       const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
       cd.textContent = `${m} : ${s}`;
@@ -644,7 +607,7 @@
       const res = await fetch(CHECK_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoice_id: invoiceId, app: "venmo" })
+        body: JSON.stringify({ invoice_id: invoiceId })
       });
       const data = await res.json();
       if (data.status === "paid" || (data.success && data.status === "paid")) {
@@ -672,22 +635,7 @@
   }
 
   function goToPayment() {
-    const amount = Number(invoice?.amount_usd || invoice?.amount || amountParam || 0).toFixed(2);
-    const username = "YOUR_USERNAME";
-    const note = `Invoice ${invoiceId || ""}`;
-
-    const deepLink = `venmo://paycharge?txn=pay&recipients=${encodeURIComponent(username)}&amount=${encodeURIComponent(amount)}&note=${encodeURIComponent(note)}`;
-    const fallback = "https://venmo.com/";
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    if (isMobile) {
-      window.location.href = deepLink;
-      setTimeout(() => {
-        window.location.href = fallback;
-      }, 1200);
-    } else {
-      window.location.href = fallback;
-    }
+    window.location.href = "https://venmo.com/";
   }
 
   function openModal() {
