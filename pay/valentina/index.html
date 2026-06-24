@@ -7,6 +7,7 @@
 
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='10' fill='%2316a34a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='system-ui' font-weight='700' fill='white'>V</text></svg>">
 
+  <!-- আপনার আগের full CSS 그대로 রেখে দিলাম -->
   <style>
     :root {
       --bg: #02040a;
@@ -189,12 +190,6 @@
       border-color: rgba(55,65,81,0.9);
       transform: translateY(-1px);
       box-shadow: 0 12px 24px rgba(0,0,0,0.5);
-    }
-
-    .payment-card.disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      pointer-events: none;
     }
 
     .payment-card-main { display: flex; align-items: center; gap: 10px; }
@@ -434,7 +429,6 @@
     cashapp: { label: "Cash App", icon: "$", invoice: BASE + "cashapp-invoice.html", network: "solana", token_mint: "USDC"  }
   };
 
-  // এখানে তুমি চাইলে dynamic address mapping করতে পারো; এখন simple placeholder
   const DEFAULT_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
   let selectedAmount = 0;
@@ -507,7 +501,6 @@
     }
 
     const info = APPS[selectedApp];
-
     const expires_at = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
     payBtn.disabled = true;
@@ -534,7 +527,7 @@
       });
 
       const data = await res.json();
-      const inv  = data[0];
+      const inv  = Array.isArray(data) ? data[0] : data;
 
       if (!inv || !inv.id) {
         alert("Failed to create invoice.");
@@ -558,7 +551,6 @@
 
   payBtn.addEventListener("click", createInvoiceAndRedirect);
 
-  // initial state
   setAmount(0);
   updateBottomBar();
 </script>
