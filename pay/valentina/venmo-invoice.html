@@ -13,7 +13,8 @@
       --card: #101018;
       --border: rgba(255,255,255,0.07);
       --solana: #14F195;
-      --venmo: #008CFF;
+      --venmo-blue: #008CFF;
+      --venmo-dark: #0059FF;
       --text: #fff;
       --dim: #555;
       --red: #ef4444;
@@ -63,7 +64,14 @@
     .topbar-brand {
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .topbar-venmo-logo { height: 18px; width: auto; }
+
+    .topbar-venmo-circle{
+      width:22px;height:22px;border-radius:50%;
+      background:linear-gradient(135deg,#00A8FF,#006DFF);
+      display:flex;align-items:center;justify-content:center;
+      font-size:12px;font-weight:900;color:#fff;
+    }
+
     .topbar-title {
       font-size: 13px;
       font-weight: 700;
@@ -71,16 +79,16 @@
     }
 
     .how-btn {
-      background: rgba(0,140,255,0.1);
-      border: 1.5px solid rgba(0,140,255,0.35);
-      border-radius: 20px; color: #7cc5ff;
+      background: rgba(0,112,186,0.1);
+      border: 1.5px solid rgba(0,112,186,0.35);
+      border-radius: 20px; color: #5BA4F5;
       font-size: 11px; font-weight: 700;
       padding: 7px 13px; cursor: pointer;
       display: flex; align-items: center; gap: 5px;
       transition: all 0.2s; font-family: inherit;
       flex-shrink: 0; letter-spacing: 0.3px;
     }
-    .how-btn:hover { border-color: rgba(0,140,255,0.6); background: rgba(0,140,255,0.18); }
+    .how-btn:hover { border-color: rgba(0,140,255,0.6); background: rgba(0,112,186,0.18); }
 
     /* AMOUNT */
     .amount-section { text-align: center; margin-bottom: 4px; }
@@ -109,7 +117,7 @@
     }
     #qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
 
-    /* Venmo/PYUSD logo in middle */
+    /* Venmo logo in middle */
     .qr-logo {
       position: absolute;
       width: 42px; height: 42px; border-radius: 50%;
@@ -119,19 +127,18 @@
       overflow: hidden; animation: logoPulse 2.5s ease-in-out infinite;
     }
     @keyframes logoPulse {
-      0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,140,255,0.4); }
-      50% { transform: scale(1.06); box-shadow: 0 0 0 5px rgba(0,140,255,0); }
+      0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,102,204,0.4); }
+      50% { transform: scale(1.06); box-shadow: 0 0 0 5px rgba(0,102,204,0); }
     }
     .qr-logo-inner {
       width: 36px; height: 36px; border-radius: 50%;
-      background: linear-gradient(135deg, #008CFF, #0066CC);
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
+      background: linear-gradient(135deg,#00A8FF,#006DFF);
+      display:flex;align-items:center;justify-content:center;
     }
-    .pyusd-p {
-      font-size: 18px; font-weight: 900; color: #fff;
+    .venmo-v {
+      font-size: 21px; font-weight: 900; color: #fff;
       font-family: 'Inter', sans-serif; letter-spacing: -1px;
-      position: relative; line-height: 1;
+      line-height:1;
     }
 
     /* TIMER */
@@ -192,13 +199,13 @@
     }
     .copy-btn {
       width: 100%; padding: 11px;
-      border: 1.5px solid rgba(0,140,255,0.3); border-radius: 12px;
-      background: rgba(0,90,190,0.1); color: #7cc5ff;
+      border: 1.5px solid rgba(0,112,186,0.3); border-radius: 12px;
+      background: rgba(0,82,165,0.1); color: #5BA4F5;
       font-size: 13px; font-weight: 700; cursor: pointer;
       transition: all 0.2s; font-family: inherit;
       display: flex; align-items: center; justify-content: center; gap: 6px;
     }
-    .copy-btn:hover { border-color: rgba(0,140,255,0.5); background: rgba(0,90,190,0.18); }
+    .copy-btn:hover { border-color: rgba(0,140,255,0.5); background: rgba(0,82,165,0.18); }
     .copy-btn.copied { border-color: rgba(0,196,140,0.4); color: #00c48c; background: rgba(0,196,140,0.08); }
 
     .expired-banner {
@@ -211,7 +218,7 @@
     .send-btn-wrap { margin-bottom: 12px; }
     .send-btn {
       width: 100%; padding: 0;
-      border: 1.5px solid rgba(0,140,255,0.35);
+      border: 1.5px solid rgba(0,112,186,0.35);
       border-radius: 18px;
       background: linear-gradient(160deg, #0e1624 0%, #0a1020 100%);
       cursor: pointer; transition: all 0.25s;
@@ -228,19 +235,19 @@
 
     .send-btn-icon {
       width: 54px; display: flex; align-items: center; justify-content: center;
-      background: rgba(0,80,160,0.25); border-right: 1px solid rgba(0,140,255,0.2);
+      background: rgba(0,80,160,0.25); border-right: 1px solid rgba(0,112,186,0.2);
       flex-shrink: 0;
     }
     .send-arrow-circle {
       width: 32px; height: 32px; border-radius: 50%;
-      background: linear-gradient(135deg, #008CFF, #0066CC);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 12px rgba(0,140,255,0.5);
+      background: linear-gradient(135deg,#00A8FF,#006DFF);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow: 0 0 12px rgba(0,112,186,0.5);
       animation: arrowPulse 2.5s ease-in-out infinite;
     }
     @keyframes arrowPulse {
-      0%,100% { box-shadow: 0 0 8px rgba(0,140,255,0.4); }
-      50% { box-shadow: 0 0 18px rgba(0,140,255,0.75); }
+      0%,100% { box-shadow: 0 0 8px rgba(0,112,186,0.4); }
+      50% { box-shadow: 0 0 18px rgba(0,112,186,0.75); }
     }
 
     .send-btn-body {
@@ -252,10 +259,10 @@
       font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -0.2px;
     }
     .send-btn-sub {
-      font-size: 11px; color: #7cc5ff; font-weight: 600; line-height: 1.4;
+      font-size: 11px; color: #5BA4F5; font-weight: 600; line-height: 1.4;
     }
     .send-btn-sub .dim-text { color: #334; font-weight: 600; }
-    .send-btn-sub .bright-text { color: #7cc5ff; font-weight: 700; }
+    .send-btn-sub .bright-text { color: #5BA4F5; font-weight: 700; }
     .send-btn-arrow {
       display: flex; align-items: center; padding-right: 14px;
       color: #446; font-size: 16px;
@@ -293,7 +300,7 @@
     .modal-x {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
       border-radius: 8px; color: #666; font-size: 14px;
-      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; display:flex;align-items:center;justify-content:center;
       cursor: pointer; transition: all 0.2s;
     }
     .modal-x:hover { color: #fff; background: rgba(255,255,255,0.1); }
@@ -306,20 +313,20 @@
       border-radius: 16px; padding: 14px;
       transition: all 0.2s;
     }
-    .step:hover { border-color: rgba(0,140,255,0.25); background: rgba(0,80,160,0.06); }
+    .step:hover { border-color: rgba(0,112,186,0.25); background: rgba(0,80,160,0.06); }
 
     .step-left { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
     .step-num {
       width: 26px; height: 26px; border-radius: 50%;
-      background: rgba(0,140,255,0.15); border: 1.5px solid rgba(0,140,255,0.3);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 800; color: #7cc5ff;
+      background: rgba(0,112,186,0.15); border: 1.5px solid rgba(0,112,186,0.3);
+      display:flex;align-items:center;justify-content:center;
+      font-size: 11px; font-weight: 800; color: #5BA4F5;
     }
     .step-body { flex: 1; }
     .step-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 4px; }
     .step-desc { font-size: 11px; color: #666; line-height: 1.6; }
     .step-desc b { color: #999; font-weight: 700; }
-    .step-desc .highlight { color: #7cc5ff; font-weight: 700; }
+    .step-desc .highlight { color: #5BA4F5; font-weight: 700; }
     .step-connector {
       width: 1px; height: 12px; background: rgba(255,255,255,0.06);
       margin: -8px auto; position: relative; z-index: 1; left: 19px;
@@ -336,13 +343,13 @@
 </head>
 <body>
 
-<!-- How to Pay Modal -->
+<!-- How to Pay Modal (Venmo + PYUSD via external address) -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-handle"></div>
       <div class="modal-title-row">
-        <h2>💡 How to pay with PYUSD (Venmo)</h2>
+        <h2>💡 How to pay with PYUSD</h2>
         <div class="modal-x" onclick="closeModal()">✕</div>
       </div>
     </div>
@@ -353,10 +360,10 @@
           <div class="step-num">1</div>
         </div>
         <div class="step-body">
-          <div class="step-title">Open Venmo app</div>
+          <div class="step-title">Check your PYUSD balance</div>
           <div class="step-desc">
-            Go to your <b>Crypto</b> section and tap <span class="highlight">PayPal USD (PYUSD)</span>.  
-            If your <b>PYUSD balance is 0</b>, buy PYUSD using bank, card or balance.
+            Open <b>PayPal</b> or your supported wallet and look for <span class="highlight">PayPal USD (PYUSD)</span>.  
+            If balance is <b>0</b>, buy PYUSD using your main balance, bank or card. [web:23][web:28]
           </div>
         </div>
       </div>
@@ -370,8 +377,8 @@
         <div class="step-body">
           <div class="step-title">Send PYUSD on Solana</div>
           <div class="step-desc">
-            From PYUSD choose <span class="highlight">Send</span> → <b>Send on chain</b> → pick <b>Solana</b>.  
-            Paste the wallet address from this invoice and confirm network = Solana.
+            Choose <span class="highlight">Send on chain</span>, select <b>Solana</b> as the network and paste the wallet address from this invoice.  
+            Confirm the network is <b>Solana</b> before sending.
           </div>
         </div>
       </div>
@@ -385,8 +392,8 @@
         <div class="step-body">
           <div class="step-title">Enter exact amount</div>
           <div class="step-desc">
-            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly as shown above, review fees and tap <b>Send now</b>.  
-            Solana confirmations typically take a few minutes.
+            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly as shown on this invoice, approve the network fee and tap <b>Send</b>.  
+            Solana confirmations usually take a few minutes.
           </div>
         </div>
       </div>
@@ -407,9 +414,8 @@
     </button>
 
     <div class="topbar-brand">
-      <img src="https://seeklogo.com/images/V/venmo-logo-05A6A51B4F-seeklogo.com.png"
-           class="topbar-venmo-logo" alt="Venmo">
-      <span class="topbar-title">Venmo · PYUSD on Solana</span>
+      <div class="topbar-venmo-circle">V</div>
+      <span class="topbar-title">Pay Valentina · Venmo</span>
     </div>
 
     <button class="how-btn" onclick="openModal()">
@@ -428,7 +434,7 @@
     <div class="amount-section">
       <div class="amount-label">Amount Due</div>
       <div class="amount" id="inv-amount">$0.00</div>
-      <div class="scan-hint">Send PYUSD on Solana to the address below</div>
+      <div class="scan-hint">Scan QR or copy PYUSD Solana address</div>
     </div>
 
     <div class="qr-section">
@@ -436,7 +442,7 @@
         <div id="qrcode"></div>
         <div class="qr-logo">
           <div class="qr-logo-inner">
-            <span class="pyusd-p">V</span>
+            <span class="venmo-v">V</span>
           </div>
         </div>
       </div>
@@ -487,10 +493,10 @@
           </div>
         </div>
         <div class="send-btn-body">
-          <div class="send-btn-title">Open Venmo → Send PYUSD</div>
+          <div class="send-btn-title">Open Venmo</div>
           <div class="send-btn-sub">
             <span class="dim-text">Use </span>
-            <span class="bright-text">Crypto → PayPal USD (PYUSD)</span>
+            <span class="bright-text">PYUSD on Solana → this address</span>
           </div>
         </div>
         <div class="send-btn-arrow">
@@ -505,7 +511,7 @@
 </div>
 
 <script>
-const params      = new URLSearchParams(window.location.search);
+  const params      = new URLSearchParams(window.location.search);
 const amountParam = params.get("amount");
 const APP         = "venmo";
 
@@ -513,6 +519,7 @@ const EDGE_URL  = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
 const CHECK_API = EDGE_URL + "/check-payment";
 const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
+// Auto-generate unique invoice ID jodi URL e nai
 let invoiceId = params.get("id");
 if (!invoiceId) {
   const r = () => Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -526,153 +533,142 @@ let invoice       = null;
 let timerInterval = null;
 let payCheckTimer = null;
 
-async function loadInvoice() {
-  if (!invoiceId) {
-    document.getElementById("loading").textContent = "Invalid invoice link.";
-    return;
-  }
-
-  try {
-    const url = `${EDGE_URL}/get-invoice?id=${encodeURIComponent(invoiceId)}&amount=${encodeURIComponent(amountParam || "0")}&app=${APP}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("get-invoice failed");
-    invoice = await res.json();
-  } catch (e) {
-    console.log("get-invoice error, falling back", e);
-    invoice = {
-      invoice_code: invoiceId,
-      amount_usd: amountParam || 0,
-      app: APP,
-      status: "pending",
-      expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString()
-    };
-  }
-  renderInvoice();
-}
-
-function renderInvoice() {
-  document.getElementById("loading").style.display = "none";
-  document.getElementById("content").style.display = "block";
-
-  const amount = Number(invoice.amount_usd || invoice.amount || amountParam || 0).toFixed(2);
-  document.getElementById("inv-amount").textContent = `$${amount}`;
-  document.getElementById("modal-amount-inline").textContent = `$${amount} PYUSD`;
-  document.getElementById("inv-code").textContent = invoice.invoice_code || invoiceId;
-  document.getElementById("inv-network").textContent = "Solana · PYUSD";
-
-  const addr = FIXED_PYUSD_ADDRESS;
-  document.getElementById("inv-address").textContent = addr;
-
-  new QRCode(document.getElementById("qrcode"), {
-    text: addr,
-    width: 200,
-    height: 200,
-    colorDark: "#000000",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.H
-  });
-
-  startTimer();
-  pollPaymentStatus();
-  payCheckTimer = setInterval(pollPaymentStatus, 30000);
-}
-
-function startTimer() {
-  const createdAt = new Date(invoice.created_at || Date.now());
-  const expiresAt = createdAt.getTime() + 60 * 60 * 1000;
-
-  function tick() {
-    const diff = expiresAt - Date.now();
-    const cd = document.getElementById("countdown");
-
-    if (diff <= 0) {
-      cd.textContent = "00 : 00";
-      cd.classList.add("urgent");
-      document.getElementById("expired-banner").style.display = "block";
-      document.getElementById("btn-send").disabled = true;
-      const st = document.getElementById("inv-status");
-      st.textContent = "EXPIRED";
-      st.classList.add("expired");
-      clearInterval(timerInterval);
+  async function loadInvoice() {
+    if (!invoiceId) {
+      document.getElementById("loading").textContent = "Invalid invoice link.";
       return;
     }
 
-    if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
-    const m = String(Math.floor(diff / 60000)).padStart(2, "0");
-    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
-    cd.textContent = `${m} : ${s}`;
-  }
-
-  tick();
-  timerInterval = setInterval(tick, 1000);
-}
-
-function setPaidUI() {
-  const st = document.getElementById("inv-status");
-  st.textContent = "PAID";
-  st.classList.remove("expired");
-  st.style.background = "rgba(20,241,149,0.12)";
-  st.style.color = "#14F195";
-
-  document.getElementById("expired-banner").style.display = "none";
-
-  if (timerInterval) clearInterval(timerInterval);
-  if (payCheckTimer) clearInterval(payCheckTimer);
-
-  const cd = document.getElementById("countdown");
-  cd.classList.remove("urgent");
-  cd.style.color = "#14F195";
-}
-
-async function pollPaymentStatus() {
-  if (!invoiceId) return;
-  try {
-    const res = await fetch(CHECK_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ invoice_id: invoiceId, app: APP })
-    });
-    const data = await res.json();
-    if (data.status === "paid" || (data.success && data.status === "paid")) {
-      setPaidUI();
-      if (payCheckTimer) clearInterval(payCheckTimer);
+    try {
+      const res = await fetch(`${EDGE_URL}/get-invoice?id=${invoiceId}`);
+      if (!res.ok) throw new Error("Not found");
+      invoice = await res.json();
+    } catch (e) {
+      invoice = {
+        invoice_code: invoiceId,
+        amount_usd: amountParam || 0,
+        expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+      };
     }
-  } catch (e) {
-    console.log("check-payment error", e);
+    renderInvoice();
   }
-}
 
-function copyAddress() {
-  const addr = FIXED_PYUSD_ADDRESS;
-  navigator.clipboard.writeText(addr).then(() => {
-    const btn = document.getElementById("copyBtn");
-    btn.innerHTML = "✓ Copied";
-    btn.classList.add("copied");
-    setTimeout(() => {
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
-        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
-      </svg> Copy address`;
-      btn.classList.remove("copied");
-    }, 2500);
-  });
-}
+  function renderInvoice() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("content").style.display = "block";
 
-function goToPayment() {
-  // Venmo app / web entry – adjust deep link later চাইলে
-  window.location.href = "https://account.venmo.com/";
-}
+    const amount = Number(invoice.amount_usd || invoice.amount || amountParam || 0).toFixed(2);
+    document.getElementById("inv-amount").textContent = `$${amount}`;
+    document.getElementById("modal-amount-inline").textContent = `$${amount} PYUSD`;
+    document.getElementById("inv-code").textContent = invoice.invoice_code || invoiceId;
+    document.getElementById("inv-network").textContent = "Solana · PYUSD";
 
-function openModal() {
-  document.getElementById("modalOverlay").classList.add("open");
-}
-function closeModal(e) {
-  if (!e || e.target === document.getElementById("modalOverlay")) {
-    document.getElementById("modalOverlay").classList.remove("open");
+    const addr = FIXED_PYUSD_ADDRESS;
+    document.getElementById("inv-address").textContent = addr;
+
+    new QRCode(document.getElementById("qrcode"), {
+      text: addr,
+      width: 200,
+      height: 200,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    startTimer();
+    pollPaymentStatus();
+    payCheckTimer = setInterval(pollPaymentStatus, 30000);
   }
+
+  function startTimer() {
+  const params      = new URLSearchParams(window.location.search);
+const amountParam = params.get("amount");
+const APP         = "paypal";
+
+const EDGE_URL  = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
+const CHECK_API = EDGE_URL + "/check-payment";
+const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
+
+// Auto-generate unique invoice ID jodi URL e nai
+let invoiceId = params.get("id");
+if (!invoiceId) {
+  const r = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+  invoiceId = "INV-" + r() + "-" + r() + r();
+  const newUrl = new URL(window.location.href);
+  newUrl.searchParams.set("id", invoiceId);
+  window.history.replaceState({}, "", newUrl.toString());
 }
 
-loadInvoice();
+let invoice       = null;
+let timerInterval = null;
+let payCheckTimer = null;
+    
+  function setPaidUI() {
+    const st = document.getElementById("inv-status");
+    st.textContent = "PAID";
+    st.classList.remove("expired");
+    st.style.background = "rgba(20,241,149,0.12)";
+    st.style.color = "#14F195";
+
+    document.getElementById("expired-banner").style.display = "none";
+
+    if (timerInterval) clearInterval(timerInterval);
+    if (payCheckTimer) clearInterval(payCheckTimer);
+
+    const cd = document.getElementById("countdown");
+    cd.classList.remove("urgent");
+    cd.style.color = "#14F195";
+  }
+
+  async function pollPaymentStatus() {
+    if (!invoiceId) return;
+    try {
+      const res = await fetch(CHECK_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoice_id: invoiceId })
+      });
+      const data = await res.json();
+      if (data.status === "paid" || (data.success && data.status === "paid")) {
+        setPaidUI();
+        if (payCheckTimer) clearInterval(payCheckTimer);
+      }
+    } catch (e) {
+      console.log("check-payment error", e);
+    }
+  }
+
+  function copyAddress() {
+    const addr = FIXED_PYUSD_ADDRESS;
+    navigator.clipboard.writeText(addr).then(() => {
+      const btn = document.getElementById("copyBtn");
+      btn.innerHTML = "✓ Copied";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
+        </svg> Copy address`;
+        btn.classList.remove("copied");
+      }, 2500);
+    });
+  }
+
+  // Venmo payment page (universal link – opens app on mobile, web on desktop) [web:36][web:41]
+  function goToPayment() {
+    window.location.href = "https://venmo.com/";
+  }
+
+  function openModal() {
+    document.getElementById("modalOverlay").classList.add("open");
+  }
+  function closeModal(e) {
+    if (!e || e.target === document.getElementById("modalOverlay")) {
+      document.getElementById("modalOverlay").classList.remove("open");
+    }
+  }
+
+  loadInvoice();
 </script>
 </body>
 </html>
