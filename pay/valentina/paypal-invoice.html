@@ -43,7 +43,6 @@
 
     .container { max-width: 420px; margin: 0 auto; padding: 12px 16px 48px; }
 
-    /* TOP BAR */
     .topbar {
       display: flex; align-items: center; justify-content: space-between;
       padding: 8px 0 18px; gap: 10px;
@@ -83,7 +82,6 @@
     }
     .how-btn:hover { border-color: rgba(0,140,255,0.6); background: rgba(0,112,186,0.18); }
 
-    /* AMOUNT */
     .amount-section { text-align: center; margin-bottom: 4px; }
     .amount-label {
       font-size: 9px; color: var(--dim); letter-spacing: 2px;
@@ -96,7 +94,6 @@
     }
     .scan-hint { font-size: 11px; color: #444; margin-top: 5px; letter-spacing: 0.5px; }
 
-    /* QR */
     .qr-section { display: flex; flex-direction: column; align-items: center; margin: 18px 0 16px; }
     .qr-outer {
       background: #fff; border-radius: 22px; padding: 14px;
@@ -110,7 +107,6 @@
     }
     #qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
 
-    /* PayPal/PYUSD logo in middle */
     .qr-logo {
       position: absolute;
       width: 42px; height: 42px; border-radius: 50%;
@@ -141,7 +137,6 @@
       font-family: 'Inter', sans-serif;
     }
 
-    /* TIMER */
     .timer-box {
       background: linear-gradient(160deg, #101018, #0c0c14);
       border: 1px solid var(--border); border-radius: 18px;
@@ -159,7 +154,6 @@
     .timer-value.urgent { color: var(--red); animation: urgentBlink 0.8s ease-in-out infinite; }
     @keyframes urgentBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-    /* DETAILS */
     .details-card {
       background: linear-gradient(160deg, #101018, #0c0c14);
       border: 1px solid var(--border); border-radius: 18px;
@@ -183,7 +177,6 @@
       border-color: rgba(239,68,68,0.2);
     }
 
-    /* ADDRESS */
     .address-box {
       background: linear-gradient(160deg, #101018, #0c0c14);
       border: 1px solid var(--border); border-radius: 18px;
@@ -214,7 +207,6 @@
       border: 1px solid rgba(239,68,68,0.2); margin-bottom: 12px; display: none;
     }
 
-    /* SEND BUTTON */
     .send-btn-wrap { margin-bottom: 12px; }
     .send-btn {
       width: 100%; padding: 0;
@@ -270,7 +262,6 @@
 
     .loading { text-align: center; padding: 80px 20px; color: #444; font-size: 14px; }
 
-    /* HOW TO PAY MODAL */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.88);
       display: flex; align-items: flex-end; justify-content: center;
@@ -339,11 +330,11 @@
       transition: all 0.2s; font-family: inherit;
     }
     .modal-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
   </style>
 </head>
 <body>
 
-<!-- How to Pay Modal -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-header">
@@ -403,7 +394,6 @@
   </div>
 </div>
 
-<!-- Main page -->
 <div class="container">
   <div class="topbar">
     <button class="back-btn" onclick="history.back()">
@@ -416,7 +406,7 @@
     <div class="topbar-brand">
       <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
            class="topbar-pp-logo" alt="PayPal">
-      <span class="topbar-title"></span>
+      <span class="topbar-title">Invoice · Pay Valentina</span>
     </div>
 
     <button class="how-btn" onclick="openModal()">
@@ -441,7 +431,6 @@
     <div class="qr-section">
       <div class="qr-outer">
         <div id="qrcode"></div>
-        <!-- PayPal/PYUSD logo in middle -->
         <div class="qr-logo">
           <div class="qr-logo-inner">
             <span class="pyusd-p">P</span>
@@ -452,7 +441,7 @@
 
     <div class="timer-box">
       <div class="timer-label">Time Remaining</div>
-      <div class="timer-value" id="countdown">60 : 00</div>
+      <div class="timer-value" id="countdown">-- : --</div>
     </div>
 
     <div class="details-card">
@@ -472,7 +461,7 @@
 
     <div class="address-box">
       <div class="address-label">PYUSD WALLET ADDRESS (SOLANA)</div>
-      <div class="address-text" id="inv-address">Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa</div>
+      <div class="address-text" id="inv-address">Loading…</div>
       <button class="copy-btn" id="copyBtn" onclick="copyAddress()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
@@ -513,83 +502,96 @@
 </div>
 
 <script>
-  const params      = new URLSearchParams(window.location.search);
-const amountParam = params.get("amount");
-const APP         = "paypal";
+const SUPABASE_URL  = "https://qhyimqvuzzanekcqaemg.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0";
 
-const EDGE_URL  = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
-const CHECK_API = EDGE_URL + "/check-payment";
-const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
+const PAGE_CONFIG = {
+  payMethod: "paypal",
+  explorerBaseUrl: "https://solscan.io/tx/"
+};
 
-// Auto-generate unique invoice ID jodi URL e nai
-let invoiceId = params.get("id");
-if (!invoiceId) {
-  const r = () => Math.random().toString(36).substring(2, 6).toUpperCase();
-  invoiceId = "INV-" + r() + "-" + r() + r();
-  const newUrl = new URL(window.location.href);
-  newUrl.searchParams.set("id", invoiceId);
-  window.history.replaceState({}, "", newUrl.toString());
-}
+const params    = new URLSearchParams(window.location.search);
+const invoiceId = params.get("invoice_id");
 
 let invoice       = null;
 let timerInterval = null;
 let payCheckTimer = null;
 
-  async function loadInvoice() {
-    if (!invoiceId) {
-      document.getElementById("loading").textContent = "Invalid invoice link.";
-      return;
-    }
-
-    try {
-      const url = `${EDGE_URL}/get-invoice?id=${encodeURIComponent(invoiceId)}&amount=${encodeURIComponent(amountParam || "0")}&app=${APP}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("get-invoice failed");
-      invoice = await res.json();
-    } catch (e) {
-      console.log("get-invoice error, falling back", e);
-      // Fallback if Supabase invoice not found: use URL params only
-      invoice = {
-        invoice_code: invoiceId,
-        amount_usd: amountParam || 0,
-        app: APP,
-        status: "pending",
-        expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString()
-      };
-    }
-    renderInvoice();
+async function loadInvoice() {
+  if (!invoiceId) {
+    document.getElementById("loading").textContent = "Invalid invoice link.";
+    return;
   }
 
-  function renderInvoice() {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("content").style.display = "block";
-
-    const amount = Number(invoice.amount_usd || invoice.amount || amountParam || 0).toFixed(2);
-    document.getElementById("inv-amount").textContent = `$${amount}`;
-    document.getElementById("modal-amount-inline").textContent = `$${amount} PYUSD`;
-    document.getElementById("inv-code").textContent = invoice.invoice_code || invoiceId;
-    document.getElementById("inv-network").textContent = "Solana · PYUSD";
-
-    const addr = FIXED_PYUSD_ADDRESS;
-    document.getElementById("inv-address").textContent = addr;
-
-    new QRCode(document.getElementById("qrcode"), {
-      text: addr,
-      width: 200,
-      height: 200,
-      colorDark: "#000000",
-      colorLight: "#ffffff",
-      correctLevel: QRCode.CorrectLevel.H
-    });
-
-    startTimer();
-    pollPaymentStatus();
-    payCheckTimer = setInterval(pollPaymentStatus, 30000);
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/invoices?id=eq.${invoiceId}&select=*`,
+      { headers: { "apikey": SUPABASE_ANON, "Authorization": `Bearer ${SUPABASE_ANON}` } }
+    );
+    const data = await res.json();
+    invoice = data[0];
+  } catch (e) {
+    document.getElementById("loading").textContent = "Error loading invoice.";
+    return;
   }
 
-  function startTimer() {
-  const createdAt = new Date(invoice.created_at || Date.now());
-  const expiresAt = createdAt.getTime() + 60 * 60 * 1000;
+  if (!invoice) {
+    document.getElementById("loading").textContent = "Invoice not found.";
+    return;
+  }
+
+  if (invoice.pay_method !== PAGE_CONFIG.payMethod) {
+    document.getElementById("loading").textContent = "This invoice is not for PayPal.";
+    return;
+  }
+
+  renderInvoice();
+}
+
+function renderInvoice() {
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("content").style.display = "block";
+
+  const amount = Number(invoice.amount_usd || 0).toFixed(2);
+  document.getElementById("inv-amount").textContent = `$${amount}`;
+  document.getElementById("modal-amount-inline").textContent = `$${amount} PYUSD`;
+
+  document.getElementById("inv-code").textContent = invoice.id.substring(0, 8).toUpperCase();
+  document.getElementById("inv-network").textContent = `${invoice.pay_network || "Solana"} · PYUSD`;
+
+  const addr = invoice.external_address;
+  document.getElementById("inv-address").textContent = addr;
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: addr,
+    width: 200,
+    height: 200,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  if (invoice.status === "settled") {
+    setPaidUI(invoice.paid_tx_signature);
+    return;
+  }
+  if (invoice.status === "expired") {
+    setExpiredUI();
+    return;
+  }
+
+  startTimer();
+  pollPaymentStatus();
+  payCheckTimer = setInterval(pollPaymentStatus, 5000);
+}
+
+function startTimer() {
+  if (!invoice.expires_at) {
+    document.getElementById("countdown").textContent = "-- : --";
+    return;
+  }
+
+  const expiresAt = new Date(invoice.expires_at).getTime();
 
   function tick() {
     const diff = expiresAt - Date.now();
@@ -598,11 +600,7 @@ let payCheckTimer = null;
     if (diff <= 0) {
       cd.textContent = "00 : 00";
       cd.classList.add("urgent");
-      document.getElementById("expired-banner").style.display = "block";
-      document.getElementById("btn-send").disabled = true;
-      const st = document.getElementById("inv-status");
-      st.textContent = "EXPIRED";
-      st.classList.add("expired");
+      setExpiredUI();
       clearInterval(timerInterval);
       return;
     }
@@ -615,74 +613,95 @@ let payCheckTimer = null;
 
   tick();
   timerInterval = setInterval(tick, 1000);
+}
+
+function setExpiredUI() {
+  const st = document.getElementById("inv-status");
+  st.textContent = "EXPIRED";
+  st.classList.add("expired");
+  document.getElementById("expired-banner").style.display = "block";
+  document.getElementById("btn-send").disabled = true;
+}
+
+function setPaidUI(sig) {
+  const st = document.getElementById("inv-status");
+  st.textContent = "PAID";
+  st.classList.remove("expired");
+  st.style.background = "rgba(20,241,149,0.12)";
+  st.style.color = "#14F195";
+
+  document.getElementById("expired-banner").style.display = "none";
+
+  if (timerInterval) clearInterval(timerInterval);
+  if (payCheckTimer) clearInterval(payCheckTimer);
+
+  const cd = document.getElementById("countdown");
+  cd.classList.remove("urgent");
+  cd.style.color = "#14F195";
+
+  if (sig) {
+    const banner = document.getElementById("expired-banner");
+    banner.style.display = "block";
+    banner.style.color = "#14F195";
+    banner.textContent = "✅ Payment confirmed";
   }
+}
 
-  function setPaidUI() {
-    const st = document.getElementById("inv-status");
-    st.textContent = "PAID";
-    st.classList.remove("expired");
-    st.style.background = "rgba(20,241,149,0.12)";
-    st.style.color = "#14F195";
-
-    document.getElementById("expired-banner").style.display = "none";
-
-    if (timerInterval) clearInterval(timerInterval);
-    if (payCheckTimer) clearInterval(payCheckTimer);
-
-    const cd = document.getElementById("countdown");
-    cd.classList.remove("urgent");
-    cd.style.color = "#14F195";
-  }
-
-  async function pollPaymentStatus() {
-    if (!invoiceId) return;
-    try {
-      const res = await fetch(CHECK_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoice_id: invoiceId, app: APP })
-      });
-      const data = await res.json();
-      if (data.status === "paid" || (data.success && data.status === "paid")) {
-        setPaidUI();
-        if (payCheckTimer) clearInterval(payCheckTimer);
-      }
-    } catch (e) {
-      console.log("check-payment error", e);
-    }
-  }
-
-  function copyAddress() {
-    const addr = FIXED_PYUSD_ADDRESS;
-    navigator.clipboard.writeText(addr).then(() => {
-      const btn = document.getElementById("copyBtn");
-      btn.innerHTML = "✓ Copied";
-      btn.classList.add("copied");
-      setTimeout(() => {
-        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-          <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
-          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
-        </svg> Copy address`;
-        btn.classList.remove("copied");
-      }, 2500);
+async function pollPaymentStatus() {
+  if (!invoiceId) return;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/check-payment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${SUPABASE_ANON}`
+      },
+      body: JSON.stringify({ invoice_id: invoiceId })
     });
-  }
+    const data = await res.json();
 
-  // Open PayPal crypto screen (mobile‑e app, desktop‑e web)
-  function goToPayment() {
-    window.location.href = "https://www.paypal.com/myaccount/crypto";
-  }
-
-  function openModal() {
-    document.getElementById("modalOverlay").classList.add("open");
-  }
-  function closeModal(e) {
-    if (!e || e.target === document.getElementById("modalOverlay")) {
-      document.getElementById("modalOverlay").classList.remove("open");
+    if (data.status === "settled") {
+      clearInterval(payCheckTimer);
+      setPaidUI(data.paid_tx_signature || data.invoice?.paid_tx_signature || null);
+    } else if (data.status === "expired") {
+      clearInterval(payCheckTimer);
+      setExpiredUI();
     }
+  } catch (e) {
+    console.log("check-payment error", e);
   }
+}
 
-  loadInvoice();
+function copyAddress() {
+  const addr = document.getElementById("inv-address").textContent;
+  navigator.clipboard.writeText(addr).then(() => {
+    const btn = document.getElementById("copyBtn");
+    btn.innerHTML = "✓ Copied";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
+      </svg> Copy address`;
+      btn.classList.remove("copied");
+    }, 2500);
+  });
+}
+
+function goToPayment() {
+  window.location.href = "https://www.paypal.com/myaccount/crypto";
+}
+
+function openModal() {
+  document.getElementById("modalOverlay").classList.add("open");
+}
+function closeModal(e) {
+  if (!e || e.target === document.getElementById("modalOverlay")) {
+    document.getElementById("modalOverlay").classList.remove("open");
+  }
+}
+
+loadInvoice();
 </script>
 </body>
 </html>
