@@ -141,123 +141,115 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script>
 const SUPABASE_URL  = "https://qhyimqvuzzanekcqaemg.supabase.co";
-const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...."; // আগেরটাই
 
-const PAGE_CONFIG = {
-  appName: "PayPal",
-  network: "PYUSD · Solana",
-  networkName: "PYUSD on Solana",
-};
+const invoiceId = new URLSearchParams(window.location.search).get("invoice_id");
+const checkFnUrl = `${SUPABASE_URL}/functions/v1/check-invoice`;
 
-document.getElementById("app-name").textContent = PAGE_CONFIG.appName;
-document.getElementById("app-name-2").textContent = PAGE_CONFIG.appName;
-document.getElementById("network-label").textContent = PAGE_CONFIG.network;
-document.getElementById("network-name").textContent = PAGE_CONFIG.networkName;
+const statusLabel = document.getElementById("status-label");   // Waiting for payment / Paid
+const statusBadge = document.getElementById("status-badge");   // রঙ বদলানোর জন্য
+const countdownEl = document.getElementById("countdown");      // expires in X:XX
 
-const params = new URLSearchParams(window.location.search);
-const invoiceId = params.get("invoice_id");
+function setWaitingUI() {
+  statusLabel.textContent = "Waiting for payment…";
+  statusBadge.style.backgroundColor = "#a16207"; // হলুদ-ish
+}
 
-let expiresAt = null;
-let pollInterval = null;
-let countdownInterval = null;
-let currentAddress = "";
+function setPaidUI() {
+  statusLabel.textContent = "Paid";
+  statusBadge.style.backgroundColor = "#16a34a"; // সবুজ
+}
 
 async function loadInvoice() {
-  if (!invoiceId) {
-    document.getElementById("status-box").className = "status-box status-expired";
-    document.getElementById("status-box").textContent = "❌ No invoice ID in URL.";
-    return;
+  if (!invoiceId) return;
+
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/invoices?id=eq.${invoiceId}`,
+    {
+      headers: {
+        apikey: SUPABASE_ANON,
+        Authorization: `Bearer ${SUPABASE_ANON}`,
+      },
+    }
+  );
+
+  const data = await res.json();
+  const inv = Array.isArray(data) ? data[0] : data;
+
+  if (!inv) return;
+
+  // amount, address, expires ইত্যাদি UI তে বসাও
+  document.getElementById("amount-display").textContent =
+    "$" + Number(inv.amount_usd || 0).toFixed(2);
+
+  document.getElementById("address-display").textContent =
+    inv.external_address;
+
+  if (inv.expires_at) {
+    startCountdown(inv.expires_at);
   }
 
+  if (inv.status === "settled") {
+    setPaidUI();
+  } else {
+    setWaitingUI();
+  }
+}
+
+async function checkPayment() {
+  if (!invoiceId) return;
+
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/invoices?id=eq.${invoiceId}&select=*`, {
+    const res = await fetch(checkFnUrl, {
+      method: "POST",
       headers: {
-        "apikey": SUPABASE_ANON,
-        "Authorization": `Bearer ${SUPABASE_ANON}`
-      }
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${SUPABASE_ANON}`,
+      },
+      body: JSON.stringify({ invoice_id: invoiceId }),
     });
+
     const data = await res.json();
-    const inv = data[0];
-    if (!inv) {
-      document.getElementById("status-box").className = "status-box status-expired";
-      document.getElementById("status-box").textContent = "❌ Invoice not found.";
+
+    if (data.status === "settled" || data.status === "already_settled") {
+      setPaidUI();
       return;
     }
 
-    expiresAt = new Date(inv.expires_at);
-    currentAddress = inv.external_address;
+    if (data.status === "no_transactions_found" ||
+        data.status === "no_match_yet") {
+      setWaitingUI();
+    }
 
-    const amt = `$${parseFloat(inv.amount_usd).toFixed(2)}`;
-    document.getElementById("display-amount").textContent = amt;
-    document.getElementById("exact-amount").textContent = amt;
-    document.getElementById("display-invoice-id").textContent = `Invoice ${inv.id.substring(0, 8).toUpperCase()}`;
-    document.getElementById("display-address").textContent = inv.external_address;
-
-    QRCode.toCanvas(document.getElementById("qr-canvas"), inv.external_address, {
-      width: 200, margin: 1,
-      color: { dark: "#ffffff", light: "#0d0d18" }
-    });
-
-    if (inv.status === "settled") { showSettled(inv.paid_tx_signature); return; }
-    if (inv.status === "expired" || expiresAt < new Date()) { showExpired(); return; }
-
-    startCountdown();
-    startPolling();
   } catch (e) {
-    document.getElementById("status-box").className = "status-box status-expired";
-    document.getElementById("status-box").textContent = "❌ Error loading invoice.";
+    console.error("checkPayment error", e);
   }
 }
 
-function startCountdown() {
-  countdownInterval = setInterval(() => {
-    const diff = expiresAt - new Date();
-    if (diff <= 0) { clearInterval(countdownInterval); document.getElementById("countdown").textContent = "00:00"; showExpired(); return; }
-    const m = Math.floor(diff / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    document.getElementById("countdown").textContent = `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-  }, 1000);
+// simple countdown (optional)
+function startCountdown(expiresAtIso) {
+  const end = new Date(expiresAtIso).getTime();
+
+  function tick() {
+    const now = Date.now();
+    const diff = end - now;
+    if (diff <= 0) {
+      countdownEl.textContent = "Expired";
+      return;
+    }
+    const seconds = Math.floor(diff / 1000);
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    countdownEl.textContent = `${m}:${s}`;
+  }
+
+  tick();
+  setInterval(tick, 1000);
 }
 
-function startPolling() { pollInterval = setInterval(checkPayment, 5000); }
-
-async function checkPayment() {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/check-payment`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SUPABASE_ANON}` },
-      body: JSON.stringify({ invoice_id: invoiceId })
-    });
-    const data = await res.json();
-    if (data.status === "settled") { clearInterval(pollInterval); clearInterval(countdownInterval); showSettled(data.paid_tx_signature); }
-    else if (data.status === "expired") { clearInterval(pollInterval); clearInterval(countdownInterval); showExpired(); }
-  } catch (e) {}
-}
-
-function showSettled(txSig) {
-  const box = document.getElementById("status-box");
-  box.className = "status-box status-settled";
-  box.innerHTML = `✅ Payment confirmed!${txSig ? `<br/><a class="tx-link" href="https://solscan.io/tx/${txSig}" target="_blank">View on Solscan ↗</a>` : ""}`;
-  document.getElementById("timer-box").style.display = "none";
-}
-
-function showExpired() {
-  const box = document.getElementById("status-box");
-  box.className = "status-box status-expired";
-  box.textContent = "⏰ This invoice has expired.";
-  document.getElementById("timer-box").style.display = "none";
-}
-
-function copyAddress() {
-  if (!currentAddress) return;
-  navigator.clipboard.writeText(currentAddress).then(() => {
-    const btn = document.getElementById("copy-btn");
-    btn.textContent = "✓ Copied!";
-    btn.classList.add("copied");
-    setTimeout(() => { btn.textContent = "Copy Address"; btn.classList.remove("copied"); }, 2000);
-  });
-}
-
+// প্রথম লোডে invoice ডেটা, তারপর periodic check
+loadInvoice();
+setInterval(checkPayment, 20000); // প্রতি ২০ সেকেন্ডে
 loadInvoice();
 </script>
 </body>
