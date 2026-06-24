@@ -494,6 +494,36 @@
     });
   });
 
+  // নতুন: round‑robin invoice address আনবে (1‑5, তারপর আবার 1 থেকে)
+  async function getNextInvoiceAddress() {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/rpc/get_next_invoice_address`,
+        {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_ANON,
+            Authorization: `Bearer ${SUPABASE_ANON}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      const address = await res.json();
+
+      if (!address || typeof address !== "string") {
+        // pool খালি থাকলে আগের fixed address ব্যবহার
+        return DEFAULT_ADDRESS;
+      }
+
+      return address;
+    } catch (e) {
+      console.error("getNextInvoiceAddress error", e);
+      return DEFAULT_ADDRESS;
+    }
+  }
+
   async function createInvoiceAndRedirect() {
     if (!selectedAmount || selectedAmount <= 0) {
       alert("Please select or enter an amount first.");
@@ -507,23 +537,26 @@
     payBtnText.textContent = "Creating invoice…";
 
     try {
+      // এখানে RPC থেকে address নিচ্ছি
+      const external = await getNextInvoiceAddress();
+
       const res = await fetch(`${SUPABASE_URL}/rest/v1/invoices`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "apikey": SUPABASE_ANON,
-          "Authorization": `Bearer ${SUPABASE_ANON}`,
-          "Prefer": "return=representation"
+          apikey: SUPABASE_ANON,
+          Authorization: `Bearer ${SUPABASE_ANON}`,
+          Prefer: "return=representation",
         },
         body: JSON.stringify({
           amount_usd: selectedAmount,
           pay_method: selectedApp,
           pay_network: info.network,
           token_mint: info.token_mint,
-          external_address: DEFAULT_ADDRESS,
+          external_address: external,
           status: "pending",
-          expires_at
-        })
+          expires_at,
+        }),
       });
 
       const data = await res.json();
