@@ -1,496 +1,688 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pay with PayPal · Pay Valentina</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice · Pay Valentina · PayPal</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+    :root {
+      --bg: #050508;
+      --card: #101018;
+      --border: rgba(255,255,255,0.07);
+      --solana: #14F195;
+      --pp-blue: #003087;
+      --pp-light: #5BA4F5;
+      --text: #fff;
+      --dim: #555;
+      --red: #ef4444;
+      --green: #14F195;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #0a0a0a;
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 0 100px 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100dvh;
+      overflow-x: hidden;
     }
 
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 500px;
+      background: radial-gradient(ellipse, rgba(0,140,255,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .container { max-width: 420px; margin: 0 auto; padding: 12px 16px 48px; }
+
+    /* TOP BAR */
     .topbar {
-      width: 100%;
-      max-width: 480px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0 18px; gap: 10px;
     }
-    .back-btn {
-      display: flex; align-items: center; gap: 6px;
-      background: #1a1a1a; border: 1px solid #2a2a2a;
-      color: #aaa; font-size: 13px; padding: 7px 14px;
-      border-radius: 20px; cursor: pointer; text-decoration: none;
-    }
-    .back-btn:hover { background: #222; }
-    .back-btn span { font-size: 15px; }
 
-    .brand-logo {
-      display: flex; align-items: center; gap: 8px;
+    .back-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; color: #888;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; padding: 7px 12px;
+      display: flex; align-items: center; gap: 5px;
+      transition: all 0.2s; font-family: inherit;
+      flex-shrink: 0;
     }
-    .brand-logo svg { height: 22px; }
+    .back-btn:hover { color: #fff; border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); }
+
+    .topbar-brand {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .topbar-pp-logo { height: 18px; width: auto; }
+    .topbar-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e5e7eb;
+    }
 
     .how-btn {
+      background: rgba(0,112,186,0.1);
+      border: 1.5px solid rgba(0,112,186,0.35);
+      border-radius: 20px; color: #5BA4F5;
+      font-size: 11px; font-weight: 700;
+      padding: 7px 13px; cursor: pointer;
       display: flex; align-items: center; gap: 5px;
-      background: #1a2a3a; border: 1px solid #1e4060;
-      color: #4aa6e8; font-size: 13px; padding: 7px 14px;
-      border-radius: 20px; cursor: pointer; text-decoration: none;
+      transition: all 0.2s; font-family: inherit;
+      flex-shrink: 0; letter-spacing: 0.3px;
     }
-    .how-btn:hover { background: #1e3450; }
-    .how-btn span { font-size: 14px; }
+    .how-btn:hover { border-color: rgba(0,140,255,0.6); background: rgba(0,112,186,0.18); }
 
-    .card {
-      width: 100%; max-width: 480px;
-      padding: 0 16px;
-    }
-
-    .amount-section {
-      text-align: center;
-      padding: 24px 0 20px;
-    }
+    /* AMOUNT */
+    .amount-section { text-align: center; margin-bottom: 4px; }
     .amount-label {
-      font-size: 11px; color: #555;
-      text-transform: uppercase; letter-spacing: 1.2px;
-      margin-bottom: 8px;
+      font-size: 9px; color: var(--dim); letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 6px; font-weight: 600;
     }
-    .amount-value {
-      font-size: 48px; font-weight: 800; color: #fff;
-      letter-spacing: -1px;
+    .amount {
+      font-size: 48px; font-weight: 900; letter-spacing: -2px;
+      background: linear-gradient(135deg, #fff 40%, #7db8f7);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .amount-sub {
-      font-size: 13px; color: #555; margin-top: 6px;
-    }
+    .scan-hint { font-size: 11px; color: #444; margin-top: 5px; letter-spacing: 0.5px; }
 
-    .qr-container {
-      display: flex; justify-content: center;
-      margin-bottom: 28px;
+    /* QR */
+    .qr-section { display: flex; flex-direction: column; align-items: center; margin: 18px 0 16px; }
+    .qr-outer {
+      background: #fff; border-radius: 22px; padding: 14px;
+      position: relative; display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 40px rgba(0,112,186,0.25);
+      animation: qrGlow 4s ease-in-out infinite;
     }
-    .qr-wrapper {
-      background: #fff;
-      border-radius: 16px;
-      padding: 14px;
-      position: relative;
-      display: inline-flex;
+    @keyframes qrGlow {
+      0%,100% { box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 30px rgba(0,112,186,0.2); }
+      50% { box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 8px 50px rgba(0,112,186,0.45); }
     }
-    .qr-wrapper canvas { display: block; border-radius: 6px; }
+    #qrcode canvas, #qrcode img { display: block; border-radius: 4px; }
+
+    /* PayPal/PYUSD logo in middle */
     .qr-logo {
       position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 38px; height: 38px;
-      background: #fff;
-      border-radius: 50%;
-      display: flex; align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 0 3px #fff;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: #fff; border: 3px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      overflow: hidden; animation: logoPulse 2.5s ease-in-out infinite;
     }
-    .qr-logo svg { width: 26px; height: 26px; }
+    @keyframes logoPulse {
+      0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,102,204,0.4); }
+      50% { transform: scale(1.06); box-shadow: 0 0 0 5px rgba(0,102,204,0); }
+    }
+    .qr-logo-inner {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #0066CC, #0047AB);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .pyusd-p {
+      font-size: 20px; font-weight: 900; color: #fff;
+      font-family: 'Inter', sans-serif; letter-spacing: -1px;
+      position: relative; line-height: 1;
+    }
+    .pyusd-p::after {
+      content: 'P';
+      position: absolute; top: 1.5px; left: 1.5px;
+      font-size: 20px; font-weight: 900; color: rgba(255,255,255,0.35);
+      font-family: 'Inter', sans-serif;
+    }
 
-    .timer-section {
-      text-align: center;
-      margin-bottom: 24px;
+    /* TIMER */
+    .timer-box {
+      background: linear-gradient(160deg, #101018, #0c0c14);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 14px 20px; margin-bottom: 14px; text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     }
     .timer-label {
-      font-size: 11px; color: #555;
-      text-transform: uppercase; letter-spacing: 1.2px;
-      margin-bottom: 8px;
+      font-size: 9px; color: var(--dim); letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 6px; font-weight: 600;
     }
     .timer-value {
-      font-size: 40px; font-weight: 700;
-      color: #fff; letter-spacing: 4px;
+      font-family: 'Inter', monospace; font-size: 32px; font-weight: 900;
+      color: #fff; letter-spacing: 6px;
     }
-    .timer-value.urgent { color: #ef4444; }
+    .timer-value.urgent { color: var(--red); animation: urgentBlink 0.8s ease-in-out infinite; }
+    @keyframes urgentBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-    .info-rows {
-      background: #111;
-      border: 1px solid #1e1e1e;
-      border-radius: 14px;
-      overflow: hidden;
-      margin-bottom: 16px;
+    /* DETAILS */
+    .details-card {
+      background: linear-gradient(160deg, #101018, #0c0c14);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 14px 16px; margin-bottom: 14px;
     }
-    .info-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 13px 16px;
-      border-bottom: 1px solid #1a1a1a;
+    .detail-row {
+      display: flex; justify-content: space-between; align-items: center; padding: 7px 0;
     }
-    .info-row:last-child { border-bottom: none; }
-    .info-key {
-      font-size: 12px; color: #555;
-      text-transform: capitalize;
-    }
-    .info-val {
-      font-size: 13px; color: #aaa;
-      font-family: monospace;
-      text-align: right;
-    }
-    .network-pills {
-      display: flex; align-items: center; gap: 6px;
-    }
-    .pill {
-      font-size: 12px; color: #aaa;
-      background: #1a1a1a; border: 1px solid #2a2a2a;
-      border-radius: 20px; padding: 3px 10px;
-    }
-    .status-badge {
-      font-size: 11px; font-weight: 600;
-      padding: 4px 12px; border-radius: 20px;
-      letter-spacing: 0.5px;
-    }
-    .badge-pending { background: #1a1600; color: #f59e0b; }
-    .badge-settled { background: #0d1f13; color: #00c97a; }
-    .badge-expired { background: #1a0d0d; color: #ef4444; }
+    .detail-row + .detail-row { border-top: 1px solid rgba(255,255,255,0.04); }
+    .detail-label { font-size: 11px; color: #555; font-weight: 600; }
+    .detail-value { font-size: 11px; color: #ccc; font-family: monospace; font-weight: 500; }
 
-    .address-section {
-      background: #111;
-      border: 1px solid #1e1e1e;
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 16px;
+    .status-pill {
+      background: rgba(0,196,140,0.12); color: #00c48c;
+      border-radius: 999px; padding: 3px 10px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+      border: 1px solid rgba(0,196,140,0.2);
     }
-    .address-section-label {
-      font-size: 11px; color: #555;
-      text-transform: uppercase; letter-spacing: 1px;
-      margin-bottom: 10px;
+    .status-pill.expired {
+      background: rgba(239,68,68,0.12); color: var(--red);
+      border-color: rgba(239,68,68,0.2);
+    }
+
+    /* ADDRESS */
+    .address-box {
+      background: linear-gradient(160deg, #101018, #0c0c14);
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 14px 16px; margin-bottom: 16px;
+    }
+    .address-label {
+      font-size: 9px; color: #555; letter-spacing: 1.5px;
+      text-transform: uppercase; margin-bottom: 8px; font-weight: 700;
     }
     .address-text {
-      font-size: 12px; color: #888;
-      font-family: monospace;
-      word-break: break-all;
-      line-height: 1.6;
-      margin-bottom: 12px;
+      font-size: 11px; font-family: monospace; color: #666;
+      word-break: break-all; line-height: 1.6; margin-bottom: 10px;
     }
     .copy-btn {
-      width: 100%;
-      padding: 12px;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      color: #fff;
-      border-radius: 10px;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 11px;
+      border: 1.5px solid rgba(0,112,186,0.3); border-radius: 12px;
+      background: rgba(0,82,165,0.1); color: #5BA4F5;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
     }
-    .copy-btn:hover { background: #222; }
-    .copy-btn.copied {
-      background: #0d1f13; border-color: #1a4a35;
-      color: #00c97a;
+    .copy-btn:hover { border-color: rgba(0,140,255,0.5); background: rgba(0,82,165,0.18); }
+    .copy-btn.copied { border-color: rgba(0,196,140,0.4); color: #00c48c; background: rgba(0,196,140,0.08); }
+
+    .expired-banner {
+      text-align: center; color: var(--red); font-size: 13px; font-weight: 600;
+      padding: 12px; background: rgba(239,68,68,0.08); border-radius: 12px;
+      border: 1px solid rgba(239,68,68,0.2); margin-bottom: 12px; display: none;
     }
 
-    .cta-bar {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      padding: 12px 16px 24px;
-      background: linear-gradient(to top, #0a0a0a 70%, transparent);
-      display: flex; justify-content: center;
+    /* SEND BUTTON */
+    .send-btn-wrap { margin-bottom: 12px; }
+    .send-btn {
+      width: 100%; padding: 0;
+      border: 1.5px solid rgba(0,112,186,0.35);
+      border-radius: 18px;
+      background: linear-gradient(160deg, #0e1624 0%, #0a1020 100%);
+      cursor: pointer; transition: all 0.25s;
+      font-family: inherit; overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,80,180,0.15);
+      display: flex; align-items: stretch;
     }
-    .cta-btn {
-      width: 100%; max-width: 480px;
-      display: flex; align-items: center; justify-content: space-between;
-      background: #111; border: 1px solid #1e1e1e;
-      border-radius: 14px; padding: 14px 18px;
-      cursor: pointer; text-decoration: none; color: #fff;
-      transition: background 0.15s;
+    .send-btn:hover:not(:disabled) {
+      border-color: rgba(0,140,255,0.55);
+      box-shadow: 0 6px 28px rgba(0,100,220,0.3);
+      transform: translateY(-1px);
     }
-    .cta-btn:hover { background: #161616; }
-    .cta-btn.disabled {
-      pointer-events: none; opacity: 0.5;
+    .send-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
+
+    .send-btn-icon {
+      width: 54px; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,80,160,0.25); border-right: 1px solid rgba(0,112,186,0.2);
+      flex-shrink: 0;
     }
-    .cta-left {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .cta-icon {
-      width: 40px; height: 40px;
-      background: #003087;
-      border-radius: 10px;
+    .send-arrow-circle {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #1a3a6e, #003087);
       display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 12px rgba(0,112,186,0.5);
+      animation: arrowPulse 2.5s ease-in-out infinite;
     }
-    .cta-icon svg { width: 22px; height: 22px; }
-    .cta-text-top {
-      font-size: 15px; font-weight: 600; color: #fff;
-    }
-    .cta-text-bottom {
-      font-size: 12px; color: #555; margin-top: 2px;
-    }
-    .cta-arrow {
-      font-size: 20px; color: #444;
+    @keyframes arrowPulse {
+      0%,100% { box-shadow: 0 0 8px rgba(0,112,186,0.4); }
+      50% { box-shadow: 0 0 18px rgba(0,112,186,0.75); }
     }
 
-    .full-msg {
-      text-align: center;
-      padding: 20px 16px;
+    .send-btn-body {
+      flex: 1; padding: 14px 14px 14px 12px;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+      text-align: left;
     }
-    .full-msg a {
-      color: #4aa6e8; font-size: 13px;
-      text-decoration: none; display: block; margin-top: 8px;
+    .send-btn-title {
+      font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -0.2px;
     }
+    .send-btn-sub {
+      font-size: 11px; color: #5BA4F5; font-weight: 600; line-height: 1.4;
+    }
+    .send-btn-sub .dim-text { color: #334; font-weight: 600; }
+    .send-btn-sub .bright-text { color: #5BA4F5; font-weight: 700; }
+    .send-btn-arrow {
+      display: flex; align-items: center; padding-right: 14px;
+      color: #446; font-size: 16px;
+    }
+
+    .loading { text-align: center; padding: 80px 20px; color: #444; font-size: 14px; }
+
+    /* HOW TO PAY MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.88);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: #0d0d16; border-radius: 28px 28px 0 0;
+      border: 1px solid rgba(255,255,255,0.07); border-bottom: none;
+      padding: 0 0 40px; width: 100%; max-width: 420px;
+      transform: translateY(50px); transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      max-height: 90dvh; overflow-y: auto;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      position: sticky; top: 0; z-index: 2;
+      background: #0d0d16; padding: 16px 24px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .modal-handle {
+      width: 36px; height: 4px; background: #2a2a2a;
+      border-radius: 99px; margin: 0 auto 14px;
+    }
+    .modal-title-row { display: flex; align-items: center; justify-content: space-between; }
+    .modal h2 { font-size: 17px; font-weight: 900; }
+    .modal-x {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; color: #666; font-size: 14px;
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .modal-x:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+    .modal-body { padding: 20px 24px 0; }
+    .step {
+      display: flex; gap: 14px; margin-bottom: 16px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px; padding: 14px;
+      transition: all 0.2s;
+    }
+    .step:hover { border-color: rgba(0,112,186,0.25); background: rgba(0,80,160,0.06); }
+
+    .step-left { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+    .step-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(0,112,186,0.15); border: 1.5px solid rgba(0,112,186,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: #5BA4F5;
+    }
+    .step-body { flex: 1; }
+    .step-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .step-desc { font-size: 11px; color: #666; line-height: 1.6; }
+    .step-desc b { color: #999; font-weight: 700; }
+    .step-desc .highlight { color: #5BA4F5; font-weight: 700; }
+    .step-connector {
+      width: 1px; height: 12px; background: rgba(255,255,255,0.06);
+      margin: -8px auto; position: relative; z-index: 1; left: 19px;
+    }
+    .modal-close {
+      width: calc(100% - 48px); margin: 20px 24px 0;
+      padding: 14px; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;
+      background: rgba(255,255,255,0.04); color: #888;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
   </style>
 </head>
 <body>
 
-<div class="topbar">
-  <a class="back-btn" href="./index.html">
-    <span>‹</span> Back
-  </a>
+<!-- How to Pay Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-handle"></div>
+      <div class="modal-title-row">
+        <h2>💡 How to pay with PYUSD</h2>
+        <div class="modal-x" onclick="closeModal()">✕</div>
+      </div>
+    </div>
 
-  <div class="brand-logo">
-    <!-- PayPal wordmark SVG -->
-    <svg viewBox="0 0 101 32" xmlns="http://www.w3.org/2000/svg" height="22">
-      <path d="M12.237 2.8H5.877C5.43 2.8 5.047 3.12 4.98 3.563L2.334 20.116a.596.596 0 0 0 .588.684h3.012c.448 0 .83-.32.897-.763l.657-4.158c.066-.443.45-.763.896-.763h2.082c4.335 0 6.836-2.097 7.49-6.253.295-1.816.012-3.245-.84-4.244-.938-1.098-2.6-1.619-4.879-1.619zm.759 6.158c-.36 2.355-2.163 2.355-3.907 2.355h-.992l.696-4.405a.536.536 0 0 1 .53-.452h.455c1.188 0 2.31 0 2.889.677.347.405.453.998.329 1.825z" fill="#253B80"/>
-      <path d="M35.395 8.882h-3.022c-.247 0-.463.17-.53.452l-.136.869-.217-.314c-.67-.971-2.163-1.296-3.654-1.296-3.418 0-6.337 2.59-6.904 6.22-.295 1.812.124 3.543 1.147 4.751.939 1.108 2.28 1.57 3.877 1.57 2.754 0 4.282-1.77 4.282-1.77l-.138.862a.596.596 0 0 0 .587.684h2.722c.447 0 .83-.32.896-.763l1.634-10.34a.596.596 0 0 0-.544-.725zm-4.212 6.017c-.3 1.769-1.708 2.956-3.497 2.956-.9 0-1.62-.29-2.083-.838-.46-.545-.633-1.32-.488-2.183.28-1.753 1.713-2.98 3.476-2.98.882 0 1.598.292 2.068.845.472.557.659 1.337.524 2.2z" fill="#253B80"/>
-      <path d="M55.496 8.882h-3.036a.898.898 0 0 0-.742.394l-4.286 6.312-1.817-6.066a.899.899 0 0 0-.862-.64h-2.98a.538.538 0 0 0-.51.714l3.422 10.05-3.217 4.541a.538.538 0 0 0 .44.847h3.033c.293 0 .566-.147.733-.39l10.326-14.91a.538.538 0 0 0-.504-.852z" fill="#253B80"/>
-      <path d="M67.457 2.8h-6.36c-.446 0-.83.32-.896.763L57.555 20.116a.596.596 0 0 0 .588.684h3.23c.312 0 .577-.226.626-.535l.68-4.386c.065-.443.449-.763.896-.763h2.08c4.336 0 6.836-2.097 7.49-6.253.296-1.816.013-3.245-.839-4.244-.937-1.098-2.598-1.619-4.849-1.819zm.758 6.158c-.36 2.355-2.162 2.355-3.906 2.355h-.992l.697-4.405a.536.536 0 0 1 .529-.452h.455c1.188 0 2.31 0 2.888.677.348.405.453.998.329 1.825z" fill="#179BD7"/>
-      <path d="M90.614 8.882h-3.02c-.247 0-.463.17-.53.452l-.136.869-.217-.314c-.671-.971-2.163-1.296-3.655-1.296-3.417 0-6.337 2.59-6.903 6.22-.295 1.812.124 3.543 1.147 4.751.94 1.108 2.28 1.57 3.877 1.57 2.754 0 4.282-1.77 4.282-1.77l-.138.862a.596.596 0 0 0 .587.684h2.722c.448 0 .83-.32.897-.763l1.633-10.34a.595.595 0 0 0-.546-.725zm-4.21 6.017c-.3 1.769-1.71 2.956-3.498 2.956-.899 0-1.62-.29-2.082-.838-.46-.545-.634-1.32-.488-2.183.28-1.753 1.713-2.98 3.476-2.98.882 0 1.597.292 2.067.845.473.557.66 1.337.525 2.2z" fill="#179BD7"/>
-      <path d="M98.178 3.17l-2.673 17.01a.596.596 0 0 0 .588.684h2.603c.447 0 .83-.32.896-.763L102.24 3.549a.596.596 0 0 0-.587-.684h-2.914a.598.598 0 0 0-.561.305z" fill="#179BD7"/>
-    </svg>
+    <div class="modal-body">
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">1</div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Open PayPal app</div>
+          <div class="step-desc">
+            Go to <b>Finances → Crypto</b> and tap <span class="highlight">PayPal USD (PYUSD)</span>.  
+            If your <b>PYUSD balance is 0</b>, buy PYUSD using your PayPal balance, bank or card.
+          </div>
+        </div>
+      </div>
+
+      <div class="step-connector"></div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">2</div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Send PYUSD on Solana</div>
+          <div class="step-desc">
+            In the PYUSD screen choose <span class="highlight">Send</span> → <b>Send on chain</b> → pick <b>Solana</b>.  
+            Paste the wallet address from this invoice and confirm network = Solana.
+          </div>
+        </div>
+      </div>
+
+      <div class="step-connector"></div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">3</div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Enter exact amount</div>
+          <div class="step-desc">
+            Enter <span class="highlight" id="modal-amount-inline">$0.00 PYUSD</span> exactly as shown above, review fees and tap <b>Send now</b>.  
+            Solana confirmations typically take a few minutes.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="modal-close" onclick="closeModal()">Got it ✓</button>
   </div>
-
-  <a class="how-btn" href="#" onclick="return false;">
-    <span>?</span> How to pay
-  </a>
 </div>
 
-<div class="card">
-
-  <div class="amount-section">
-    <div class="amount-label">Amount Due</div>
-    <div class="amount-value" id="display-amount">$--</div>
-    <div class="amount-sub">Send PYUSD on Solana to the address below</div>
-  </div>
-
-  <div class="qr-container">
-    <div class="qr-wrapper">
-      <canvas id="qr-canvas"></canvas>
-      <div class="qr-logo">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.5 21L9.75 7.5H14.25C16.5 7.5 18 8.7 17.625 11.25C17.25 13.5 15.375 15 12.75 15H10.5L9.75 21H7.5Z" fill="#003087"/>
-          <path d="M10.875 13.5L11.625 9H14.25C15.75 9 16.5 9.75 16.125 11.25C15.75 12.75 14.625 13.5 12.75 13.5H10.875Z" fill="#179BD7"/>
-        </svg>
-      </div>
-    </div>
-  </div>
-
-  <div class="timer-section">
-    <div class="timer-label">Time Remaining</div>
-    <div class="timer-value" id="countdown">-- : --</div>
-  </div>
-
-  <div class="info-rows">
-    <div class="info-row">
-      <span class="info-key">Reference</span>
-      <span class="info-val" id="display-invoice-id">--</span>
-    </div>
-    <div class="info-row">
-      <span class="info-key">Network</span>
-      <div class="network-pills">
-        <span class="pill">Solana</span>
-        <span class="pill">PYUSD</span>
-      </div>
-    </div>
-    <div class="info-row">
-      <span class="info-key">Status</span>
-      <span class="status-badge badge-pending" id="status-badge">AWAITING PAYMENT</span>
-    </div>
-  </div>
-
-  <div class="address-section">
-    <div class="address-section-label">PYUSD Wallet Address (Solana)</div>
-    <div class="address-text" id="display-address">Loading...</div>
-    <button class="copy-btn" id="copy-btn" onclick="copyAddress()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+<!-- Main page -->
+<div class="container">
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      Copy address
+      Back
+    </button>
+
+    <div class="topbar-brand">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
+           class="topbar-pp-logo" alt="PayPal">
+      <span class="topbar-title"></span>
+    </div>
+
+    <button class="how-btn" onclick="openModal()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      How to pay
     </button>
   </div>
 
-  <div class="full-msg" id="tx-msg" style="display:none;"></div>
-</div>
+  <div id="loading" class="loading">Loading invoice…</div>
 
-<div class="cta-bar">
-  <a class="cta-btn" id="open-paypal-btn"
-     href="https://www.paypal.com/crypto" target="_blank" rel="noopener noreferrer">
-    <div class="cta-left">
-      <div class="cta-icon">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="white">
-          <path d="M7.5 21L9.75 7.5H14.25C16.5 7.5 18 8.7 17.625 11.25C17.25 13.5 15.375 15 12.75 15H10.5L9.75 21H7.5Z"/>
-        </svg>
-      </div>
-      <div>
-        <div class="cta-text-top">Open PayPal → Send PYUSD</div>
-        <div class="cta-text-bottom" id="cta-sub">Finances → Crypto → PayPal USD</div>
+  <div id="content" style="display:none">
+
+    <div class="amount-section">
+      <div class="amount-label">Amount Due</div>
+      <div class="amount" id="inv-amount">$0.00</div>
+      <div class="scan-hint">Send PYUSD on Solana to the address below</div>
+    </div>
+
+    <div class="qr-section">
+      <div class="qr-outer">
+        <div id="qrcode"></div>
+        <!-- PayPal/PYUSD logo in middle -->
+        <div class="qr-logo">
+          <div class="qr-logo-inner">
+            <span class="pyusd-p">P</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="cta-arrow">›</div>
-  </a>
+
+    <div class="timer-box">
+      <div class="timer-label">Time Remaining</div>
+      <div class="timer-value" id="countdown">60 : 00</div>
+    </div>
+
+    <div class="details-card">
+      <div class="detail-row">
+        <span class="detail-label">Reference</span>
+        <span class="detail-value" id="inv-code">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Network</span>
+        <span class="detail-value" id="inv-network">Solana · PYUSD</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="status-pill" id="inv-status">AWAITING PAYMENT</span>
+      </div>
+    </div>
+
+    <div class="address-box">
+      <div class="address-label">PYUSD WALLET ADDRESS (SOLANA)</div>
+      <div class="address-text" id="inv-address">Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyAddress()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Copy address
+      </button>
+    </div>
+
+    <div class="expired-banner" id="expired-banner">⚠️ This invoice has expired</div>
+
+    <div class="send-btn-wrap">
+      <button class="send-btn" id="btn-send" onclick="goToPayment()">
+        <div class="send-btn-icon">
+          <div class="send-arrow-circle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M22 2L11 13" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="send-btn-body">
+          <div class="send-btn-title">Open PayPal → Send PYUSD</div>
+          <div class="send-btn-sub">
+            <span class="dim-text">Use </span>
+            <span class="bright-text">Finances → Crypto → PayPal USD</span>
+          </div>
+        </div>
+        <div class="send-btn-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </button>
+    </div>
+
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script>
-const SUPABASE_URL  = "https://qhyimqvuzzanekcqaemg.supabase.co";
-const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0";
+  const params      = new URLSearchParams(window.location.search);
+const amountParam = params.get("amount");
+const APP         = "paypal";
 
-const PAGE_CONFIG = {
-  payMethod: "paypal",
-  explorerBaseUrl: "https://solscan.io/tx/"
-};
+const EDGE_URL  = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
+const CHECK_API = EDGE_URL + "/check-payment";
+const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
-const params    = new URLSearchParams(window.location.search);
-const invoiceId = params.get("invoice_id");
+// Auto-generate unique invoice ID jodi URL e nai
+let invoiceId = params.get("id");
+if (!invoiceId) {
+  const r = () => Math.random().toString(36).substring(2, 6).toUpperCase();
+  invoiceId = "INV-" + r() + "-" + r() + r();
+  const newUrl = new URL(window.location.href);
+  newUrl.searchParams.set("id", invoiceId);
+  window.history.replaceState({}, "", newUrl.toString());
+}
 
-let expiresAt = null;
-let pollInterval = null;
-let countdownInterval = null;
+let invoice       = null;
+let timerInterval = null;
+let payCheckTimer = null;
 
-async function loadInvoice() {
-  if (!invoiceId) { showError("No invoice ID."); return; }
-
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/invoices?id=eq.${invoiceId}&select=*`,
-      { headers: { "apikey": SUPABASE_ANON, "Authorization": `Bearer ${SUPABASE_ANON}` } }
-    );
-    const data = await res.json();
-    const inv = data[0];
-    if (!inv) { showError("Invoice not found."); return; }
-
-    if (inv.pay_method !== PAGE_CONFIG.payMethod) {
-      showError("This invoice is not for PayPal."); return;
+  async function loadInvoice() {
+    if (!invoiceId) {
+      document.getElementById("loading").textContent = "Invalid invoice link.";
+      return;
     }
 
-    const amount = parseFloat(inv.amount_usd);
-    document.getElementById("display-amount").textContent    = `$${amount.toFixed(2)}`;
-    document.getElementById("display-invoice-id").textContent = `INV-APL9-${inv.id.substring(0,8).toUpperCase()}`;
-    document.getElementById("display-address").textContent   = inv.external_address;
-
-    document.getElementById("open-paypal-btn").href =
-      `https://www.paypal.com/crypto/send?address=${encodeURIComponent(inv.external_address)}`;
-
-    QRCode.toCanvas(document.getElementById("qr-canvas"), inv.external_address, {
-      width: 200, margin: 1,
-      color: { dark: "#000000", light: "#ffffff" }
-    });
-
-    if (inv.status === "settled") { showSettled(inv.paid_tx_signature); return; }
-    if (inv.status === "expired") { showExpired(); return; }
-
-    expiresAt = inv.expires_at ? new Date(inv.expires_at) : null;
-    startCountdown();
-    startPolling();
-
-  } catch (e) {
-    showError("Error loading invoice.");
+    try {
+      const url = `${EDGE_URL}/get-invoice?id=${encodeURIComponent(invoiceId)}&amount=${encodeURIComponent(amountParam || "0")}&app=${APP}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("get-invoice failed");
+      invoice = await res.json();
+    } catch (e) {
+      console.log("get-invoice error, falling back", e);
+      // Fallback if Supabase invoice not found: use URL params only
+      invoice = {
+        invoice_code: invoiceId,
+        amount_usd: amountParam || 0,
+        app: APP,
+        status: "pending",
+        expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString()
+      };
+    }
+    renderInvoice();
   }
-}
 
-function startCountdown() {
-  if (!expiresAt) return;
-  countdownInterval = setInterval(() => {
-    const diff = expiresAt - Date.now();
-    const el = document.getElementById("countdown");
-    if (diff <= 0) {
-      clearInterval(countdownInterval);
-      el.textContent = "00 : 00";
-      el.classList.add("urgent");
-      showExpired(); return;
-    }
-    const m = Math.floor(diff / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    el.textContent = `${String(m).padStart(2,"0")} : ${String(s).padStart(2,"0")}`;
-    if (diff < 60000) el.classList.add("urgent");
-  }, 1000);
-}
+  function renderInvoice() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("content").style.display = "block";
 
-function startPolling() { pollInterval = setInterval(checkPayment, 5000); }
+    const amount = Number(invoice.amount_usd || invoice.amount || amountParam || 0).toFixed(2);
+    document.getElementById("inv-amount").textContent = `$${amount}`;
+    document.getElementById("modal-amount-inline").textContent = `$${amount} PYUSD`;
+    document.getElementById("inv-code").textContent = invoice.invoice_code || invoiceId;
+    document.getElementById("inv-network").textContent = "Solana · PYUSD";
 
-async function checkPayment() {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/check-payment`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SUPABASE_ANON}` },
-      body: JSON.stringify({ invoice_id: invoiceId })
+    const addr = FIXED_PYUSD_ADDRESS;
+    document.getElementById("inv-address").textContent = addr;
+
+    new QRCode(document.getElementById("qrcode"), {
+      text: addr,
+      width: 200,
+      height: 200,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
     });
-    if (res.status === 404) {
-      showError("Invoice not found."); clearAll(); return;
+
+    startTimer();
+    pollPaymentStatus();
+    payCheckTimer = setInterval(pollPaymentStatus, 30000);
+  }
+
+  function startTimer() {
+  const createdAt = new Date(invoice.created_at || Date.now());
+  const expiresAt = createdAt.getTime() + 60 * 60 * 1000;
+
+  function tick() {
+    const diff = expiresAt - Date.now();
+    const cd = document.getElementById("countdown");
+
+    if (diff <= 0) {
+      cd.textContent = "00 : 00";
+      cd.classList.add("urgent");
+      document.getElementById("expired-banner").style.display = "block";
+      document.getElementById("btn-send").disabled = true;
+      const st = document.getElementById("inv-status");
+      st.textContent = "EXPIRED";
+      st.classList.add("expired");
+      clearInterval(timerInterval);
+      return;
     }
-    const data = await res.json();
-    if (data.status === "settled") {
-      clearAll();
-      showSettled(data.paid_tx_signature || data.invoice?.paid_tx_signature || null);
-    } else if (data.status === "expired") {
-      clearAll(); showExpired();
+
+    if (diff < 5 * 60 * 1000) cd.classList.add("urgent");
+    const m = String(Math.floor(diff / 60000)).padStart(2, "0");
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+    cd.textContent = `${m} : ${s}`;
+  }
+
+  tick();
+  timerInterval = setInterval(tick, 1000);
+  }
+
+  function setPaidUI() {
+    const st = document.getElementById("inv-status");
+    st.textContent = "PAID";
+    st.classList.remove("expired");
+    st.style.background = "rgba(20,241,149,0.12)";
+    st.style.color = "#14F195";
+
+    document.getElementById("expired-banner").style.display = "none";
+
+    if (timerInterval) clearInterval(timerInterval);
+    if (payCheckTimer) clearInterval(payCheckTimer);
+
+    const cd = document.getElementById("countdown");
+    cd.classList.remove("urgent");
+    cd.style.color = "#14F195";
+  }
+
+  async function pollPaymentStatus() {
+    if (!invoiceId) return;
+    try {
+      const res = await fetch(CHECK_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoice_id: invoiceId, app: APP })
+      });
+      const data = await res.json();
+      if (data.status === "paid" || (data.success && data.status === "paid")) {
+        setPaidUI();
+        if (payCheckTimer) clearInterval(payCheckTimer);
+      }
+    } catch (e) {
+      console.log("check-payment error", e);
     }
-  } catch (_) {}
-}
+  }
 
-function showSettled(sig) {
-  setBadge("PAYMENT CONFIRMED", "badge-settled");
-  document.getElementById("countdown").textContent = "✓";
-  document.getElementById("countdown").classList.remove("urgent");
-  const msg = document.getElementById("tx-msg");
-  msg.style.display = "block";
-  msg.innerHTML = sig
-    ? `✅ Payment confirmed!<a href="${PAGE_CONFIG.explorerBaseUrl}${sig}" target="_blank" rel="noopener noreferrer">View on Solscan ↗</a>`
-    : `✅ Payment confirmed!`;
-  const cta = document.getElementById("open-paypal-btn");
-  cta.classList.add("disabled");
-  cta.querySelector(".cta-text-top").textContent = "Payment Successful";
-  cta.querySelector("#cta-sub").textContent = "Your payment has been confirmed";
-}
+  function copyAddress() {
+    const addr = FIXED_PYUSD_ADDRESS;
+    navigator.clipboard.writeText(addr).then(() => {
+      const btn = document.getElementById("copyBtn");
+      btn.innerHTML = "✓ Copied";
+      btn.classList.add("copied");
+      setTimeout(() => {
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/>
+        </svg> Copy address`;
+        btn.classList.remove("copied");
+      }, 2500);
+    });
+  }
 
-function showExpired() {
-  setBadge("EXPIRED", "badge-expired");
-  document.getElementById("countdown").textContent = "00 : 00";
-  document.getElementById("countdown").classList.add("urgent");
-  const cta = document.getElementById("open-paypal-btn");
-  cta.classList.add("disabled");
-  cta.querySelector(".cta-text-top").textContent = "Invoice Expired";
-  cta.querySelector("#cta-sub").textContent = "Please request a new payment link";
-}
+  // Open PayPal crypto screen (mobile‑e app, desktop‑e web)
+  function goToPayment() {
+    window.location.href = "https://www.paypal.com/myaccount/crypto";
+  }
 
-function showError(msg) {
-  setBadge("ERROR", "badge-expired");
-  document.getElementById("display-address").textContent = msg;
-  document.getElementById("open-paypal-btn").classList.add("disabled");
-}
+  function openModal() {
+    document.getElementById("modalOverlay").classList.add("open");
+  }
+  function closeModal(e) {
+    if (!e || e.target === document.getElementById("modalOverlay")) {
+      document.getElementById("modalOverlay").classList.remove("open");
+    }
+  }
 
-function setBadge(text, cls) {
-  const b = document.getElementById("status-badge");
-  b.textContent = text;
-  b.className = `status-badge ${cls}`;
-}
-
-function clearAll() {
-  clearInterval(pollInterval);
-  clearInterval(countdownInterval);
-}
-
-function copyAddress() {
-  const text = document.getElementById("display-address").textContent;
-  if (!text || text === "Loading...") return;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById("copy-btn");
-    btn.textContent = "✓ Copied!";
-    btn.classList.add("copied");
-    setTimeout(() => {
-      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy address`;
-      btn.classList.remove("copied");
-    }, 2000);
-  });
-}
-
-loadInvoice();
+  loadInvoice();
 </script>
 </body>
 </html>
