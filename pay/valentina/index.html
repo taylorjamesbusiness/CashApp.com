@@ -5,7 +5,6 @@
   <title>Pay Valentina</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Browser favicon / site logo: SVG inline favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='10' fill='%2316a34a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='system-ui' font-weight='700' fill='white'>V</text></svg>">
 
   <style>
@@ -44,7 +43,6 @@
       padding: 18px 14px 100px;
     }
 
-    /* ── Header ── */
     header {
       display: flex;
       align-items: center;
@@ -81,7 +79,6 @@
       font-size: 10px; background: rgba(255,255,255,0.1);
     }
 
-    /* ── Invoice card ── */
     .card {
       background: radial-gradient(circle at top, #020617, #030712);
       border-radius: 26px; padding: 18px 16px;
@@ -118,7 +115,6 @@
       color: #bbf7d0; background: rgba(34,197,94,0.08);
     }
 
-    /* ── Quick amounts ── */
     .quick-amounts {
       margin-top: 14px;
       display: grid;
@@ -147,7 +143,6 @@
       border-color: rgba(75,85,99,0.9);
     }
 
-    /* ── Custom amount ── */
     .custom-amount-row {
       margin-top: 10px;
       display: flex; align-items: center; gap: 0;
@@ -172,7 +167,6 @@
 
     .custom-amount-input::placeholder { color: #374151; }
 
-    /* ── Payment apps ── */
     .apps-section-title {
       margin: 16px 4px 10px;
       font-size: 12px; letter-spacing: 0.12em;
@@ -252,7 +246,6 @@
 
     .footer-note strong { color: #9ca3af; font-weight: 600; }
 
-    /* ── Bottom bar ── */
     .bottom-bar {
       position: fixed; left: 0; right: 0; bottom: 0;
       padding: 12px 14px 16px;
@@ -310,7 +303,6 @@
 <div class="page-wrapper">
   <div class="shell">
 
-    <!-- Header -->
     <header>
       <div class="brand">
         <div class="brand-logo">V</div>
@@ -325,7 +317,6 @@
       </div>
     </header>
 
-    <!-- Invoice card -->
     <section class="card">
       <div class="card-header">
         <div class="card-title">Invoice total</div>
@@ -337,11 +328,10 @@
       </div>
 
       <div class="invoice-tags">
-        <span class="tag tag-accent" id="invoice-id-tag">No invoice ID</span>
+        <span class="tag tag-accent" id="invoice-id-tag">No invoice ID yet</span>
         <span class="tag">Pay with Cash App, PayPal, Venmo</span>
       </div>
 
-      <!-- Quick amount buttons -->
       <div class="quick-amounts" id="quick-amounts">
         <button type="button" data-amount="50">$50</button>
         <button type="button" data-amount="100">$100</button>
@@ -349,7 +339,6 @@
         <button type="button" data-amount="200">$200</button>
       </div>
 
-      <!-- Custom amount input -->
       <div class="custom-amount-row">
         <span class="custom-amount-prefix">$</span>
         <input
@@ -363,12 +352,9 @@
       </div>
     </section>
 
-    <!-- Payment apps -->
     <div class="apps-section-title">Select payment app</div>
 
     <div class="payment-apps">
-
-      <!-- PayPal -->
       <div class="payment-card" id="card-paypal" data-app="paypal">
         <div class="payment-card-main">
           <div class="payment-card-logo paypal">P</div>
@@ -384,7 +370,6 @@
         <div class="payment-card-arrow">›</div>
       </div>
 
-      <!-- Venmo -->
       <div class="payment-card" id="card-venmo" data-app="venmo">
         <div class="payment-card-main">
           <div class="payment-card-logo venmo">V</div>
@@ -400,7 +385,6 @@
         <div class="payment-card-arrow">›</div>
       </div>
 
-      <!-- Cash App -->
       <div class="payment-card cashapp-glow" id="card-cashapp" data-app="cashapp">
         <div class="payment-card-main">
           <div class="payment-card-logo cashapp">$</div>
@@ -415,7 +399,6 @@
         </div>
         <div class="payment-card-arrow">›</div>
       </div>
-
     </div>
 
     <p class="footer-note">
@@ -425,7 +408,6 @@
     </p>
   </div>
 
-  <!-- Sticky bottom bar -->
   <div class="bottom-bar">
     <div class="bottom-inner">
       <div class="bottom-summary">
@@ -443,15 +425,20 @@
 <script>
   const BASE = "https://cpay-cash.app/pay/valentina/";
 
+  const SUPABASE_URL  = "https://qhyimqvuzzanekcqaemg.supabase.co";
+  const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0";
+
   const APPS = {
-    paypal:  { label: "PayPal",   icon: "P", invoice: BASE + "paypal-invoice.html"  },
-    venmo:   { label: "Venmo",    icon: "V", invoice: BASE + "venmo-invoice.html"   },
-    cashapp: { label: "Cash App", icon: "$", invoice: BASE + "cashapp-invoice.html" }
+    paypal:  { label: "PayPal",   icon: "P", invoice: BASE + "paypal-invoice.html",  network: "solana", token_mint: "PYUSD" },
+    venmo:   { label: "Venmo",    icon: "V", invoice: BASE + "venmo-invoice.html",   network: "solana", token_mint: "PYUSD" },
+    cashapp: { label: "Cash App", icon: "$", invoice: BASE + "cashapp-invoice.html", network: "solana", token_mint: "USDC"  }
   };
+
+  // এখানে তুমি চাইলে dynamic address mapping করতে পারো; এখন simple placeholder
+  const DEFAULT_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
   let selectedAmount = 0;
   let selectedApp    = "cashapp";
-  let invoiceId      = null;
 
   const amountDisplay  = document.getElementById("invoice-amount-display");
   const bottomAmount   = document.getElementById("bottom-amount");
@@ -463,22 +450,14 @@
   const customInput    = document.getElementById("custom-amount");
   const quickBtns      = document.querySelectorAll("#quick-amounts button[data-amount]");
 
-  /* ── Helpers ── */
-  function fmt(v) { return "$" + Number(v).toFixed(2); }
-
-  function genInvoiceId() {
-    const ts  = Date.now().toString(36).slice(-4).toUpperCase();
-    const rnd = Math.random().toString(36).slice(2,7).toUpperCase();
-    return "INV-" + ts + "-" + rnd;
-  }
+  function fmt(v) { return "$" + Number(v || 0).toFixed(2); }
 
   function setAmount(val) {
-    selectedAmount = Number(val);
+    selectedAmount = Number(val) || 0;
     amountDisplay.textContent = fmt(selectedAmount);
     bottomAmount.textContent  = fmt(selectedAmount);
-    if (!invoiceId && selectedAmount > 0) {
-      invoiceId = genInvoiceId();
-      invoiceIdTag.textContent = invoiceId;
+    if (selectedAmount <= 0) {
+      invoiceIdTag.textContent = "No invoice ID yet";
     }
   }
 
@@ -491,13 +470,11 @@
 
   function selectApp(appKey) {
     selectedApp = appKey;
-    // reset all card highlights
     document.querySelectorAll(".payment-card").forEach(c => c.classList.remove("cashapp-glow"));
     document.getElementById("card-" + appKey).classList.add("cashapp-glow");
     updateBottomBar();
   }
 
-  /* ── Quick amount buttons ── */
   quickBtns.forEach(btn => {
     btn.addEventListener("click", () => {
       quickBtns.forEach(b => b.classList.remove("active"));
@@ -507,7 +484,6 @@
     });
   });
 
-  /* ── Custom amount ── */
   customInput.addEventListener("input", () => {
     const val = parseFloat(customInput.value);
     quickBtns.forEach(b => b.classList.remove("active"));
@@ -518,32 +494,73 @@
     }
   });
 
-  /* ── Payment card click (all 3 work now) ── */
   Object.keys(APPS).forEach(appKey => {
     document.getElementById("card-" + appKey).addEventListener("click", () => {
       selectApp(appKey);
     });
   });
 
-  /* ── Pay button ── */
-  payBtn.addEventListener("click", () => {
+  async function createInvoiceAndRedirect() {
     if (!selectedAmount || selectedAmount <= 0) {
       alert("Please select or enter an amount first.");
       return;
     }
-    if (!invoiceId) {
-      invoiceId = genInvoiceId();
-      invoiceIdTag.textContent = invoiceId;
+
+    const info = APPS[selectedApp];
+
+    const expires_at = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+    payBtn.disabled = true;
+    payBtnText.textContent = "Creating invoice…";
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/invoices`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_ANON,
+          "Authorization": `Bearer ${SUPABASE_ANON}`,
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify({
+          amount_usd: selectedAmount,
+          pay_method: selectedApp,
+          pay_network: info.network,
+          token_mint: info.token_mint,
+          external_address: DEFAULT_ADDRESS,
+          status: "pending",
+          expires_at
+        })
+      });
+
+      const data = await res.json();
+      const inv  = data[0];
+
+      if (!inv || !inv.id) {
+        alert("Failed to create invoice.");
+        payBtn.disabled = false;
+        payBtnText.textContent = "Pay with " + info.label;
+        return;
+      }
+
+      invoiceIdTag.textContent = inv.id.substring(0, 8).toUpperCase();
+
+      const url = info.invoice + "?invoice_id=" + encodeURIComponent(inv.id);
+      window.location.href = url;
+
+    } catch (e) {
+      console.error(e);
+      alert("Error creating invoice. Please try again.");
+      payBtn.disabled = false;
+      payBtnText.textContent = "Pay with " + info.label;
     }
+  }
 
-    const info    = APPS[selectedApp];
-    const url     = info.invoice
-                  + "?id="     + encodeURIComponent(invoiceId)
-                  + "&amount=" + encodeURIComponent(selectedAmount.toFixed(2))
-                  + "&app="    + encodeURIComponent(selectedApp);
+  payBtn.addEventListener("click", createInvoiceAndRedirect);
 
-    window.location.href = url;
-  });
+  // initial state
+  setAmount(0);
+  updateBottomBar();
 </script>
 </body>
 </html>
