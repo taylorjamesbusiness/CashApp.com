@@ -466,6 +466,7 @@
   const amountParam = params.get("amount");
   const EDGE_URL = "https://ouecuohshzyefyxhjahn.supabase.co/functions/v1";
   const CHECK_API = EDGE_URL + "/check-payment";
+  const APP       = "venmo";
   const FIXED_PYUSD_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
   let invoiceId = params.get("id");
@@ -607,11 +608,12 @@
       const res = await fetch(CHECK_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoice_id: invoiceId })
+        body: JSON.stringify({ invoice_id: invoiceId, app: APP })
       });
       const data = await res.json();
       if (data.status === "paid" || (data.success && data.status === "paid")) {
         setPaidUI();
+        if (payCheckTimer) clearInterval(payCheckTimer);
       }
     } catch (e) {
       console.log("check-payment error", e);
