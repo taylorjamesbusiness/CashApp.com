@@ -4,55 +4,25 @@
   <meta charset="UTF-8" />
   <title>Pay Valentina</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='10' fill='%2316a34a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='system-ui' font-weight='700' fill='white'>V</text></svg>">
-
-  <!-- আপনার আগের full CSS 그대로 রেখে দিলাম -->
   <style>
     :root {
-      --bg: #02040a;
-      --bg-elevated: #060915;
-      --border-soft: #111827;
-      --text-main: #e5e7eb;
-      --text-muted: #6b7280;
-      --accent: #22c55e;
-      --accent-soft: rgba(34,197,94,0.1);
-      --radius-pill: 999px;
-      --shadow-soft: 0 22px 45px rgba(0,0,0,0.6);
+      --bg: #02040a; --bg-elevated: #060915; --border-soft: #111827;
+      --text-main: #e5e7eb; --text-muted: #6b7280;
+      --accent: #22c55e; --accent-soft: rgba(34,197,94,0.1);
+      --radius-pill: 999px; --shadow-soft: 0 22px 45px rgba(0,0,0,0.6);
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: radial-gradient(circle at top, #020617 0, #02040a 40%);
-      color: var(--text-main);
-      -webkit-font-smoothing: antialiased;
+      color: var(--text-main); -webkit-font-smoothing: antialiased;
     }
-
-    .page-wrapper {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .shell {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 18px 14px 100px;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
-    }
-
+    .page-wrapper { min-height: 100vh; display: flex; flex-direction: column; align-items: stretch; }
+    .shell { max-width: 480px; margin: 0 auto; padding: 18px 14px 100px; }
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
     .brand { display: flex; align-items: center; gap: 10px; }
-
     .brand-logo {
       width: 32px; height: 32px; border-radius: 10px;
       background: radial-gradient(circle at 25% 0, #4ade80, #16a34a);
@@ -60,11 +30,9 @@
       color: white; font-weight: 700; font-size: 20px;
       box-shadow: 0 10px 25px rgba(34,197,94,0.6);
     }
-
     .brand-text { display: flex; flex-direction: column; }
     .brand-text span:first-child { font-size: 12px; color: var(--text-muted); }
     .brand-text span:last-child  { font-size: 15px; font-weight: 700; }
-
     .status-pill {
       padding: 7px 13px; border-radius: var(--radius-pill);
       background: linear-gradient(135deg, #16a34a, #22c55e);
@@ -72,220 +40,107 @@
       color: white; font-size: 12px; font-weight: 600;
       box-shadow: 0 12px 30px rgba(22,163,74,0.7);
     }
-
     .status-pill-icon {
       width: 16px; height: 16px; border-radius: 999px;
       border: 1.5px solid rgba(255,255,255,0.6);
       display: flex; align-items: center; justify-content: center;
       font-size: 10px; background: rgba(255,255,255,0.1);
     }
-
     .card {
       background: radial-gradient(circle at top, #020617, #030712);
       border-radius: 26px; padding: 18px 16px;
-      box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(31,41,55,0.8);
-      margin-bottom: 14px;
+      box-shadow: var(--shadow-soft); border: 1px solid rgba(31,41,55,0.8); margin-bottom: 14px;
     }
-
-    .card-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .card-title {
-      font-size: 13px; letter-spacing: 0.06em;
-      text-transform: uppercase; color: var(--text-muted);
-    }
-
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .card-title { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
     .invoice-main { display: flex; align-items: baseline; gap: 8px; }
     .invoice-amount { font-size: 32px; font-weight: 700; }
-
-    .invoice-tags {
-      margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;
-    }
-
-    .tag {
-      padding: 4px 8px; border-radius: 999px; font-size: 10px;
-      border: 1px solid var(--border-soft);
-      background: rgba(15,23,42,0.8); color: var(--text-muted);
-    }
-
-    .tag-accent {
-      border-color: rgba(34,197,94,0.5);
-      color: #bbf7d0; background: rgba(34,197,94,0.08);
-    }
-
-    .quick-amounts {
-      margin-top: 14px;
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap: 8px;
-    }
-
+    .invoice-tags { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { padding: 4px 8px; border-radius: 999px; font-size: 10px; border: 1px solid var(--border-soft); background: rgba(15,23,42,0.8); color: var(--text-muted); }
+    .tag-accent { border-color: rgba(34,197,94,0.5); color: #bbf7d0; background: rgba(34,197,94,0.08); }
+    .quick-amounts { margin-top: 14px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
     .quick-amounts button {
-      border-radius: 999px;
-      border: 1px solid rgba(55,65,81,0.9);
-      background: #020617;
-      color: var(--text-muted);
-      font-size: 12px; padding: 8px 0;
-      cursor: pointer;
-      transition: all 0.16s ease-out;
+      border-radius: 999px; border: 1px solid rgba(55,65,81,0.9); background: #020617;
+      color: var(--text-muted); font-size: 12px; padding: 8px 0; cursor: pointer; transition: all 0.16s ease-out;
     }
-
     .quick-amounts button.active {
       background: radial-gradient(circle at 0 0, #22c55e, #16a34a 40%, #166534);
       color: white; border-color: rgba(34,197,94,0.8);
-      box-shadow: 0 10px 25px rgba(22,163,74,0.8);
-      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(22,163,74,0.8); transform: translateY(-1px);
     }
-
-    .quick-amounts button:hover:not(.active) {
-      border-color: rgba(75,85,99,0.9);
-    }
-
+    .quick-amounts button:hover:not(.active) { border-color: rgba(75,85,99,0.9); }
     .custom-amount-row {
-      margin-top: 10px;
-      display: flex; align-items: center; gap: 0;
-      border: 1px solid rgba(55,65,81,0.9);
-      border-radius: 999px; overflow: hidden;
-      background: #020617;
+      margin-top: 10px; display: flex; align-items: center; gap: 0;
+      border: 1px solid rgba(55,65,81,0.9); border-radius: 999px; overflow: hidden; background: #020617;
     }
-
     .custom-amount-prefix {
-      padding: 10px 14px;
-      font-size: 14px; font-weight: 600; color: var(--text-muted);
-      border-right: 1px solid rgba(55,65,81,0.7);
-      background: rgba(15,23,42,0.6);
-      user-select: none;
+      padding: 10px 14px; font-size: 14px; font-weight: 600; color: var(--text-muted);
+      border-right: 1px solid rgba(55,65,81,0.7); background: rgba(15,23,42,0.6); user-select: none;
     }
-
     .custom-amount-input {
       flex: 1; background: transparent; border: none; outline: none;
-      color: var(--text-main); font-size: 14px; padding: 10px 14px;
-      font-family: inherit;
+      color: var(--text-main); font-size: 14px; padding: 10px 14px; font-family: inherit;
     }
-
     .custom-amount-input::placeholder { color: #374151; }
-
-    .apps-section-title {
-      margin: 16px 4px 10px;
-      font-size: 12px; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--text-muted);
-    }
-
+    .apps-section-title { margin: 16px 4px 10px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
     .payment-apps { display: flex; flex-direction: column; gap: 9px; }
-
     .payment-card {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px; border-radius: 18px;
-      background: #020617;
-      border: 1px solid rgba(31,41,55,0.9);
-      cursor: pointer;
-      transition: border 0.18s, transform 0.16s, box-shadow 0.18s;
-      text-decoration: none; color: inherit;
+      padding: 10px; border-radius: 18px; background: #020617;
+      border: 1px solid rgba(31,41,55,0.9); cursor: pointer;
+      transition: border 0.18s, transform 0.16s, box-shadow 0.18s; color: inherit;
     }
-
-    .payment-card:hover {
-      border-color: rgba(55,65,81,0.9);
-      transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.5);
-    }
-
+    .payment-card:hover { border-color: rgba(55,65,81,0.9); transform: translateY(-1px); box-shadow: 0 12px 24px rgba(0,0,0,0.5); }
     .payment-card-main { display: flex; align-items: center; gap: 10px; }
-
     .payment-card-logo {
-      width: 36px; height: 36px; border-radius: 12px;
-      background: #111827;
+      width: 36px; height: 36px; border-radius: 12px; background: #111827;
       display: flex; align-items: center; justify-content: center;
       font-size: 14px; font-weight: 700; color: #f9fafb;
     }
-
     .payment-card-logo.paypal  { background: #2563eb; }
     .payment-card-logo.venmo   { background: #0284c7; }
     .payment-card-logo.cashapp { background: #16a34a; }
-
     .payment-card-text { display: flex; flex-direction: column; gap: 2px; }
     .payment-card-text-title { font-size: 14px; font-weight: 600; }
     .payment-card-text-sub   { font-size: 11px; color: var(--text-muted); }
-
     .payment-card-chip {
       display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 7px; border-radius: 999px;
-      border: 1px solid rgba(55,65,81,0.8);
-      background: #020617; font-size: 10px; color: #9ca3af;
-      margin-top: 3px; width: fit-content;
+      padding: 3px 7px; border-radius: 999px; border: 1px solid rgba(55,65,81,0.8);
+      background: #020617; font-size: 10px; color: #9ca3af; margin-top: 3px; width: fit-content;
     }
-
     .payment-card-arrow {
-      width: 26px; height: 26px; border-radius: 999px;
-      border: 1px solid rgba(75,85,99,0.8);
-      display: inline-flex; align-items: center; justify-content: center;
-      color: #9ca3af; font-size: 14px;
+      width: 26px; height: 26px; border-radius: 999px; border: 1px solid rgba(75,85,99,0.8);
+      display: inline-flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 14px;
     }
-
-    .payment-card.cashapp-glow {
-      border-color: rgba(34,197,94,0.8);
-      box-shadow: 0 14px 32px rgba(22,163,74,0.5);
-    }
-
-    .payment-card.cashapp-glow .payment-card-arrow {
-      border-color: rgba(34,197,94,0.8); color: #bbf7d0;
-      background: rgba(34,197,94,0.08);
-    }
-
-    .footer-note {
-      margin-top: 16px; font-size: 11px; line-height: 1.5;
-      color: #6b7280;
-    }
-
+    .payment-card.active-glow { border-color: rgba(34,197,94,0.8); box-shadow: 0 14px 32px rgba(22,163,74,0.5); }
+    .payment-card.active-glow .payment-card-arrow { border-color: rgba(34,197,94,0.8); color: #bbf7d0; background: rgba(34,197,94,0.08); }
+    .footer-note { margin-top: 16px; font-size: 11px; line-height: 1.5; color: #6b7280; }
     .footer-note strong { color: #9ca3af; font-weight: 600; }
-
     .bottom-bar {
-      position: fixed; left: 0; right: 0; bottom: 0;
-      padding: 12px 14px 16px;
+      position: fixed; left: 0; right: 0; bottom: 0; padding: 12px 14px 16px;
       backdrop-filter: blur(16px);
       background: linear-gradient(to top, rgba(3,7,18,0.97), rgba(3,7,18,0.7), transparent);
       border-top: 1px solid rgba(15,23,42,0.9);
     }
-
-    .bottom-inner {
-      max-width: 480px; margin: 0 auto;
-      display: flex; align-items: center; gap: 10px;
-    }
-
+    .bottom-inner { max-width: 480px; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
     .bottom-summary { flex: 1; display: flex; flex-direction: column; gap: 3px; }
     .bottom-summary-label  { font-size: 11px; color: var(--text-muted); }
     .bottom-summary-amount { font-size: 14px; font-weight: 600; }
-
     .bottom-btn {
-      flex: 0 0 auto; min-width: 175px;
-      padding: 12px 16px; border-radius: 999px;
+      flex: 0 0 auto; min-width: 175px; padding: 12px 16px; border-radius: 999px;
       background: radial-gradient(circle at 0 0, #22c55e, #16a34a 40%, #166534);
-      color: white; font-size: 13px; font-weight: 600;
-      border: none; cursor: pointer;
+      color: white; font-size: 13px; font-weight: 600; border: none; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       box-shadow: 0 16px 40px rgba(22,163,74,0.9);
       transition: transform 0.12s ease-out, box-shadow 0.12s, filter 0.12s;
     }
-
-    .bottom-btn:hover {
-      filter: brightness(1.06); transform: translateY(-1px);
-      box-shadow: 0 18px 45px rgba(22,163,74,0.95);
-    }
-
-    .bottom-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 10px 24px rgba(22,163,74,0.8);
-    }
-
+    .bottom-btn:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: 0 18px 45px rgba(22,163,74,0.95); }
+    .bottom-btn:active { transform: translateY(0); box-shadow: 0 10px 24px rgba(22,163,74,0.8); }
+    .bottom-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     .bottom-btn .icon {
-      width: 18px; height: 18px; border-radius: 7px;
-      background: rgba(15,23,42,0.9);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 11px;
+      width: 18px; height: 18px; border-radius: 7px; background: rgba(15,23,42,0.9);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 11px;
     }
-
     @media (max-width: 380px) {
       .shell { padding-inline: 10px; }
       .quick-amounts { grid-template-columns: repeat(3, minmax(0,1fr)); }
@@ -297,7 +152,6 @@
 <body>
 <div class="page-wrapper">
   <div class="shell">
-
     <header>
       <div class="brand">
         <div class="brand-logo">V</div>
@@ -317,33 +171,22 @@
         <div class="card-title">Invoice total</div>
         <div style="font-size:11px;color:#6b7280;">USD • Encrypted</div>
       </div>
-
       <div class="invoice-main">
         <div class="invoice-amount" id="invoice-amount-display">$0.00</div>
       </div>
-
       <div class="invoice-tags">
         <span class="tag tag-accent" id="invoice-id-tag">No invoice ID yet</span>
         <span class="tag">Pay with Cash App, PayPal, Venmo</span>
       </div>
-
       <div class="quick-amounts" id="quick-amounts">
         <button type="button" data-amount="50">$50</button>
         <button type="button" data-amount="100">$100</button>
         <button type="button" data-amount="150">$150</button>
         <button type="button" data-amount="200">$200</button>
       </div>
-
       <div class="custom-amount-row">
         <span class="custom-amount-prefix">$</span>
-        <input
-          class="custom-amount-input"
-          id="custom-amount"
-          type="number"
-          min="1"
-          step="0.01"
-          placeholder="Enter custom amount"
-        />
+        <input class="custom-amount-input" id="custom-amount" type="number" min="1" step="0.01" placeholder="Enter custom amount" />
       </div>
     </section>
 
@@ -358,7 +201,7 @@
             <div class="payment-card-text-sub">Send via PayPal balance or bank</div>
             <div class="payment-card-chip">
               <span style="width:6px;height:6px;border-radius:999px;background:#22c55e;display:inline-block;"></span>
-              PYUSD • Solana
+              PYUSD · Solana
             </div>
           </div>
         </div>
@@ -373,14 +216,14 @@
             <div class="payment-card-text-sub">Fast payments via Venmo app</div>
             <div class="payment-card-chip">
               <span style="width:6px;height:6px;border-radius:999px;background:#22c55e;display:inline-block;"></span>
-              PYUSD • Solana
+              PYUSD · Solana
             </div>
           </div>
         </div>
         <div class="payment-card-arrow">›</div>
       </div>
 
-      <div class="payment-card cashapp-glow" id="card-cashapp" data-app="cashapp">
+      <div class="payment-card active-glow" id="card-cashapp" data-app="cashapp">
         <div class="payment-card-main">
           <div class="payment-card-logo cashapp">$</div>
           <div class="payment-card-text">
@@ -388,7 +231,7 @@
             <div class="payment-card-text-sub">Pay with Cash App balance</div>
             <div class="payment-card-chip">
               <span style="width:6px;height:6px;border-radius:999px;background:#22c55e;display:inline-block;"></span>
-              USDC • Solana
+              USDC · Solana
             </div>
           </div>
         </div>
@@ -398,7 +241,7 @@
 
     <p class="footer-note">
       Payments are processed on <strong>Solana</strong> using stablecoins
-      (PYUSD / USDC). Each invoice is created per‑session and securely
+      (PYUSD / USDC). Each invoice is created per-session and securely
       linked to your device.
     </p>
   </div>
@@ -406,7 +249,7 @@
   <div class="bottom-bar">
     <div class="bottom-inner">
       <div class="bottom-summary">
-        <div class="bottom-summary-label" id="bottom-label">Paying with Cash App</div>
+        <div class="bottom-summary-label"  id="bottom-label">Paying with Cash App</div>
         <div class="bottom-summary-amount" id="bottom-amount">$0.00</div>
       </div>
       <button class="bottom-btn" id="pay-btn" type="button">
@@ -418,31 +261,28 @@
 </div>
 
 <script>
-  const BASE = "https://cpay-cash.app/pay/valentina/";
-
-  const SUPABASE_URL  = "https://qhyimqvuzzanekcqaemg.supabase.co";
-  const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0";
+  const BASE         = "https://cpay-cash.app/pay/valentina/";
+  const SUPABASE_URL = "https://qhyimqvuzzanekcqaemg.supabase.co";
+  const SUPABASE_ANON= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0";
 
   const APPS = {
-    paypal:  { label: "PayPal",   icon: "P", invoice: BASE + "paypal-invoice.html",  network: "solana", token_mint: "PYUSD" },
-    venmo:   { label: "Venmo",    icon: "V", invoice: BASE + "venmo-invoice.html",   network: "solana", token_mint: "PYUSD" },
-    cashapp: { label: "Cash App", icon: "$", invoice: BASE + "cashapp-invoice.html", network: "solana", token_mint: "USDC"  }
+    paypal:  { label: "PayPal",   icon: "P", page: BASE + "paypal-invoice.html"  },
+    venmo:   { label: "Venmo",    icon: "V", page: BASE + "venmo-invoice.html"   },
+    cashapp: { label: "Cash App", icon: "$", page: BASE + "cashapp-invoice.html" },
   };
-
-  const DEFAULT_ADDRESS = "Bk6HHmSVYwM3veHS9LpWq2TvGKjah9jmuBhCyrGu2TNa";
 
   let selectedAmount = 0;
   let selectedApp    = "cashapp";
 
-  const amountDisplay  = document.getElementById("invoice-amount-display");
-  const bottomAmount   = document.getElementById("bottom-amount");
-  const bottomLabel    = document.getElementById("bottom-label");
-  const invoiceIdTag   = document.getElementById("invoice-id-tag");
-  const payBtn         = document.getElementById("pay-btn");
-  const payBtnText     = document.getElementById("pay-btn-text");
-  const payBtnIcon     = document.getElementById("pay-btn-icon");
-  const customInput    = document.getElementById("custom-amount");
-  const quickBtns      = document.querySelectorAll("#quick-amounts button[data-amount]");
+  const amountDisplay = document.getElementById("invoice-amount-display");
+  const bottomAmount  = document.getElementById("bottom-amount");
+  const bottomLabel   = document.getElementById("bottom-label");
+  const invoiceIdTag  = document.getElementById("invoice-id-tag");
+  const payBtn        = document.getElementById("pay-btn");
+  const payBtnText    = document.getElementById("pay-btn-text");
+  const payBtnIcon    = document.getElementById("pay-btn-icon");
+  const customInput   = document.getElementById("custom-amount");
+  const quickBtns     = document.querySelectorAll("#quick-amounts button[data-amount]");
 
   function fmt(v) { return "$" + Number(v || 0).toFixed(2); }
 
@@ -450,22 +290,20 @@
     selectedAmount = Number(val) || 0;
     amountDisplay.textContent = fmt(selectedAmount);
     bottomAmount.textContent  = fmt(selectedAmount);
-    if (selectedAmount <= 0) {
-      invoiceIdTag.textContent = "No invoice ID yet";
-    }
+    if (selectedAmount <= 0) invoiceIdTag.textContent = "No invoice ID yet";
   }
 
   function updateBottomBar() {
     const info = APPS[selectedApp];
-    bottomLabel.textContent  = "Paying with " + info.label;
-    payBtnText.textContent   = "Pay with " + info.label;
-    payBtnIcon.textContent   = info.icon;
+    bottomLabel.textContent = "Paying with " + info.label;
+    payBtnText.textContent  = "Pay with "    + info.label;
+    payBtnIcon.textContent  = info.icon;
   }
 
   function selectApp(appKey) {
     selectedApp = appKey;
-    document.querySelectorAll(".payment-card").forEach(c => c.classList.remove("cashapp-glow"));
-    document.getElementById("card-" + appKey).classList.add("cashapp-glow");
+    document.querySelectorAll(".payment-card").forEach(c => c.classList.remove("active-glow"));
+    document.getElementById("card-" + appKey).classList.add("active-glow");
     updateBottomBar();
   }
 
@@ -481,48 +319,13 @@
   customInput.addEventListener("input", () => {
     const val = parseFloat(customInput.value);
     quickBtns.forEach(b => b.classList.remove("active"));
-    if (!isNaN(val) && val > 0) {
-      setAmount(val);
-    } else {
-      setAmount(0);
-    }
+    setAmount(!isNaN(val) && val > 0 ? val : 0);
   });
 
   Object.keys(APPS).forEach(appKey => {
-    document.getElementById("card-" + appKey).addEventListener("click", () => {
-      selectApp(appKey);
-    });
+    document.getElementById("card-" + appKey)
+      .addEventListener("click", () => selectApp(appKey));
   });
-
-  // নতুন: round‑robin invoice address আনবে (1‑5, তারপর আবার 1 থেকে)
-  async function getNextInvoiceAddress() {
-    try {
-      const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/rpc/get_next_invoice_address`,
-        {
-          method: "POST",
-          headers: {
-            apikey: SUPABASE_ANON,
-            Authorization: `Bearer ${SUPABASE_ANON}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        }
-      );
-
-      const address = await res.json();
-
-      if (!address || typeof address !== "string") {
-        // pool খালি থাকলে আগের fixed address ব্যবহার
-        return DEFAULT_ADDRESS;
-      }
-
-      return address;
-    } catch (e) {
-      console.error("getNextInvoiceAddress error", e);
-      return DEFAULT_ADDRESS;
-    }
-  }
 
   async function createInvoiceAndRedirect() {
     if (!selectedAmount || selectedAmount <= 0) {
@@ -531,59 +334,45 @@
     }
 
     const info = APPS[selectedApp];
-    const expires_at = new Date(Date.now() + 60 * 60 * 1000).toISOString();
-
     payBtn.disabled = true;
     payBtnText.textContent = "Creating invoice…";
 
     try {
-      // এখানে RPC থেকে address নিচ্ছি
-      const external = await getNextInvoiceAddress();
-
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/invoices`, {
+      // ✅ Edge function call — rotation + correct token_mint সব handle করে
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/invoice-create`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_ANON,
-          Authorization: `Bearer ${SUPABASE_ANON}`,
-          Prefer: "return=representation",
+          "Content-Type":  "application/json",
+          "Authorization": `Bearer ${SUPABASE_ANON}`,
         },
         body: JSON.stringify({
-          amount_usd: selectedAmount,
-          pay_method: selectedApp,
-          pay_network: info.network,
-          token_mint: info.token_mint,
-          external_address: external,
-          status: "pending",
-          expires_at,
+          amount_usd:  selectedAmount,
+          pay_method:  selectedApp,
         }),
       });
 
-      const data = await res.json();
-      const inv  = Array.isArray(data) ? data[0] : data;
+      const inv = await res.json();
 
-      if (!inv || !inv.id) {
-        alert("Failed to create invoice.");
+      if (!res.ok || !inv.invoice_id) {
+        console.error("Invoice create failed:", inv);
+        alert("Failed to create invoice: " + (inv.error || "Unknown error"));
         payBtn.disabled = false;
         payBtnText.textContent = "Pay with " + info.label;
         return;
       }
 
-      invoiceIdTag.textContent = inv.id.substring(0, 8).toUpperCase();
-
-      const url = info.invoice + "?invoice_id=" + encodeURIComponent(inv.id);
-      window.location.href = url;
+      invoiceIdTag.textContent = inv.invoice_id.substring(0, 8).toUpperCase();
+      window.location.href = info.page + "?invoice_id=" + encodeURIComponent(inv.invoice_id);
 
     } catch (e) {
       console.error(e);
-      alert("Error creating invoice. Please try again.");
+      alert("Network error. Please try again.");
       payBtn.disabled = false;
       payBtnText.textContent = "Pay with " + info.label;
     }
   }
 
   payBtn.addEventListener("click", createInvoiceAndRedirect);
-
   setAmount(0);
   updateBottomBar();
 </script>
