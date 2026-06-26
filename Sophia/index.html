@@ -388,25 +388,45 @@ async function goToInvoice() {
 
     const res = await fetch(`${SUPABASE_URL}/functions/v1/btcpay-webhook`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ amount, email: '', source: 'pay-cash.app', city, country })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({
+        amount,
+        email: '',
+        source: 'cpay-cash.app',
+        city,
+        country,
+        paymentType: 'lightning'   // ✅ এটা আগে ছিল না
+      })
     });
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed');
 
-    let rawCode = data.lightningCode;
-    let bolt11 = rawCode.toLowerCase().startsWith('lightning:') ? rawCode.slice(10) : rawCode;
-    let cashAppUrl = `https://cash.app/launch/lightning/${bolt11}`;
+    // ✅ lightningCode না আসলে checkoutLink fallback
+    const rawCode = data.lightningCode || data.checkoutLink || '';
+    if (!rawCode) throw new Error('No payment code received');
+
+    const bolt11 = rawCode.toLowerCase().startsWith('lightning:')
+      ? rawCode.slice(10)
+      : rawCode;
+
+    const cashAppUrl = bolt11.startsWith('lnbc') || bolt11.startsWith('lntb')
+      ? `https://cash.app/launch/lightning/${bolt11}`
+      : rawCode;  // checkoutLink হলে সরাসরি ব্যবহার
 
     sessionStorage.setItem('invoiceSession', JSON.stringify({
-      amount: data.amount,
+      amount:     data.amount,
       cashAppUrl,
-      invoiceId: data.invoiceId,
+      invoiceId:  data.invoiceId,
       bolt11,
       secondsLeft: 15 * 60
     }));
 
     window.location.href = 'pay/invoice.html';
+
   } catch(e) {
     overlay.classList.remove('visible');
     document.getElementById('payBtn').disabled = false;
