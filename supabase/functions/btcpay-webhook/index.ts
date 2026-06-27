@@ -54,8 +54,8 @@ serve(async (req: Request) => {
       const cfCity      = req.headers.get('CF-IPCity')    || payload.city    || ''
       const cfCountry   = req.headers.get('CF-IPCountry') || payload.country || ''
 
-      if (!amount || amount < 10) {
-        return new Response(JSON.stringify({ error: 'Minimum amount is $10 for USDC swap' }), {
+      if (!amount || amount < 2) {
+        return new Response(JSON.stringify({ error: 'Minimum amount is $2' }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
         })
       }
@@ -68,9 +68,15 @@ serve(async (req: Request) => {
       }
 
       // ── Step 1: BTCPay invoice create ──
-      const paymentMethods = paymentType === 'onchain'
-        ? ['BTC']
-        : ['BTC-LightningNetwork', 'BTC']
+      // lightning → Lightning only
+      // onchain  → BTC on-chain only
+      // usdc     → BTC on-chain only (Exolix needs on-chain address, bolt11 rejected)
+      let paymentMethods: string[]
+      if (paymentType === 'lightning') {
+        paymentMethods = ['BTC-LightningNetwork']
+      } else {
+        paymentMethods = ['BTC']
+      }
 
       const invoiceRes = await fetch(
         `${BTCPAY_URL}/api/v1/stores/${BTCPAY_STORE_ID}/invoices`,
@@ -115,15 +121,50 @@ serve(async (req: Request) => {
           console.log('[Payment methods]', JSON.stringify(pmData))
           for (const pm of pmData) {
             const dest = (pm.destination || '').trim()
+            const pmId = (pm.paymentMethodId || '').toUpperCase()
             if (dest.startsWith('lnbc') || dest.startsWith('lntb')) {
               lightningCode = dest
-            } else if (dest.length >= 26 && dest.length <= 62) {
+            }
+            // On-chain: paymentMethodId = 'BTC-CHAIN' or 'BTC', dest is 26-62 chars
+            if ((pmId === 'BTC-CHAIN' || pmId === 'BTC') && !dest.startsWith('lnbc') && dest.length >= 26 && dest.length <= 62) {
               btcAddress = dest
             }
           }
+          // Fallback: any non-lightning 26-62 char address
+          if (!btcAddress) {
+            for (const pm of pmData) {
+              const dest = (pm.destination || '').trim()
+              if (!dest.startsWith('lnbc') && !dest.startsWith('lntb') && dest.length >= 26 && dest.length <= 62) {
+                btcAddress = dest
+                break
+              }
+            }
+          }
+          console.log('[Addresses] lightning:', lightningCode ? lightningCode.substring(0,20) : 'none', 'btc:', btcAddress || 'none')
         }
       } catch (pmErr) {
         console.error('[Payment methods error]', pmErr)
+      }
+
+      // If USDC and still no BTC address, try creating a separate BTC-only sub-request
+      // by fetching the store's onchain wallet address directly
+      if (paymentType === 'usdc' && !btcAddress) {
+        try {
+          const walletRes = await fetch(
+            `${BTCPAY_URL}/api/v1/stores/${BTCPAY_STORE_ID}/payment-methods/BTC/wallet/address`,
+            { method: 'POST', headers: { 'Authorization': `token ${btcpayApiKey}`, 'Content-Type': 'application/json' }, body: '{}' }
+          )
+          if (walletRes.ok) {
+            const walletData = await walletRes.json()
+            btcAddress = walletData.address || ''
+            console.log('[BTC wallet address fallback]', btcAddress)
+          } else {
+            const t = await walletRes.text()
+            console.error('[BTC wallet address error]', t)
+          }
+        } catch(we) {
+          console.error('[BTC wallet fetch error]', we)
+        }
       }
 
       // ── Step 3: USDC → Exolix API directly ──
@@ -131,16 +172,18 @@ serve(async (req: Request) => {
       let exolixSwapId = ''
 
       if (paymentType === 'usdc') {
-        // withdrawal address = lightning invoice (Exolix pays out via Lightning)
-        const withdrawalAddr = lightningCode || btcAddress
-        const withdrawalNetwork = lightningCode ? 'LIGHTNING' : 'BTC'
+        // Exolix minimum swap: ~$49 USD. Warn if below.
+        if (amount < 49) console.warn('[USDC] Amount', amount, 'may be below Exolix minimum (~$49)')
+        // Exolix requires an amount-less withdrawal address.
+        // Lightning bolt11 has a fixed amount → Exolix rejects it.
+        // Solution: use BTC on-chain address as withdrawal → Exolix sends BTC on-chain → BTCPay settles invoice.
+        const withdrawalAddr = btcAddress
 
         if (!withdrawalAddr) {
-          console.error('[USDC] No withdrawal address from BTCPay')
+          console.error('[USDC] No BTC on-chain address from BTCPay')
         } else {
           try {
-            // Exolix API: create exchange
-            // USDC (SOL) → BTC (Lightning)
+            // Exolix API: USDC (SOL) → BTC (on-chain)
             const exolixRes = await fetch(`${EXOLIX_API}/transactions`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -148,8 +191,8 @@ serve(async (req: Request) => {
                 coinFrom: 'USDC',
                 networkFrom: 'SOL',
                 coinTo: 'BTC',
-                networkTo: withdrawalNetwork,
-                amount: amount,        // USD amount = USDC amount (1:1)
+                networkTo: 'BTC',
+                amount: amount,          // USDC amount (1 USDC ≈ 1 USD)
                 withdrawalAddress: withdrawalAddr,
                 rateType: 'float',
               })
