@@ -370,7 +370,7 @@ function toggleQuick() {
 async function goToInvoice() {
   const amount = getNumericValue();
   if (!amount || amount < 10) {
-    alert('Please enter an amount (min $2)');
+    alert('Please enter an amount (min $10)');
     return;
   }
   const overlay = document.getElementById('loadingOverlay');
