@@ -453,10 +453,15 @@ async function submitPayment() {
       session.payCode    = data.btcAddress || data.payCode || '';
       session.cashAppUrl = session.payCode ? `bitcoin:${session.payCode}?amount=${data.amount}` : data.checkoutLink;
     } else {
-      // USDC: Exolix gives a swap address in BTCPay
-      // payCode = usdcAddress (the Exolix swap deposit address) OR checkoutLink
-      session.payCode    = data.usdcAddress || data.payCode || '';
-      session.cashAppUrl = data.checkoutLink || ''; // BTCPay checkout for USDC
+      // USDC: Exolix gives a Solana deposit address via payment-methods API
+      const usdcAddr = data.usdcAddress || '';
+      session.payCode = usdcAddr;
+      // solana: URI for Cash App QR scan (Cash App supports solana: URI)
+      // If address found, build solana URI; otherwise fall back to checkoutLink
+      session.cashAppUrl = usdcAddr
+        ? `solana:${usdcAddr}?spl-token=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&amount=${data.amount}`
+        : (data.checkoutLink || '');
+      session.checkoutLink = data.checkoutLink || '';
     }
 
     sessionStorage.setItem('inv', JSON.stringify(session));
@@ -509,9 +514,10 @@ function renderStep2(s) {
     scanTip.textContent          = 'Scan QR or copy address below';
 
     // Show address
-    document.getElementById('usdcAddrDisplay').textContent = payCode || '(loading from BTCPay…)';
+    const addrEl = document.getElementById('usdcAddrDisplay');
+    addrEl.textContent = payCode || '(waiting for address…)';
 
-    // QR code for USDC address
+    // QR code for USDC address — QR encodes the raw Solana address
     document.getElementById('qrcodeUsdc').innerHTML = '';
     if (payCode) {
       new QRCode(document.getElementById('qrcodeUsdc'), {
@@ -519,13 +525,21 @@ function renderStep2(s) {
         colorDark: '#000', colorLight: '#fff',
         correctLevel: QRCode.CorrectLevel.M
       });
-      document.getElementById('qrLinkUsdc').href = checkoutLink || '#';
     }
+    // QR link goes nowhere (no BTCPay) — just visual
+    document.getElementById('qrLinkUsdc').href = '#';
+    document.getElementById('qrLinkUsdc').onclick = (e) => e.preventDefault();
 
-    // "Open BTCPay" button — opens the Exolix USDC page on BTCPay
-    payNowBtn.href        = checkoutLink || '#';
+    // "Open Cash App" button — tries to open Cash App with pre-filled send
+    // Cash App supports cashapp:// deep link for crypto send
+    const cashAppDeepLink = payCode
+      ? `https://cash.app/$cashtag?amount=${amount}&currency=USDC`
+      : '#';
+    payNowBtn.href          = cashAppDeepLink;
+    payNowBtn.target        = '_blank';
     payNowBtn.style.display = 'flex';
-    payNowTxt.textContent = '$ Open in Cash App / BTCPay';
+    payNowBtn.style.background = 'linear-gradient(135deg,#00D632,#00a040)';
+    payNowTxt.innerHTML     = '<span style="font-size:18px;font-weight:900;">$</span> Open Cash App';
 
     copySmallBtn.textContent = 'Copy USDC Address';
     currentPayCode = payCode;
