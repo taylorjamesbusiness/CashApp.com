@@ -99,16 +99,15 @@ tr:hover td{background:rgba(255,255,255,.02)}
 #toast{position:fixed;bottom:24px;right:24px;background:#111;border:1px solid rgba(0,214,50,.3);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:600;color:#00D632;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s}
 #toast.show{transform:translateY(0);opacity:1}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<!-- Login Screen -->
 <div id="loginScreen">
 <div class="login-card">
 <div class="login-logo">$</div>
 <div class="login-title">Admin Panel</div>
 <div class="login-sub">Pay Valentina · Dashboard</div>
-<!-- 💡 ইমেইল ফিল্ড যুক্ত করা হয়েছে -->
 <input type="email" id="emInput" class="login-input" placeholder="Admin Email" value="admin@valentina.com">
 <input type="password" id="pwInput" class="login-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
 <button class="login-btn" onclick="doLogin()" id="loginBtn">Login →</button>
@@ -197,10 +196,8 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div id="toast"></div>
 
 <script>
-// 💡 URL এবং ANON Key আপডেট করা হয়েছে
 const SB_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
 const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
-const BTCPAY = 'https://btcpay805858.lndyn.com/stores/7tUk4vx8Ej74ETGsbujMPiSKTkisZZawFYfHwkEUqyUj';
 
 let allPayments = [], allWithdrawals = [];
 let filtered = [];
@@ -208,7 +205,6 @@ let curPage = 1;
 const PER_PAGE = 25;
 let curTab = 'payments';
 
-// ── Login via Supabase Auth (Secured) ──
 async function doLogin(){
     const email = document.getElementById('emInput').value.trim();
     const pw = document.getElementById('pwInput').value;
@@ -253,7 +249,6 @@ window.addEventListener('DOMContentLoaded',()=>{
     }
 });
 
-// ── Supabase fetch (Secured with Bearer Token) ──
 async function sbFetch(table, select='*', filters=''){
     const token = sessionStorage.getItem('vadmin_token') || ANON;
     const res = await fetch(`${SB_URL}/rest/v1/${table}?select=${select}${filters}&order=created_at.desc`,{
@@ -264,7 +259,6 @@ async function sbFetch(table, select='*', filters=''){
     return data;
 }
 
-// ── Load all data ──
 async function loadAll(){
     document.getElementById('updatedTxt').textContent = 'Loading…';
     try{
@@ -273,7 +267,6 @@ async function loadAll(){
             sbFetch('withdrawals')
         ]);
         
-        // 💡 60 মিনিট পার হলে ডাটাবেস আপডেট না হলেও প্যানেলে Expired দেখানোর ডাইনামিক ফিক্স
         const now = new Date();
         allPayments = Array.isArray(pays) ? pays.map(p => {
             if(p.status === 'new') {
@@ -293,7 +286,6 @@ async function loadAll(){
     }
 }
 
-// ── Stats ──
 function calcStats(){
     const settled = allPayments.filter(p=>p.status==='settled');
     const total = settled.reduce((s,p)=>s+parseFloat(p.amount||0),0);
@@ -308,7 +300,7 @@ function calcStats(){
     document.getElementById('statPending').textContent = pending;
     document.getElementById('statCount').textContent = allPayments.length;
     document.getElementById('statExpired').textContent = expired+' expired';
-    // Balance
+    
     const totalWd = allWithdrawals.reduce((s,w)=>s+parseFloat(w.amount||0),0);
     const balance = total - totalWd;
     document.getElementById('balanceVal').textContent = '$'+balance.toFixed(2);
@@ -330,7 +322,6 @@ function isThisMonth(dateStr){
     return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth();
 }
 
-// ── Filters ──
 function applyFilter(){
     const st=document.getElementById('fStatus').value;
     const mt=document.getElementById('fMethod').value;
@@ -355,7 +346,6 @@ function clearFilters(){
     applyFilter();
 }
 
-// ── Payments Table ──
 function renderTable(){
     const total=filtered.length;
     document.getElementById('payCount').textContent=total+' records';
@@ -392,7 +382,6 @@ function renderTable(){
     }
     document.getElementById('payTable').innerHTML=rows;
     
-    // Pagination
     const pages=Math.ceil(total/PER_PAGE);
     let pag='';
     if(pages > 1){
@@ -405,7 +394,6 @@ function renderTable(){
 }
 function goPage(p){curPage=p;renderTable();}
 
-// ── Withdrawals Table ──
 function renderWithdrawals(){
     const wds=allWithdrawals;
     document.getElementById('wdCount').textContent=wds.length+' records';
@@ -426,7 +414,6 @@ function renderWithdrawals(){
     document.getElementById('wdTable').innerHTML=rows;
 }
 
-// ── Record Withdrawal (Secured) ──
 async function recordWithdrawal(){
     const amt=parseFloat(document.getElementById('wdAmt').value);
     const note=document.getElementById('wdNote').value.trim();
@@ -449,7 +436,6 @@ async function recordWithdrawal(){
     }catch(e){showToast('Error: '+e.message,'error');}
 }
 
-// ── Tab switch ──
 function showTab(t){
     curTab=t;
     document.querySelectorAll('.ptab').forEach((el,i)=>el.classList.toggle('active',['payments','withdrawals'][i]===t));
@@ -457,7 +443,6 @@ function showTab(t){
     document.getElementById('tab-withdrawals').style.display=t==='withdrawals'?'block':'none';
 }
 
-// ── Toast ──
 function showToast(msg,type='success'){
     const t=document.getElementById('toast');
     t.textContent=msg;
@@ -467,7 +452,18 @@ function showToast(msg,type='success'){
     setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// Auto refresh every 30s
+// 💡 </span> বাগটি এখানে ფিক্স করা হয়েছে
+function startCountdownTick() {
+  setInterval(() => {
+    document.querySelectorAll('[data-expire]').forEach(el => {
+      const diff = Math.max(0, Math.floor((new Date(el.dataset.expire) - new Date()) / 1000));
+      const m = Math.floor(diff/60), s = diff%60;
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if (diff === 0) el.className = el.classList.contains('m-expire') ? 'm-expired-pill' : 'expired-text';
+    });
+  }, 1000);
+}
+
 setInterval(()=>{if(sessionStorage.getItem('vadmin_token'))loadAll();},30000);
 </script>
 </body>
