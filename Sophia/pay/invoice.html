@@ -25,7 +25,6 @@ body {
   overflow-x:hidden;
 }
 
-/* Subtle bg glow */
 body::before {
   content:'';
   position:fixed;inset:0;
@@ -51,7 +50,6 @@ body::before {
 }
 .drag-bar { width:36px;height:4px;background:rgba(255,255,255,0.1);border-radius:4px;margin:12px auto 0; }
 
-/* ====== STEP 2 ====== */
 #step2 { padding:0; }
 
 .s2-topbar {
@@ -87,7 +85,6 @@ body::before {
 .amount-val { font-size:44px;font-weight:800;color:#fff;margin:6px 0 2px;letter-spacing:-1px; }
 .scan-tip { font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:18px; }
 
-/* QR */
 .qr-outer {
   display:flex;align-items:center;justify-content:center;
   margin-bottom:18px;
@@ -116,7 +113,6 @@ body::before {
   font-size:17px;font-weight:900;color:#fff;
 }
 
-/* Invoice box */
 .invoice-box {
   background:#111;
   border:1px solid rgba(0,200,81,0.12);
@@ -142,9 +138,8 @@ body::before {
   display:flex;align-items:center;gap:5px;
 }
 .status-dot { width:6px;height:6px;background:#00C851;border-radius:50%;animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+@canvas pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
 
-/* Pay Now */
 .pay-now-btn {
   width:100%;
   background:linear-gradient(135deg,#00C851,#00a040);
@@ -167,7 +162,6 @@ body::before {
 }
 .copy-btn:hover { color:rgba(255,255,255,0.6); }
 
-/* ====== STEP 3 ====== */
 #step3 { display:none;padding:48px 24px;text-align:center; }
 .success-icon {
   width:80px;height:80px;
@@ -197,7 +191,6 @@ body::before {
 }
 .reload-btn:hover { transform:translateY(-2px); }
 
-/* ====== HOW TO PAY MODAL ====== */
 #howToPayModal {
   display:none;
   position:fixed;inset:0;
@@ -261,7 +254,6 @@ body::before {
 <div class="card">
   <div class="drag-bar"></div>
 
-  <!-- STEP 2: Invoice -->
   <div id="step2">
     <div class="s2-topbar">
       <button class="back-btn" onclick="goBack()">
@@ -296,8 +288,7 @@ body::before {
 
       <div class="invoice-box">
         <div class="timer-label">Time Remaining</div>
-        <div class="timer-val" id="timer">15 : 00</div>
-        <div class="inv-row">
+        <div class="timer-val" id="timer">60 : 00</div> <div class="inv-row">
           <span class="inv-key">Reference</span>
           <span class="inv-val" id="invoiceIdDisplay">Loading…</span>
         </div>
@@ -319,7 +310,6 @@ body::before {
     </div>
   </div>
 
-  <!-- STEP 3: Success -->
   <div id="step3">
     <div class="success-icon">
       <svg width="44" height="44" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24">
@@ -333,7 +323,6 @@ body::before {
   </div>
 </div>
 
-<!-- How to Pay Modal -->
 <div id="howToPayModal">
   <div class="modal-inner">
     <div class="modal-head">
@@ -386,7 +375,6 @@ body::before {
 </div>
 
 <script>
-// আপডেট করা প্রজেক্ট ইউআরএল এবং এনন কী
 const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
 
