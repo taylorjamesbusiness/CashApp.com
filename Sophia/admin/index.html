@@ -224,6 +224,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 </head>
 <body>
 
+<!-- ═══ LOGIN PAGE ═══ -->
 <div class="login-wrap" id="loginPage">
   <div class="login-card">
     <div class="login-logo">$</div>
@@ -239,6 +240,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
   </div>
 </div>
 
+<!-- ═══ DASHBOARD ═══ -->
 <div id="dashboard">
   <div class="topbar">
     <div class="topbar-logo">
@@ -256,6 +258,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 
   <div class="content">
 
+    <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card green">
         <div class="stat-icon">💰</div>
@@ -283,11 +286,13 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
       </div>
     </div>
 
+    <!-- TABS -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('payments', this)">💳 Payments</button>
       <button class="tab-btn" onclick="switchTab('withdrawals', this)">💸 Withdrawals</button>
     </div>
 
+    <!-- PAYMENTS TAB -->
     <div id="tab-payments">
       <div class="filter-bar">
         <select class="filter-select" id="filterStatus" onchange="resetAndRenderPayments()">
@@ -306,6 +311,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
         <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
       </div>
       <div class="table-wrap">
+        <!-- DESKTOP TABLE -->
         <div class="table-scroll">
           <table>
             <thead>
@@ -325,14 +331,17 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
             </tbody>
           </table>
         </div>
+        <!-- MOBILE CARDS -->
         <div class="mobile-list" id="mobilePaymentsList">
           <div class="m-empty">Loading...</div>
         </div>
+        <!-- PAGINATION UI -->
         <div class="pagination" id="payPagination"></div>
         <div class="table-footer" id="paymentsFooter"></div>
       </div>
     </div>
 
+    <!-- WITHDRAWALS TAB -->
     <div id="tab-withdrawals" style="display:none;">
       <div class="filter-bar">
         <select class="filter-select" id="filterWStatus" onchange="renderWithdrawals()">
@@ -343,6 +352,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
         <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
       </div>
       <div class="table-wrap">
+        <!-- DESKTOP -->
         <div class="table-scroll">
           <table>
             <thead>
@@ -360,6 +370,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
             </tbody>
           </table>
         </div>
+        <!-- MOBILE -->
         <div class="mobile-list" id="mobileWithdrawalsList">
           <div class="m-empty">Loading...</div>
         </div>
@@ -376,7 +387,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'Sophia@2026';
-const INVOICE_EXPIRE_MINUTES = 60; // Fixed from 15 to 60 Minutes
+const INVOICE_EXPIRE_MINUTES = 60; 
 const PER_PAGE = 25;
 
 let allPayments = [];
@@ -654,7 +665,6 @@ async function markCompleted(id) {
   await loadData();
 }
 
-/tab switcher/
 function switchTab(tab, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -667,7 +677,7 @@ function startCountdownTick() {
     document.querySelectorAll('[data-expire]').forEach(el => {
       const diff = Math.max(0, Math.floor((new Date(el.dataset.expire) - new Date()) / 1000));
       const m = Math.floor(diff/60), s = diff%60;
-      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</span>`;
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
       if (diff === 0) el.className = el.classList.contains('m-expire') ? 'm-expired-pill' : 'expired-text';
     });
   }, 1000);
