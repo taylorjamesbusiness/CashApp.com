@@ -3,310 +3,468 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pay Valentina</title>
-
-<meta property="og:title" content="Pay Valentina">
-<meta property="og:description" content="Securely pay via Bitcoin Lightning, On-Chain, or Cash App (USDC).">
-<meta property="og:image" content="https://cryptologos.cc/logos/bitcoin-btc-logo.png">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2300D632'/><text x='50' y='72' font-size='65' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>$</text></svg>">
+<title>Admin Panel – Pay Valentina</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';"></script>
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;font-family:'DM Sans',sans-serif;background:#000}body{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:16px;overflow-x:hidden}.bg{position:fixed;inset:0;z-index:0;overflow:hidden}.bg-glow{position:absolute;width:100%;height:100%;background:radial-gradient(circle at 20% 50%,rgba(0,214,50,.07) 0%,transparent 55%),radial-gradient(circle at 80% 80%,rgba(0,214,50,.05) 0%,transparent 55%)}.dot{position:absolute;width:3px;height:3px;background:rgba(0,214,50,.4);border-radius:50%;animation:rise 20s infinite}.dot:nth-child(1){left:10%;top:70%}.dot:nth-child(2){left:25%;top:80%;animation-delay:3s}.dot:nth-child(3){left:60%;top:60%;animation-delay:6s}.dot:nth-child(4){left:80%;top:75%;animation-delay:9s}@keyframes rise{0%,100%{transform:translateY(0);opacity:0}10%{opacity:.6}90%{opacity:.6}100%{transform:translateY(-120px);opacity:0}}.card{position:relative;z-index:10;width:100%;max-width:400px;background:#0a0a0a;border-radius:24px;border:1px solid rgba(0,214,50,.2);box-shadow:0 12px 48px rgba(0,0,0,.8);overflow:hidden;animation:slideUp .5s cubic-bezier(.34,1.56,.64,1) forwards}@keyframes slideUp{from{transform:translateY(32px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}.drag-bar{width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:4px;margin:12px auto 0}#step1{padding:20px 20px 26px}.title-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}.title{font-size:22px;font-weight:800;color:#fff}.check-icon{width:22px;height:22px;background:linear-gradient(135deg,#00D632,#00a040);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(0,214,50,.5);animation:pulse 2s ease infinite}.check-icon svg{width:12px;height:12px}@keyframes pulse{0%,100%{box-shadow:0 0 8px rgba(0,214,50,.4)}50%{box-shadow:0 0 18px rgba(0,214,50,.8)}}.secure{display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.3);color:#00D632;font-size:11px;font-weight:600;padding:5px 14px;border-radius:999px;width:fit-content;margin:0 auto 14px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;background:#0f0f0f;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:5px;margin-bottom:12px}.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:10px;background:transparent;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;color:rgba(255,255,255,.35)}.tab .ti{font-size:17px;line-height:1}.tab .tl{font-size:10px;font-weight:700;letter-spacing:.02em}.tab .ts{font-size:9px;color:rgba(255,255,255,.22)}.tab.active{background:#111;border:1px solid rgba(0,214,50,.35);color:#fff;box-shadow:0 2px 12px rgba(0,214,50,.12)}.tab.active .ts{color:rgba(0,214,50,.8)}.info{border-radius:11px;padding:9px 12px;margin-bottom:12px;font-size:12px;display:flex;align-items:flex-start;gap:7px;line-height:1.5}.info.lightning{background:rgba(255,196,0,.07);border:1px solid rgba(255,196,0,.2);color:rgba(255,196,0,.85)}.info.onchain{background:rgba(247,147,26,.07);border:1px solid rgba(247,147,26,.2);color:rgba(247,147,26,.85)}.info.usdc{background:rgba(0,214,50,.07);border:1px solid rgba(0,214,50,.25);color:rgba(100,230,140,.9)}.amt-box{background:#111;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:13px}.amt-label{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.4);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:11px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:7px}.ab{border:1.5px solid rgba(255,255,255,.1);background:#1a1a1a;color:#fff;border-radius:11px;padding:10px 0;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}.ab:hover{background:#222;border-color:rgba(0,214,50,.4)}.ab.sel{border-color:#00D632;background:linear-gradient(135deg,#00D632,#00a040);color:#fff;box-shadow:0 4px 14px rgba(0,214,50,.4)}.more-btn{width:100%;background:rgba(0,214,50,.08);border:1.5px solid rgba(0,214,50,.25);color:#00D632;border-radius:11px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;margin-bottom:8px;font-family:'DM Sans',sans-serif;transition:all .2s}.more-btn:hover{background:rgba(0,214,50,.14)}.custom-wrap{position:relative}.custom-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.35);font-size:14px;font-weight:700}.custom-input{width:100%;background:#1a1a1a;border:1.5px solid rgba(255,255,255,.1);border-radius:11px;padding:10px 13px 10px 30px;font-size:14px;color:#fff;outline:none;font-family:'DM Sans',sans-serif;transition:all .2s}.custom-input::placeholder{color:rgba(255,255,255,.22)}.custom-input:focus{border-color:#00D632;box-shadow:0 0 0 3px rgba(0,214,50,.12)}.pay-btn{width:100%;background:linear-gradient(135deg,#00D632,#00a040);color:#fff;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 22px rgba(0,214,50,.3);transition:all .3s;font-family:'DM Sans',sans-serif}.pay-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,214,50,.45)}.pay-btn:disabled{opacity:.55;transform:none;cursor:not-allowed}.powered{text-align:center;padding:11px 0 2px;color:rgba(255,255,255,.22);font-size:11px;display:flex;align-items:center;justify-content:center;gap:5px}#step2{display:none}.s2-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 0}.back-btn{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.65);padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}.how-btn{display:flex;align-items:center;gap:5px;background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.3);color:#00D632;padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}.s2-body{padding:14px 18px 22px;text-align:center}.method-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;margin-bottom:6px}.method-badge.lightning{background:rgba(255,196,0,.1);border:1px solid rgba(255,196,0,.25);color:#ffc400}.method-badge.onchain{background:rgba(247,147,26,.1);border:1px solid rgba(247,147,26,.25);color:#f7931a}.method-badge.usdc{background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.3);color:#00D632}.amt-due-label{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing Club;.1em;font-weight:600}.amt-due{font-size:40px;font-weight:800;color:#fff;margin:5px 0}.scan-tip{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:14px;transition:all .3s}.qr-wrap{background:#fff;border-radius:18px;padding:12px;display:inline-block;box-shadow:0 6px 28px rgba(0,0,0,.6);position:relative;margin-bottom:14px;cursor:pointer;transition:all .3s}.qr-wrap:hover{transform:scale(1.02)}.qr-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:4px;border-radius:9px}.qr-logo{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff}.cashapp-section{background:#0d1a0f;border:1px solid rgba(0,214,50,.25);border-radius:14px;padding:14px;margin-bottom:14px;text-align:left}.cashapp-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}.cashapp-logo{width:28px;height:28px;background:#00D632;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;flex-shrink:0}.cashapp-title{font-size:13px;font-weight:700;color:#fff}.cashapp-sub{font-size:11px;color:rgba(255,255,255,.4)}.usdc-amount-badge{background:rgba(0,214,50,.12);border:1px solid rgba(0,214,50,.3);border-radius:9px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:rgba(255,255,255,.7);line-height:1.5}.usdc-amount-badge strong{color:#00D632;font-size:15px}.addr-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}.addr-box{background:#0a0a0a;border:1px solid rgba(0,214,50,.2);border-radius:9px;padding:9px 12px;font-size:11px;color:#7dd8a0;font-family:monospace;word-break:break-all;line-height:1.6;margin-bottom:10px}.copy-addr-btn{width:100%;background:rgba(0,214,50,.12);border:1.5px solid rgba(0,214,50,.3);color:#00D632;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}.copy-addr-btn:hover{background:rgba(0,214,50,.2)}.usdc-warn{background:rgba(255,80,60,.07);border:1px solid rgba(255,80,60,.2);border-radius:9px;padding:9px 11px;font-size:11px;color:rgba(255,130,110,.85);line-height:1.5;margin-top:10px}.inv-box{background:#111;border:1px solid rgba(0,214,50,.12);border-radius:14px;padding:14px;margin-bottom:14px;text-align:left}.timer-lbl{color:#00D632;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing Club;.15em;text-align:center}.timer-val{font-size:26px;font-weight:800;color:#fff;text-align:center;letter-spacing:.1em;margin:5px 0 13px}.timer-val.urgent{color:#ff4444;animation:blink .8s ease infinite}@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}.inv-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px}.inv-row:last-of-type{border-bottom:none}.inv-k{color:rgba(255,255,255,.38);font-weight:600}.status-badge{background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.3);color:#00D632;padding:3px 11px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;display:flex;align-items:center;gap:4px;transition:all .3s}.sdot{width:5px;height:5px;background:currentColor;border-radius:50%;animation:pulse 2s infinite}.pay-now-btn{width:100%;background:linear-gradient(135deg,#00D632,#00a040);color:#fff;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 5px 18px rgba(0,214,50,.28);text-decoration:none;font-family:'DM Sans',sans-serif;transition:all .3s}.pay-now-btn:hover{transform:translateY(-2px)}.copy-btn-small{width:100%;margin-top:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);border-radius:12px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}.copy-btn-small:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(0,214,50,.4)}#step3{display:none;padding:40px 22px;text-align:center}@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}.success-icon{width:78px;height:78px;background:linear-gradient(135deg,#00D632,#00a040);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 0 40px rgba(0,214,50,.5);animation:pop .6s cubic-bezier(.34,1.56,.64,1) forwards}.success-title{font-size:23px;font-weight:800;color:#fff;margin-bottom:5px}.success-sub{color:rgba(255,255,255,.45);font-size:14px;margin-bottom:8px}.success-amt{font-size:38px;font-weight:800;color:#00D632;margin-bottom:22px}.reload-btn{width:100%;background:linear-gradient(135deg,#00D632,#00a040);color:#fff;border:none;border-radius:13px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:18px}.modal-inner{width:100%;max-width:360px;background:#0a0a0a;border:1px solid rgba(0,214,50,.2);border-radius:20px;padding:22px;max-height:90vh;overflow-y:auto}.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.modal-title{font-size:15px;font-weight:800;color:#fff}.modal-close{background:rgba(255,255,255,.07);border:none;color:rgba(255,255,255,.55);width:28px;height:28px;border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}.modal-ok{width:100%;margin-top:18px;background:linear-gradient(135deg,#00D632,#00a040);color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}.ms{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}.ms-num{min-width:28px;height:28px;background:linear-gradient(135deg,#00D632,#00a040);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff}.ms-t{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}.ms-s{font-size:11px;color:rgba(255,255,255,.45)}.warn-box{background:rgba(255,80,60,.08);border:1px solid rgba(255,80,60,.22);border-radius:8px;padding:9px 11px;font-size:11px;color:rgba(255,130,110,.9);line-height:1.5;margin-top:10px}@media(max-width:430px){.card{max-width:100%;border-radius:22px 22px 0 0}.amt-due{font-size:34px}}
-#toast{position:fixed;top:20px;left:50%;transform:translate(-50%, -20px);background:#1a1a1a;border:1px solid rgba(255,80,80,.4);border-radius:12px;padding:12px 20px;font-size:13px;font-weight:600;color:#ff6b6b;z-index:999;opacity:0;pointer-events:none;transition:all .3s ease;box-shadow:0 8px 30px rgba(0,0,0,0.8);}
-#toast.show{transform:translate(-50%, 0);opacity:1;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#111}::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:#0a0a0a;display:flex;align-items:center;justify-content:center;z-index:100}
+.login-card{background:#111;border:1px solid rgba(0,214,50,.2);border-radius:20px;padding:36px;width:100%;max-width:340px;text-align:center}
+.login-logo{width:52px;height:52px;background:linear-gradient(135deg,#00D632,#00a040);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;margin:0 auto 16px}
+.login-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.login-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:24px}
+.login-input{width:100%;background:#1a1a1a;border:1.5px solid rgba(255,255,255,.1);border-radius:11px;padding:12px 16px;font-size:14px;color:#fff;outline:none;font-family:'DM Sans',sans-serif;margin-bottom:12px}
+.login-input:focus{border-color:#00D632}
+.login-btn{width:100%;background:linear-gradient(135deg,#00D632,#00a040);color:#fff;border:none;border-radius:11px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.login-err{color:#ff6b6b;font-size:12px;margin-top:8px;display:none}
+/* LAYOUT */
+#app{display:none}
+.topbar{background:#111;border-bottom:1px solid rgba(255,255,255,.07);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-logo{width:34px;height:34px;background:linear-gradient(135deg,#00D632,#00a040);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff}
+.topbar-title{font-size:16px;font-weight:800}
+.topbar-sub{font-size:11px;color:rgba(255,255,255,.35)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.updated-txt{font-size:11px;color:rgba(255,255,255,.3)}
+.logout-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.refresh-btn{background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.3);color:#00D632;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* TABS */
+.page-tabs{display:flex;gap:0;background:#111;border-bottom:1px solid rgba(255,255,255,.07)}
+.ptab{padding:12px 20px;font-size:13px;font-weight:600;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.ptab.active{color:#00D632;border-bottom-color:#00D632}
+/* CONTENT */
+.content{padding:20px;max-width:1200px;margin:0 auto}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+@media(min-width:640px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:#111;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px}
+.stat-icon{font-size:24px;margin-bottom:8px}
+.stat-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.stat-val{font-size:26px;font-weight:800;color:#fff}
+.stat-val.green{color:#00D632}
+.stat-val.yellow{color:#ffc400}
+.stat-sub{font-size:11px;color:rgba(255,255,255,.3);margin-top:3px}
+/* BALANCE SECTION */
+.balance-section{background:#111;border:1px solid rgba(0,214,50,.2);border-radius:16px;padding:18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.balance-left{display:flex;flex-direction:column;gap:4px}
+.balance-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em}
+.balance-val{font-size:32px;font-weight:800;color:#00D632}
+.balance-breakdown{font-size:11px;color:rgba(255,255,255,.35)}
+.withdraw-form{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wd-input-wrap{position:relative}
+.wd-dollar{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);font-size:14px;font-weight:700}
+.wd-input{background:#1a1a1a;border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px 10px 28px;font-size:14px;color:#fff;width:130px;outline:none;font-family:'DM Sans',sans-serif}
+.wd-input:focus{border-color:#00D632}
+.wd-note{background:#1a1a1a;border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px;font-size:13px;color:#fff;width:160px;outline:none;font-family:'DM Sans',sans-serif}
+.wd-note:focus{border-color:#00D632}
+.wd-btn{background:linear-gradient(135deg,#00D632,#00a040);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+/* FILTERS */
+.filters{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filter-select{background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:8px 12px;font-size:12px;color:#fff;outline:none;font-family:'DM Sans',sans-serif;cursor:pointer}
+.search-input{background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:8px 12px;font-size:12px;color:#fff;outline:none;font-family:'DM Sans',sans-serif;flex:1;min-width:150px}
+.search-input::placeholder{color:rgba(255,255,255,.25)}
+.filter-btn{background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.3);color:#00D632;border-radius:9px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* TABLE */
+.table-wrap{background:#111;border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden}
+.table-header{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
+.table-title{font-size:14px;font-weight:700}
+.table-count{font-size:12px;color:rgba(255,255,255,.35)}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap}
+td{padding:12px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;white-space:nowrap}
+.badge.settled{background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.25);color:#00D632}
+.badge.new{background:rgba(255,196,0,.1);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+.badge.expired{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4)}
+.bdot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.method-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px}
+.method-pill.lightning{background:rgba(255,196,0,.1);color:#ffc400}
+.method-pill.onchain{background:rgba(247,147,26,.1);color:#f7931a}
+.method-pill.usdc{background:rgba(0,214,50,.1);color:#00D632}
+.inv-link{color:rgba(100,180,255,.8);font-size:11px;font-family:monospace;text-decoration:none}
+.inv-link:hover{color:#fff}
+.loc-tag{font-size:11px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:3px}
+.empty{text-align:center;padding:40px;color:rgba(255,255,255,.25);font-size:14px}
+.loading{text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px}
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px}
+.page-btn{background:#1a1a1a;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);width:34px;height:34px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center}
+.page-btn.active{background:linear-gradient(135deg,#00D632,#00a040);border-color:transparent;color:#fff}
+.page-btn:disabled{opacity:.3;cursor:not-allowed}
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:#111;border:1px solid rgba(0,214,50,.3);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:600;color:#00D632;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s}
+#toast.show{transform:translateY(0);opacity:1}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="bg"><div class="bg-glow"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-<div class="card">
-  <div class="drag-bar"></div>
-  <div id="step1">
-    <div class="title-row"><div class="title">Pay Valentina</div><div class="check-icon"><svg fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div></div>
-    <div class="secure"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>Secure Payment</div>
-    <div class="tabs">
-      <button class="tab active" id="tab-lightning" onclick="selM('lightning')"><span class="ti">⚡</span><span class="tl">Lightning</span><span class="ts">Instant</span></button>
-      <button class="tab" id="tab-onchain" onclick="selM('onchain')"><span class="ti">₿</span><span class="tl">On-Chain</span><span class="ts">~10 min</span></button>
-      <button class="tab" id="tab-usdc" onclick="selM('usdc')"><span class="ti" style="font-size:15px">$</span><span class="tl">Cash App</span><span class="ts">USDC·SOL</span></button>
-    </div>
-    <div class="info lightning" id="info-lightning">⚡ Instant via Bitcoin Lightning. Open in Cash App or any Lightning wallet.</div>
-    <div class="info onchain" id="info-onchain" style="display:none">₿ Standard Bitcoin. ~10–60 min. Any Bitcoin wallet.</div>
-    <div class="info usdc" id="info-usdc" style="display:none">$ Send USDC from Cash App via <strong>Solana Network</strong>. Min $50.</div>
-    <div class="amt-box">
-      <div class="amt-label"><svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/></svg>Select Amount</div>
-      <div class="grid3"><button class="ab sel" onclick="selA(this,10)">$10</button><button class="ab" onclick="selA(this,15)">$15</button><button class="ab" onclick="selA(this,20)">$20</button></div>
-      <button class="more-btn" id="moreToggle" onclick="toggleMore()">Show more <span id="moreArrow">▾</span></button>
-      <div id="moreAmts" style="display:none">
-        <div class="grid3"><button class="ab" onclick="selA(this,25)">$25</button><button class="ab" onclick="selA(this,50)">$50</button><button class="ab" onclick="selA(this,75)">$75</button></div>
-        <div class="grid3" style="margin-top:7px"><button class="ab" onclick="selA(this,100)">$100</button><button class="ab" onclick="selA(this,150)">$150</button><button class="ab" onclick="selA(this,200)">$200</button></div>
-        <div class="grid3" style="margin-top:7px;margin-bottom:7px"><button class="ab" onclick="selA(this,255)">$250</button><button class="ab" onclick="selA(this,300)">$300</button><button class="ab" style="visibility:hidden"></button></div>
-      </div>
-      <div class="custom-wrap"><span class="custom-icon">$</span><input type="number" id="ci" class="custom-input" placeholder="Custom amount" min="2" max="2000" oninput="onC(this)"></div>
-    </div>
-    <button class="pay-btn" id="payBtn" onclick="submit()"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg><span id="payBtnText">Pay Now →</span></button>
-    <div class="powered"><span style="width:13px;height:13px;border:1.5px solid rgba(255,255,255,.15);border-radius:50%;display:inline-block"></span>Powered by <strong>BTCPay Server</strong></div>
-  </div>
 
-  <div id="step2">
-    <div class="s2-topbar">
-      <button class="back-btn" onclick="goBack()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>Back</button>
-      <button class="how-btn" onclick="openModal()"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>How to Pay</button>
-    </div>
-    <div class="s2-body">
-      <span class="method-badge" id="s2badge">⚡ Lightning</span>
-      <div class="amt-due-label">Amount Due</div>
-      <div class="amt-due">$<span id="displayAmt">0.00</span></div>
-      <div class="scan-tip" id="scanTip">Scan or tap to pay</div>
-      <div id="qrSection">
-        <a id="qrLink" href="#" target="_blank"><div class="qr-wrap"><div id="qrcode"></div><div class="qr-overlay"><div class="qr-logo" id="qrLogo" style="background:#00D632">$</div></div></div></a>
-      </div>
-      <div id="cashappSection" style="display:none">
-        <a id="qrLinkU" href="#" onclick="return false"><div class="qr-wrap"><div id="qrcodeU"></div><div class="qr-overlay"><div class="qr-logo" style="background:#00D632;font-size:20px;width:38px;height:38px;border-radius:9px">$</div></div></div></a>
-        <div class="cashapp-section">
-          <div class="cashapp-header"><div class="cashapp-logo">$</div><div><div class="cashapp-title">Send USDC via Cash App</div><div class="cashapp-sub">Solana Network</div></div></div>
-          <div class="usdc-amount-badge">Send exactly <strong id="usdcAmtDisp">— USDC</strong></div>
-          <div class="addr-label">USDC (Solana) Deposit Address</div>
-          <div class="addr-box" id="usdcAddr">—</div>
-          <button class="copy-addr-btn" id="copyAddrBtn" onclick="copyAddr()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Copy USDC Address</button>
-          <div class="usdc-warn">⚠️ <strong>Solana network only.</strong> Wrong network = permanent loss of funds.</div>
-        </div>
-      </div>
-      <div class="inv-box">
-        <div class="timer-lbl">Time Remaining</div>
-        <div class="timer-val" id="timer">60 : 00</div>
-        <div class="inv-row"><span class="inv-k">Reference</span><span style="font-weight:700;font-size:12px;color:#fff" id="invId">—</span></div>
-        <div class="inv-row"><span class="inv-k">Method</span><span style="font-weight:700;font-size:13px;color:#fff" id="methDisp">—</span></div>
-        <div class="inv-row"><span class="inv-k">Status</span><span class="status-badge" id="statusBadge"><span class="sdot"></span>Awaiting Payment</span></div>
-      </div>
-      <a id="payNowBtn" href="#" target="_blank" class="pay-now-btn"><span id="payNowTxt">Open in Cash App</span></a>
-      <button class="copy-btn-small" id="copySmallBtn" onclick="copySmall()"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg><span id="copySmallBtnTxt">Copy Invoice</span></button>
-    </div>
-  </div>
-
-  <div id="step3">
-    <div class="success-icon"><svg width="42" height="42" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
-    <div class="success-title">Payment Received!</div>
-    <div class="success-sub">Thank you for your payment</div>
-    <div class="success-amt" id="successAmt">$0.00</div>
-    <button class="reload-btn" onclick="clearSessionAndReload()">Make Another Payment</button>
-  </div>
+<div id="loginScreen">
+<div class="login-card">
+<div class="login-logo">$</div>
+<div class="login-title">Admin Panel</div>
+<div class="login-sub">Pay Valentina · Dashboard</div>
+<input type="email" id="emInput" class="login-input" placeholder="Admin Email" value="admin@valentina.com">
+<input type="password" id="pwInput" class="login-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+<button class="login-btn" onclick="doLogin()" id="loginBtn">Login →</button>
+<div class="login-err" id="loginErr">Invalid email or password</div>
+</div>
 </div>
 
-<div id="modal"><div class="modal-inner"><div class="modal-header"><div class="modal-title" id="modalTitle">How to Pay</div><button class="modal-close" onclick="closeModal()">×</button></div><div id="modalContent"></div><button class="modal-ok" onclick="closeModal()">Got it!</button></div></div>
+<div id="app">
+<div class="topbar">
+<div class="topbar-left">
+<div class="topbar-logo">$</div>
+<div><div class="topbar-title">Admin Panel</div><div class="topbar-sub" id="sophia">Valentina</div></div>
+</div>
+<div class="topbar-right">
+<span class="updated-txt" id="updatedTxt"></span>
+<button class="refresh-btn" onclick="loadAll()">⟳ Refresh</button>
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+</div>
+<div class="page-tabs">
+<div class="ptab active" onclick="showTab('payments')">💳 Payments</div>
+<div class="ptab" onclick="showTab('withdrawals')">💸 Withdrawals</div>
+</div>
+<div class="content">
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Total Settled</div><div class="stat-val green" id="statTotal">$0</div><div class="stat-sub" id="statTotalCount">0 payments</div></div>
+<div class="stat-card"><div class="stat-icon">📅</div><div class="stat-label">Today's Earnings</div><div class="stat-val green" id="statToday">$0</div><div class="stat-sub" id="statTodayCount">0 today</div></div>
+<div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-label">Pending</div><div class="stat-val yellow" id="statPending">0</div><div class="stat-sub">Awaiting payment</div></div>
+<div class="stat-card"><div class="stat-icon">📊</div><div class="stat-label">Total Payments</div><div class="stat-val" id="statCount">0</div><div class="stat-sub" id="statExpired" style="color:#ff6b6b"></div></div>
+</div>
+<div class="balance-section">
+<div class="balance-left">
+<div class="balance-label">Available Balance</div>
+<div class="balance-val" id="balanceVal">$0.00</div>
+<div class="balance-breakdown" id="balanceBreak">Total settled − Total withdrawn</div>
+</div>
+<div class="withdraw-form">
+<div class="wd-input-wrap"><span class="wd-dollar">$</span><input type="number" id="wdAmt" class="wd-input" placeholder="Amount" min="0.01" step="0.01"></div>
+<input type="text" id="wdNote" class="wd-note" placeholder="Note (optional)">
+<button class="wd-btn" onclick="recordWithdrawal()">Record Withdrawal</button>
+</div>
+</div>
+<div id="tab-payments">
+<div class="filters">
+<select class="filter-select" id="fStatus" onchange="applyFilter()">
+<option value="">All Status</option>
+<option value="settled">Settled</option>
+<option value="new">Pending</option>
+<option value="expired">Expired</option>
+</select>
+<select class="filter-select" id="fMethod" onchange="applyFilter()">
+<option value="">All Methods</option>
+<option value="lightning">Lightning</option>
+<option value="onchain">On-Chain</option>
+<option value="usdc">USDC</option>
+</select>
+<select class="filter-select" id="fDate" onchange="applyFilter()">
+<option value="">All Time</option>
+<option value="today">Today</option>
+<option value="week">This Week</option>
+<option value="month">This Month</option>
+</select>
+<input type="text" id="fSearch" class="search-input" placeholder="🔍 Search invoice ID…" oninput="applyFilter()">
+<button class="filter-btn" onclick="clearFilters()">Clear</button>
+</div>
+<div class="table-wrap">
+<div class="table-header"><div class="table-title">Payment History</div><div class="table-count" id="payCount">—</div></div>
+<div style="overflow-x:auto"><table>
+<thead><tr><th>Invoice ID</th><th>Amount</th><th>Method</th><th>Status</th><th>Location</th><th>Date</th><th>Track</th></tr></thead>
+<tbody id="payTable"><tr><td colspan="7" class="loading">Loading…</td></tr></tbody>
+</table></div>
+<div class="pagination" id="payPag"></div>
+</div>
+</div>
+<div id="tab-withdrawals" style="display:none">
+<div class="table-wrap">
+<div class="table-header"><div class="table-title">Withdrawal History</div><div class="table-count" id="wdCount">—</div></div>
+<div style="overflow-x:auto"><table>
+<thead><tr><th>Date</th><th>Amount</th><th>Note</th></tr></thead>
+<tbody id="wdTable"><tr><td colspan="3" class="loading">Loading…</td></tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
 <div id="toast"></div>
 
 <script>
-const EFN='https://qhyimqvuzzanekcqaemg.supabase.co/functions/v1/btcpay-webhook';
-let M='lightning',A=10,tIv,pIv,payCode='',invId_='',curA=0;
+const SB_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+let allPayments = [], allWithdrawals = [];
+let filtered = [];
+let curPage = 1;
+const PER_PAGE = 25;
+let curTab = 'payments';
 
-function selM(m){M=m;['lightning','onchain','usdc'].forEach(id=>{document.getElementById('tab-'+id).classList.toggle('active',id===m);const el=document.getElementById('info-'+id);if(el)el.style.display=id===m?'flex':'none';});const ci=document.getElementById('ci');if(m==='usdc'){ci.min=50;ci.placeholder='Custom amount (min $50)';if(A<50)A=50;}else{ci.min=2;ci.placeholder='Custom amount';}}
-function selA(btn,a){A=a;document.querySelectorAll('.ab').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');document.getElementById('ci').value='';}
-function toggleMore(){const el=document.getElementById('moreAmts');const o=el.style.display==='none';el.style.display=o?'block':'none';document.getElementById('moreArrow').textContent=o?'▴':'▾';document.getElementById('moreToggle').childNodes[0].textContent=o?'Show less ':'Show more ';}
-function onC(inp){const v=parseFloat(inp.value);if(v){A=v;document.querySelectorAll('.ab').forEach(b=>b.classList.remove('sel'));}}
-
-async function submit(){
-  const min=M==='usdc'?50:2;
-  if(!A||A<min){showToast('Minimum amount is $'+min);return;}
-  const btn=document.getElementById('payBtn'),txt=document.getElementById('payBtnText');
-  btn.disabled=true;txt.textContent='Generating…';
-  try{
-    const res=await fetch(EFN,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({amount:A,paymentType:M,source:'cpay-cash.app',email:'',city:'',country:''})});
-    const data=await res.json();
-    if(!res.ok||data.error)throw new Error(data.error||'Failed');
-    invId_=data.invoiceId;curA=data.amount;
+async function doLogin(){
+    const email = document.getElementById('emInput').value.trim();
+    const pw = document.getElementById('pwInput').value;
+    const btn = document.getElementById('loginBtn');
     
-    // Save State for Refresh Persistence
-    saveSession(data, 60*60);
-    render2(data);
-  }catch(e){showToast('Error: '+e.message);}
-  finally{btn.disabled=false;txt.textContent='Pay Now →';}
-}
-
-function saveSession(data, sLeft) {
-  sessionStorage.setItem('val_invoice_session', JSON.stringify({
-    data,
-    M,
-    A,
-    secondsLeft: sLeft,
-    savedAt: Date.now()
-  }));
-}
-
-function render2(data, timeOverride){
-  const sLeft = timeOverride !== undefined ? timeOverride : 60*60;
-  
-  document.getElementById('step1').style.display='none';
-  document.getElementById('step2').style.display='block';
-  document.getElementById('displayAmt').textContent=parseFloat(data.amount).toFixed(2);
-  document.getElementById('invId').textContent=(data.invoiceId||'').substring(0,14)+'…';
-  
-  document.getElementById('scanTip').style.color = 'rgba(255,255,255,.35)';
-  const statusBadge = document.getElementById('statusBadge');
-  statusBadge.innerHTML = '<span class="sdot"></span>Awaiting Payment';
-  statusBadge.style.color = '#00D632';
-  statusBadge.style.borderColor = 'rgba(0,214,50,.3)';
-  statusBadge.style.background = 'rgba(0,214,50,.1)';
-  document.querySelectorAll('.qr-wrap').forEach(el => el.style.opacity = '1');
-  document.getElementById('payNowBtn').style.display = 'flex';
-  
-  const badge=document.getElementById('s2badge'),md=document.getElementById('methDisp');
-  const qs=document.getElementById('qrSection'),cs=document.getElementById('cashappSection');
-  const pn=document.getElementById('payNowBtn'),pt=document.getElementById('payNowTxt'),csb=document.getElementById('copySmallBtnTxt');
-  document.getElementById('qrcode').innerHTML='';document.getElementById('qrcodeU').innerHTML='';
-
-  if(M==='usdc'){
-    badge.className='method-badge usdc';badge.textContent='$ Cash App · USDC';
-    md.textContent='Cash App (USDC-SOL)';
-    qs.style.display='none';cs.style.display='block';
-    document.getElementById('scanTip').textContent='Scan QR or copy address below';
-    const addr=data.usdcAddress||'';const ua=data.usdcAmountNeeded||'?';
-    document.getElementById('usdcAddr').textContent=addr||'(generating…)';
-    document.getElementById('usdcAmtDisp').textContent=ua+' USDC';
-    payCode=addr;
-    if(addr && typeof QRCode !== 'undefined') new QRCode(document.getElementById('qrcodeU'),{text:addr,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
-    pn.href='https://cash.app';pn.target='_blank';
-    pt.innerHTML='<span style="font-size:18px;font-weight:900;margin-right:4px">$</span>Open Cash App';
-    csb.textContent='Copy USDC Address';
-  }else if(M==='onchain'){
-    badge.className='method-badge onchain';badge.textContent='₿ On-Chain BTC';
-    md.textContent='Bitcoin On-Chain';
-    qs.style.display='block';cs.style.display='none';
-    document.getElementById('scanTip').textContent='Scan or tap to open Bitcoin wallet';
-    const addr=data.btcAddress||'';payCode=addr;
-    const uri=addr?`bitcoin:${addr}`:'';
-    if(addr && typeof QRCode !== 'undefined') new QRCode(document.getElementById('qrcode'),{text:uri||addr,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
-    const lg=document.getElementById('qrLogo');lg.textContent='₿';lg.style.background='#f7931a';
-    document.getElementById('qrLink').href=uri||'#';
-    pn.href=uri||'#';pn.target='_blank';pt.textContent='₿ Open Bitcoin Wallet';
-    csb.textContent='Copy BTC On-Chain Address';
-  }else{
-    badge.className='method-badge lightning';badge.textContent='⚡ Lightning';
-    md.textContent='Bitcoin Lightning';
-    qs.style.display='block';cs.style.display='none';
-    document.getElementById('scanTip').textContent='Scan or tap to open your Lightning wallet';
-    const bolt=data.lightningCode||'';payCode=bolt;
-    if(bolt && typeof QRCode !== 'undefined') new QRCode(document.getElementById('qrcode'),{text:bolt,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});
-    const lg=document.getElementById('qrLogo');lg.textContent='$';lg.style.background='#00D632';
-    const lnl=bolt?`lightning:${bolt}`:'#';
-    document.getElementById('qrLink').href=lnl;
-    pn.href=lnl;pn.target='_blank';pt.textContent='⚡ Open in Cash App';
-    csb.textContent='Copy BTC Lightning Address';
-  }
-  startTimer(sLeft);clearInterval(pIv);startPoll(data.invoiceId,data.amount);
-}
-
-function markExpired() {
-  document.getElementById('scanTip').textContent = 'Invoice Expired. Please refresh to try again.';
-  document.getElementById('scanTip').style.color = '#ff6b6b';
-  const badge = document.getElementById('statusBadge');
-  badge.innerHTML = 'Expired';
-  badge.style.color = '#ff6b6b';
-  badge.style.borderColor = 'rgba(255,107,107,.3)';
-  badge.style.background = 'rgba(255,107,107,.1)';
-  document.querySelectorAll('.qr-wrap').forEach(el => el.style.opacity = '0.2');
-  document.getElementById('payNowBtn').style.display = 'none';
-  sessionStorage.removeItem('val_invoice_session');
-}
-
-function startTimer(s){clearInterval(tIv);let t=s;const el=document.getElementById('timer');
-  tIv=setInterval(()=>{
-    if(t<=0){
-      clearInterval(tIv);
-      el.textContent='00 : 00';
-      el.classList.add('urgent');
-      markExpired();
-      return;
-    }
-    const m=Math.floor(t/60),sc=t%60;el.textContent=String(m).padStart(2,'0')+' : '+String(sc).padStart(2,'0');
-    if(t<=300)el.classList.add('urgent');else el.classList.remove('urgent');
+    if(!email || !pw) return;
+    btn.textContent = 'Verifying...';
     
-    if(t % 5 === 0) {
-      const session = JSON.parse(sessionStorage.getItem('val_invoice_session') || '{}');
-      if(session.data) {
-        session.secondsLeft = t;
-        session.savedAt = Date.now();
-        sessionStorage.setItem('val_invoice_session', JSON.stringify(session));
-      }
+    try {
+        const res = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`, {
+            method: 'POST',
+            headers: { 'apikey': ANON, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: pw })
+        });
+        const data = await res.json();
+        
+        if(data.access_token){
+            sessionStorage.setItem('vadmin_token', data.access_token);
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            loadAll();
+        } else {
+            throw new Error();
+        }
+    } catch(e) {
+        const err = document.getElementById('loginErr');
+        err.style.display = 'block';
+        setTimeout(()=>err.style.display='none', 3000);
     }
-    t--;
-  },1000);
+    btn.textContent = 'Login →';
 }
 
-function startPoll(id,amt){clearInterval(pIv);
-  pIv=setInterval(async()=>{try{
-    const res=await fetch(EFN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({checkStatus:true,invoiceId:id})});
-    const d=await res.json();
-    if(d.status==='settled'){clearInterval(pIv);clearInterval(tIv);
-      sessionStorage.removeItem('val_invoice_session');
-      document.getElementById('step2').style.display='none';document.getElementById('step3').style.display='block';
-      document.getElementById('successAmt').textContent='$'+parseFloat(amt).toFixed(2);
-    } else if(d.status==='expired') {
-      clearInterval(pIv);clearInterval(tIv);
-      markExpired();
-      document.getElementById('timer').textContent='00 : 00';
-    }
-  }catch(e){}},5000);}
-
-function copyAddr(){const a=document.getElementById('usdcAddr').textContent;navigator.clipboard.writeText(a);const b=document.getElementById('copyAddrBtn');const o=b.innerHTML;b.innerHTML='✓ Copied!';setTimeout(()=>b.innerHTML=o,2000);}
-// Redesigned Copy Address Logic
-function copySmall(){navigator.clipboard.writeText(payCode);const b=document.getElementById('copySmallBtn');const o=b.innerHTML;b.innerHTML='✓ Address Copied!';setTimeout(()=>b.innerHTML=o,2000);}
-function goBack(){clearInterval(tIv);clearInterval(pIv);sessionStorage.removeItem('val_invoice_session');document.getElementById('step2').style.display='none';document.getElementById('step1').style.display='block';}
-function clearSessionAndReload(){sessionStorage.removeItem('val_invoice_session');location.reload();}
-
-const HOW={
-lightning:`<div class="ms"><div class="ms-num">1</div><div><div class="ms-t">Open Cash App</div><div class="ms-s">Tap the Bitcoin ⚡ tab at the bottom</div></div></div><div class="ms"><div class="ms-num">2</div><div><div class="ms-t">Tap "Pay"</div><div class="ms-s">Tap scan icon or paste the Lightning invoice</div></div></div><div class="ms"><div class="ms-num">3</div><div><div class="ms-t">Tap "Open in Cash App"</div><div class="ms-s">Or scan the QR code with Cash App camera</div></div></div><div class="ms"><div class="ms-num">4</div><div><div class="ms-t">Confirm payment</div><div class="ms-s">Settlement is instant!</div></div></div>`,
-onchain:`<div class="ms"><div class="ms-num">1</div><div><div class="ms-t">Open any Bitcoin wallet</div><div class="ms-s">Coinbase, Exodus, Blue Wallet, etc.</div></div></div><div class="ms"><div class="ms-num">2</div><div><div class="ms-t">Tap "Send"</div><div class="ms-s">Choose BTC as currency</div></div></div><div class="ms"><div class="ms-num">3</div><div><div class="ms-t">Scan QR or paste address</div><div class="ms-s">Copy the Bitcoin address shown</div></div></div><div class="ms"><div class="ms-num">4</div><div><div class="ms-t">Confirm & send</div><div class="ms-s">Confirms in ~10–60 minutes</div></div></div>`,
-usdc:`<div class="ms"><div class="ms-num">1</div><div><div class="ms-t">Open Cash App</div><div class="ms-s">Tap the "$" icon on home screen</div></div></div><div class="ms"><div class="ms-num">2</div><div><div class="ms-t">Tap "Send" → "Send via Crypto"</div><div class="ms-s">Select <strong style="color:#00D632">USDC</strong> and network <strong style="color:#00D632">Solana</strong></div></div></div><div class="ms"><div class="ms-num">3</div><div><div class="ms-t">Paste the address</div><div class="ms-s">Copy the USDC address shown below the QR</div></div></div><div class="ms"><div class="ms-num">4</div><div><div class="ms-t">Send EXACT USDC amount shown</div><div class="ms-s">Payment updates instantly upon network detection</div></div></div><div class="warn-box">🚨 <strong>Solana network only.</strong> Wrong network = funds lost permanently.</div>`
-};
-function openModal(){document.getElementById('modalTitle').textContent=M==='lightning'?'⚡ How to Pay (Lightning)':M==='onchain'?'₿ How to Pay (On-Chain)':'$ How to Pay (Cash App)';document.getElementById('modalContent').innerHTML=HOW[M];document.getElementById('modal').style.display='flex';}
-function closeModal(){document.getElementById('modal').style.display='none';}
-
-document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && document.getElementById('modal').style.display === 'flex') {
-    closeModal();
-  }
-});
+function logout(){sessionStorage.removeItem('vadmin_token');location.reload();}
 
 window.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('info-lightning').style.display='flex';
-  document.getElementById('info-onchain').style.display='none';
-  document.getElementById('info-usdc').style.display='none';
-  
-  // Refresh Persistence Logic Handler
-  const saved = sessionStorage.getItem('val_invoice_session');
-  if(saved){
-    try {
-      const { data, M: savedM, A: savedA, secondsLeft, savedAt } = JSON.parse(saved);
-      const elapsed = Math.floor((Date.now() - savedAt) / 1000);
-      const remaining = secondsLeft - elapsed;
-      if(remaining > 0){
-        M = savedM;
-        A = savedA;
-        selM(M);
-        render2(data, remaining);
-      } else {
-        sessionStorage.removeItem('val_invoice_session');
-      }
-    } catch(e) {
-      sessionStorage.removeItem('val_invoice_session');
+    if(sessionStorage.getItem('vadmin_token')){
+        document.getElementById('loginScreen').style.display='none';
+        document.getElementById('app').style.display='block';
+        loadAll();
+    } else {
+        document.getElementById('pwInput').focus();
     }
-  }
 });
+
+async function sbFetch(table, select='*', filters=''){
+    const token = sessionStorage.getItem('vadmin_token') || ANON;
+    const res = await fetch(`${SB_URL}/rest/v1/${table}?select=${select}${filters}&order=created_at.desc`,{
+        headers:{'apikey':ANON,'Authorization':'Bearer '+token}
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.message || 'Fetch failed');
+    return data;
+}
+
+async function loadAll(){
+    document.getElementById('updatedTxt').textContent = 'Loading…';
+    try{
+        const [pays, wds] = await Promise.all([
+            sbFetch('payments'),
+            sbFetch('withdrawals')
+        ]);
+        
+        const now = new Date();
+        allPayments = Array.isArray(pays) ? pays.map(p => {
+            if(p.status === 'new') {
+                const diffMin = (now - new Date(p.created_at)) / 60000;
+                if(diffMin > 60) p.status = 'expired';
+            }
+            return p;
+        }) : [];
+        
+        allWithdrawals = Array.isArray(wds) ? wds : [];
+        calcStats();
+        applyFilter();
+        renderWithdrawals();
+        document.getElementById('updatedTxt').textContent = 'Updated '+new Date().toLocaleTimeString();
+    }catch(e){
+        document.getElementById('updatedTxt').textContent = 'Error loading data';
+    }
+}
+
+function calcStats(){
+    const settled = allPayments.filter(p=>p.status==='settled');
+    const total = settled.reduce((s,p)=>s+parseFloat(p.amount||0),0);
+    const today = settled.filter(p=>isToday(p.created_at));
+    const todayAmt= today.reduce((s,p)=>s+parseFloat(p.amount||0),0);
+    const pending = allPayments.filter(p=>p.status==='new').length;
+    const expired = allPayments.filter(p=>p.status==='expired').length;
+    document.getElementById('statTotal').textContent = '$'+total.toFixed(2);
+    document.getElementById('statTotalCount').textContent = settled.length+' payments';
+    document.getElementById('statToday').textContent = '$'+todayAmt.toFixed(2);
+    document.getElementById('statTodayCount').textContent = today.length+' today';
+    document.getElementById('statPending').textContent = pending;
+    document.getElementById('statCount').textContent = allPayments.length;
+    document.getElementById('statExpired').textContent = expired+' expired';
+    
+    const totalWd = allWithdrawals.reduce((s,w)=>s+parseFloat(w.amount||0),0);
+    const balance = total - totalWd;
+    document.getElementById('balanceVal').textContent = '$'+balance.toFixed(2);
+    document.getElementById('balanceBreak').textContent = '$'+total.toFixed(2)+' settled − $'+totalWd.toFixed(2)+' withdrawn';
+}
+
+function isToday(dateStr){
+    const d = new Date(dateStr);
+    const n = new Date();
+    return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();
+}
+function isThisWeek(dateStr){
+    const d=new Date(dateStr);const n=new Date();
+    const start=new Date(n);start.setDate(n.getDate()-n.getDay());start.setHours(0,0,0,0);
+    return d>=start;
+}
+function isThisMonth(dateStr){
+    const d=new Date(dateStr);const n=new Date();
+    return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth();
+}
+
+function applyFilter(){
+    const st=document.getElementById('fStatus').value;
+    const mt=document.getElementById('fMethod').value;
+    const dt=document.getElementById('fDate').value;
+    const sq=(document.getElementById('fSearch').value||'').toLowerCase();
+    filtered = allPayments.filter(p=>{
+        if(st&&p.status!==st)return false;
+        if(mt&&p.payment_type!==mt)return false;
+        if(dt==='today'&&!isToday(p.created_at))return false;
+        if(dt==='week'&&!isThisWeek(p.created_at))return false;
+        if(dt==='month'&&!isThisMonth(p.created_at))return false;
+        if(sq&&!(p.invoice_id||'').toLowerCase().includes(sq))return false;
+        return true;
+    });
+    curPage=1;
+    renderTable();
+}
+
+function clearFilters(){
+    ['fStatus','fMethod','fDate'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fSearch').value='';
+    applyFilter();
+}
+
+function renderTable(){
+    const total=filtered.length;
+    document.getElementById('payCount').textContent=total+' records';
+    const start=(curPage-1)*PER_PAGE;
+    const page=filtered.slice(start,start+PER_PAGE);
+    
+    if(!total){
+        document.getElementById('payTable').innerHTML='<tr><td colspan="7" class="empty">No payments found</td></tr>';
+        document.getElementById('payPag').innerHTML='';
+        return;
+    }
+    
+    let rows='';
+    for(const p of page){
+        const d=new Date(p.created_at);
+        const dateStr=d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+', '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        const method=p.payment_type||'lightning';
+        const methodIcon=method==='lightning'?'⚡':method==='onchain'?'₿':'$';
+        const methodLabel=method==='lightning'?'Lightning':method==='onchain'?'On-Chain':'USDC';
+        const status=p.status||'new';
+        const loc=[p.city,p.country].filter(Boolean).join(', ');
+        const invShort=(p.invoice_id||'').substring(0,12)+'…';
+        const btcpayLink=`${BTCPAY}/invoices/${p.invoice_id}`;
+        
+        rows+=`<tr>
+        <td><span style="font-family:monospace;font-size:11px;color:rgba(255,255,255,.6)">${invShort}</span></td>
+        <td><strong style="color:#fff">$${parseFloat(p.amount||0).toFixed(2)}</strong></td>
+        <td><span class="method-pill ${method}">${methodIcon} ${methodLabel}</span></td>
+        <td><span class="badge ${status}"><span class="bdot"></span>${status.toUpperCase()}</span></td>
+        <td><span class="loc-tag">📍 ${loc||'—'}</span></td>
+        <td style="color:rgba(255,255,255,.5);font-size:12px">${dateStr}</td>
+        <td><a href="${btcpayLink}" target="_blank" class="inv-link">View →</a></td>
+        </tr>`;
+    }
+    document.getElementById('payTable').innerHTML=rows;
+    
+    const pages=Math.ceil(total/PER_PAGE);
+    let pag='';
+    if(pages > 1){
+        pag+=`<button class="page-btn" onclick="goPage(${curPage-1})" ${curPage<=1?'disabled':''}>‹</button>`;
+        const start2=Math.max(1,curPage-2),end2=Math.min(pages,curPage+2);
+        for(let i=start2;i<=end2;i++){pag+=`<button class="page-btn ${i===curPage?'active':''}" onclick="goPage(${i})">${i}</button>`;}
+        pag+=`<button class="page-btn" onclick="goPage(${curPage+1})" ${curPage>=pages?'disabled':''}>›</button>`;
+    }
+    document.getElementById('payPag').innerHTML=pag;
+}
+function goPage(p){curPage=p;renderTable();}
+
+function renderWithdrawals(){
+    const wds=allWithdrawals;
+    document.getElementById('wdCount').textContent=wds.length+' records';
+    if(!wds.length){
+        document.getElementById('wdTable').innerHTML='<tr><td colspan="3" class="empty">No withdrawals recorded</td></tr>';
+        return;
+    }
+    let rows='';
+    for(const w of wds){
+        const d=new Date(w.created_at);
+        const dateStr=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        rows+=`<tr>
+        <td style="color:rgba(255,255,255,.5);font-size:12px">${dateStr}</td>
+        <td><strong style="color:#ff6b6b">-$${parseFloat(w.amount||0).toFixed(2)}</strong></td>
+        <td style="color:rgba(255,255,255,.4);font-size:12px">${w.note||'—'}</td>
+        </tr>`;
+    }
+    document.getElementById('wdTable').innerHTML=rows;
+}
+
+async function recordWithdrawal(){
+    const amt=parseFloat(document.getElementById('wdAmt').value);
+    const note=document.getElementById('wdNote').value.trim();
+    if(!amt||amt<=0){showToast('Enter a valid amount','error');return;}
+    try{
+        const token = sessionStorage.getItem('vadmin_token') || ANON;
+        const res=await fetch(`${SB_URL}/rest/v1/withdrawals`,{
+            method:'POST',
+            headers:{'apikey':ANON,'Authorization':'Bearer '+token,'Content-Type':'application/json','Prefer':'return=minimal'},
+            body:JSON.stringify({amount:amt,note:note||null})
+        });
+        if(res.ok){
+            document.getElementById('wdAmt').value='';
+            document.getElementById('wdNote').value='';
+            showToast('Withdrawal recorded: $'+amt.toFixed(2));
+            await loadAll();
+        }else{
+            showToast('Failed to record withdrawal','error');
+        }
+    }catch(e){showToast('Error: '+e.message,'error');}
+}
+
+function showTab(t){
+    curTab=t;
+    document.querySelectorAll('.ptab').forEach((el,i)=>el.classList.toggle('active',['payments','withdrawals'][i]===t));
+    document.getElementById('tab-payments').style.display=t==='payments'?'block':'none';
+    document.getElementById('tab-withdrawals').style.display=t==='withdrawals'?'block':'none';
+}
+
+function showToast(msg,type='success'){
+    const t=document.getElementById('toast');
+    t.textContent=msg;
+    t.style.color=type==='error'?'#ff6b6b':'#00D632';
+    t.style.borderColor=type==='error'?'rgba(255,80,80,.3)':'rgba(0,214,50,.3)';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// 💡 </span> বাগটি এখানে ფিক্স করা হয়েছে
+function startCountdownTick() {
+  setInterval(() => {
+    document.querySelectorAll('[data-expire]').forEach(el => {
+      const diff = Math.max(0, Math.floor((new Date(el.dataset.expire) - new Date()) / 1000));
+      const m = Math.floor(diff/60), s = diff%60;
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if (diff === 0) el.className = el.classList.contains('m-expire') ? 'm-expired-pill' : 'expired-text';
+    });
+  }, 1000);
+}
+
+setInterval(()=>{if(sessionStorage.getItem('vadmin_token'))loadAll();},30000);
 </script>
 </body>
 </html>
