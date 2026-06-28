@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel – Pay Valentina</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#111}::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:#0a0a0a;display:flex;align-items:center;justify-content:center;z-index:100}
+.login-card{background:#111;border:1px solid rgba(0,214,50,.2);border-radius:20px;padding:36px;width:100%;max-width:340px;text-align:center}
+.login-logo{width:52px;height:52px;background:linear-gradient(135deg,#00D632,#00a040);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;margin:0 auto 16px}
+.login-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.login-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:24px}
+.login-input{width:100%;background:#1a1a1a;border:1.5px solid rgba(255,255,255,.1);border-radius:11px;padding:12px 16px;font-size:14px;color:#fff;outline:none;font-family:'DM Sans',sans-serif;margin-bottom:12px}
+.login-input:focus{border-color:#00D632}
+.login-btn{width:100%;background:linear-gradient(135deg,#00D632,#00a040);color:#fff;border:none;border-radius:11px;padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.login-err{color:#ff6b6b;font-size:12px;margin-top:8px;display:none}
+/* LAYOUT */
+#app{display:none}
+.topbar{background:#111;border-bottom:1px solid rgba(255,255,255,.07);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-logo{width:34px;height:34px;background:linear-gradient(135deg,#00D632,#00a040);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff}
+.topbar-title{font-size:16px;font-weight:800}
+.topbar-sub{font-size:11px;color:rgba(255,255,255,.35)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.updated-txt{font-size:11px;color:rgba(255,255,255,.3)}
+.logout-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.refresh-btn{background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.3);color:#00D632;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* TABS */
+.page-tabs{display:flex;gap:0;background:#111;border-bottom:1px solid rgba(255,255,255,.07)}
+.ptab{padding:12px 20px;font-size:13px;font-weight:600;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.ptab.active{color:#00D632;border-bottom-color:#00D632}
+/* CONTENT */
+.content{padding:20px;max-width:1200px;margin:0 auto}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+@media(min-width:640px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:#111;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px}
+.stat-icon{font-size:24px;margin-bottom:8px}
+.stat-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.stat-val{font-size:26px;font-weight:800;color:#fff}
+.stat-val.green{color:#00D632}
+.stat-val.yellow{color:#ffc400}
+.stat-sub{font-size:11px;color:rgba(255,255,255,.3);margin-top:3px}
+/* BALANCE SECTION */
+.balance-section{background:#111;border:1px solid rgba(0,214,50,.2);border-radius:16px;padding:18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.balance-left{display:flex;flex-direction:column;gap:4px}
+.balance-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em}
+.balance-val{font-size:32px;font-weight:800;color:#00D632}
+.balance-breakdown{font-size:11px;color:rgba(255,255,255,.35)}
+.withdraw-form{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wd-input-wrap{position:relative}
+.wd-dollar{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);font-size:14px;font-weight:700}
+.wd-input{background:#1a1a1a;border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px 10px 28px;font-size:14px;color:#fff;width:130px;outline:none;font-family:'DM Sans',sans-serif}
+.wd-input:focus{border-color:#00D632}
+.wd-note{background:#1a1a1a;border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 12px;font-size:13px;color:#fff;width:160px;outline:none;font-family:'DM Sans',sans-serif}
+.wd-note:focus{border-color:#00D632}
+.wd-btn{background:linear-gradient(135deg,#00D632,#00a040);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+/* FILTERS */
+.filters{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filter-select{background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:8px 12px;font-size:12px;color:#fff;outline:none;font-family:'DM Sans',sans-serif;cursor:pointer}
+.search-input{background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:8px 12px;font-size:12px;color:#fff;outline:none;font-family:'DM Sans',sans-serif;flex:1;min-width:150px}
+.search-input::placeholder{color:rgba(255,255,255,.25)}
+.filter-btn{background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.3);color:#00D632;border-radius:9px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* TABLE */
+.table-wrap{background:#111;border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden}
+.table-header{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
+.table-title{font-size:14px;font-weight:700}
+.table-count{font-size:12px;color:rgba(255,255,255,.35)}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap}
+td{padding:12px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;white-space:nowrap}
+.badge.settled{background:rgba(0,214,50,.1);border:1px solid rgba(0,214,50,.25);color:#00D632}
+.badge.new{background:rgba(255,196,0,.1);border:1px solid rgba(255,196,0,.25);color:#ffc400}
+.badge.expired{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4)}
+.bdot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.method-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px}
+.method-pill.lightning{background:rgba(255,196,0,.1);color:#ffc400}
+.method-pill.onchain{background:rgba(247,147,26,.1);color:#f7931a}
+.method-pill.usdc{background:rgba(0,214,50,.1);color:#00D632}
+.inv-link{color:rgba(100,180,255,.8);font-size:11px;font-family:monospace;text-decoration:none}
+.inv-link:hover{color:#fff}
+.loc-tag{font-size:11px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:3px}
+.empty{text-align:center;padding:40px;color:rgba(255,255,255,.25);font-size:14px}
+.loading{text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px}
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px}
+.page-btn{background:#1a1a1a;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);width:34px;height:34px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center}
+.page-btn.active{background:linear-gradient(135deg,#00D632,#00a040);border-color:transparent;color:#fff}
+.page-btn:disabled{opacity:.3;cursor:not-allowed}
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:#111;border:1px solid rgba(0,214,50,.3);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:600;color:#00D632;z-index:999;transform:translateY(100px);opacity:0;transition:all .3s}
+#toast.show{transform:translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="loginScreen">
+<div class="login-card">
+<div class="login-logo">$</div>
+<div class="login-title">Admin Panel</div>
+<div class="login-sub">Pay Valentina · Dashboard</div>
+<!-- 💡 ইমেইল ফিল্ড যুক্ত করা হয়েছে -->
+<input type="email" id="emInput" class="login-input" placeholder="Admin Email" value="admin@valentina.com">
+<input type="password" id="pwInput" class="login-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+<button class="login-btn" onclick="doLogin()" id="loginBtn">Login →</button>
+<div class="login-err" id="loginErr">Invalid email or password</div>
+</div>
+</div>
+
+<div id="app">
+<div class="topbar">
+<div class="topbar-left">
+<div class="topbar-logo">$</div>
+<div><div class="topbar-title">Admin Panel</div><div class="topbar-sub" id="sophia">Valentina</div></div>
+</div>
+<div class="topbar-right">
+<span class="updated-txt" id="updatedTxt"></span>
+<button class="refresh-btn" onclick="loadAll()">⟳ Refresh</button>
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+</div>
+<div class="page-tabs">
+<div class="ptab active" onclick="showTab('payments')">💳 Payments</div>
+<div class="ptab" onclick="showTab('withdrawals')">💸 Withdrawals</div>
+</div>
+<div class="content">
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Total Settled</div><div class="stat-val green" id="statTotal">$0</div><div class="stat-sub" id="statTotalCount">0 payments</div></div>
+<div class="stat-card"><div class="stat-icon">📅</div><div class="stat-label">Today's Earnings</div><div class="stat-val green" id="statToday">$0</div><div class="stat-sub" id="statTodayCount">0 today</div></div>
+<div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-label">Pending</div><div class="stat-val yellow" id="statPending">0</div><div class="stat-sub">Awaiting payment</div></div>
+<div class="stat-card"><div class="stat-icon">📊</div><div class="stat-label">Total Payments</div><div class="stat-val" id="statCount">0</div><div class="stat-sub" id="statExpired" style="color:#ff6b6b"></div></div>
+</div>
+<div class="balance-section">
+<div class="balance-left">
+<div class="balance-label">Available Balance</div>
+<div class="balance-val" id="balanceVal">$0.00</div>
+<div class="balance-breakdown" id="balanceBreak">Total settled − Total withdrawn</div>
+</div>
+<div class="withdraw-form">
+<div class="wd-input-wrap"><span class="wd-dollar">$</span><input type="number" id="wdAmt" class="wd-input" placeholder="Amount" min="0.01" step="0.01"></div>
+<input type="text" id="wdNote" class="wd-note" placeholder="Note (optional)">
+<button class="wd-btn" onclick="recordWithdrawal()">Record Withdrawal</button>
+</div>
+</div>
+<div id="tab-payments">
+<div class="filters">
+<select class="filter-select" id="fStatus" onchange="applyFilter()">
+<option value="">All Status</option>
+<option value="settled">Settled</option>
+<option value="new">Pending</option>
+<option value="expired">Expired</option>
+</select>
+<select class="filter-select" id="fMethod" onchange="applyFilter()">
+<option value="">All Methods</option>
+<option value="lightning">Lightning</option>
+<option value="onchain">On-Chain</option>
+<option value="usdc">USDC</option>
+</select>
+<select class="filter-select" id="fDate" onchange="applyFilter()">
+<option value="">All Time</option>
+<option value="today">Today</option>
+<option value="week">This Week</option>
+<option value="month">This Month</option>
+</select>
+<input type="text" id="fSearch" class="search-input" placeholder="🔍 Search invoice ID…" oninput="applyFilter()">
+<button class="filter-btn" onclick="clearFilters()">Clear</button>
+</div>
+<div class="table-wrap">
+<div class="table-header"><div class="table-title">Payment History</div><div class="table-count" id="payCount">—</div></div>
+<div style="overflow-x:auto"><table>
+<thead><tr><th>Invoice ID</th><th>Amount</th><th>Method</th><th>Status</th><th>Location</th><th>Date</th><th>Track</th></tr></thead>
+<tbody id="payTable"><tr><td colspan="7" class="loading">Loading…</td></tr></tbody>
+</table></div>
+<div class="pagination" id="payPag"></div>
+</div>
+</div>
+<div id="tab-withdrawals" style="display:none">
+<div class="table-wrap">
+<div class="table-header"><div class="table-title">Withdrawal History</div><div class="table-count" id="wdCount">—</div></div>
+<div style="overflow-x:auto"><table>
+<thead><tr><th>Date</th><th>Amount</th><th>Note</th></tr></thead>
+<tbody id="wdTable"><tr><td colspan="3" class="loading">Loading…</td></tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div id="toast"></div>
+
+<script>
+// 💡 URL এবং ANON Key আপডেট করা হয়েছে
+const SB_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
+const BTCPAY = 'https://btcpay805858.lndyn.com/stores/7tUk4vx8Ej74ETGsbujMPiSKTkisZZawFYfHwkEUqyUj';
+
+let allPayments = [], allWithdrawals = [];
+let filtered = [];
+let curPage = 1;
+const PER_PAGE = 25;
+let curTab = 'payments';
+
+// ── Login via Supabase Auth (Secured) ──
+async function doLogin(){
+    const email = document.getElementById('emInput').value.trim();
+    const pw = document.getElementById('pwInput').value;
+    const btn = document.getElementById('loginBtn');
+    
+    if(!email || !pw) return;
+    btn.textContent = 'Verifying...';
+    
+    try {
+        const res = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`, {
+            method: 'POST',
+            headers: { 'apikey': ANON, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: pw })
+        });
+        const data = await res.json();
+        
+        if(data.access_token){
+            sessionStorage.setItem('vadmin_token', data.access_token);
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            loadAll();
+        } else {
+            throw new Error();
+        }
+    } catch(e) {
+        const err = document.getElementById('loginErr');
+        err.style.display = 'block';
+        setTimeout(()=>err.style.display='none', 3000);
+    }
+    btn.textContent = 'Login →';
+}
+
+function logout(){sessionStorage.removeItem('vadmin_token');location.reload();}
+
+window.addEventListener('DOMContentLoaded',()=>{
+    if(sessionStorage.getItem('vadmin_token')){
+        document.getElementById('loginScreen').style.display='none';
+        document.getElementById('app').style.display='block';
+        loadAll();
+    } else {
+        document.getElementById('pwInput').focus();
+    }
+});
+
+// ── Supabase fetch (Secured with Bearer Token) ──
+async function sbFetch(table, select='*', filters=''){
+    const token = sessionStorage.getItem('vadmin_token') || ANON;
+    const res = await fetch(`${SB_URL}/rest/v1/${table}?select=${select}${filters}&order=created_at.desc`,{
+        headers:{'apikey':ANON,'Authorization':'Bearer '+token}
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.message || 'Fetch failed');
+    return data;
+}
+
+// ── Load all data ──
+async function loadAll(){
+    document.getElementById('updatedTxt').textContent = 'Loading…';
+    try{
+        const [pays, wds] = await Promise.all([
+            sbFetch('payments'),
+            sbFetch('withdrawals')
+        ]);
+        
+        // 💡 60 মিনিট পার হলে ডাটাবেস আপডেট না হলেও প্যানেলে Expired দেখানোর ডাইনামিক ফিক্স
+        const now = new Date();
+        allPayments = Array.isArray(pays) ? pays.map(p => {
+            if(p.status === 'new') {
+                const diffMin = (now - new Date(p.created_at)) / 60000;
+                if(diffMin > 60) p.status = 'expired';
+            }
+            return p;
+        }) : [];
+        
+        allWithdrawals = Array.isArray(wds) ? wds : [];
+        calcStats();
+        applyFilter();
+        renderWithdrawals();
+        document.getElementById('updatedTxt').textContent = 'Updated '+new Date().toLocaleTimeString();
+    }catch(e){
+        document.getElementById('updatedTxt').textContent = 'Error loading data';
+    }
+}
+
+// ── Stats ──
+function calcStats(){
+    const settled = allPayments.filter(p=>p.status==='settled');
+    const total = settled.reduce((s,p)=>s+parseFloat(p.amount||0),0);
+    const today = settled.filter(p=>isToday(p.created_at));
+    const todayAmt= today.reduce((s,p)=>s+parseFloat(p.amount||0),0);
+    const pending = allPayments.filter(p=>p.status==='new').length;
+    const expired = allPayments.filter(p=>p.status==='expired').length;
+    document.getElementById('statTotal').textContent = '$'+total.toFixed(2);
+    document.getElementById('statTotalCount').textContent = settled.length+' payments';
+    document.getElementById('statToday').textContent = '$'+todayAmt.toFixed(2);
+    document.getElementById('statTodayCount').textContent = today.length+' today';
+    document.getElementById('statPending').textContent = pending;
+    document.getElementById('statCount').textContent = allPayments.length;
+    document.getElementById('statExpired').textContent = expired+' expired';
+    // Balance
+    const totalWd = allWithdrawals.reduce((s,w)=>s+parseFloat(w.amount||0),0);
+    const balance = total - totalWd;
+    document.getElementById('balanceVal').textContent = '$'+balance.toFixed(2);
+    document.getElementById('balanceBreak').textContent = '$'+total.toFixed(2)+' settled − $'+totalWd.toFixed(2)+' withdrawn';
+}
+
+function isToday(dateStr){
+    const d = new Date(dateStr);
+    const n = new Date();
+    return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();
+}
+function isThisWeek(dateStr){
+    const d=new Date(dateStr);const n=new Date();
+    const start=new Date(n);start.setDate(n.getDate()-n.getDay());start.setHours(0,0,0,0);
+    return d>=start;
+}
+function isThisMonth(dateStr){
+    const d=new Date(dateStr);const n=new Date();
+    return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth();
+}
+
+// ── Filters ──
+function applyFilter(){
+    const st=document.getElementById('fStatus').value;
+    const mt=document.getElementById('fMethod').value;
+    const dt=document.getElementById('fDate').value;
+    const sq=(document.getElementById('fSearch').value||'').toLowerCase();
+    filtered = allPayments.filter(p=>{
+        if(st&&p.status!==st)return false;
+        if(mt&&p.payment_type!==mt)return false;
+        if(dt==='today'&&!isToday(p.created_at))return false;
+        if(dt==='week'&&!isThisWeek(p.created_at))return false;
+        if(dt==='month'&&!isThisMonth(p.created_at))return false;
+        if(sq&&!(p.invoice_id||'').toLowerCase().includes(sq))return false;
+        return true;
+    });
+    curPage=1;
+    renderTable();
+}
+
+function clearFilters(){
+    ['fStatus','fMethod','fDate'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fSearch').value='';
+    applyFilter();
+}
+
+// ── Payments Table ──
+function renderTable(){
+    const total=filtered.length;
+    document.getElementById('payCount').textContent=total+' records';
+    const start=(curPage-1)*PER_PAGE;
+    const page=filtered.slice(start,start+PER_PAGE);
+    
+    if(!total){
+        document.getElementById('payTable').innerHTML='<tr><td colspan="7" class="empty">No payments found</td></tr>';
+        document.getElementById('payPag').innerHTML='';
+        return;
+    }
+    
+    let rows='';
+    for(const p of page){
+        const d=new Date(p.created_at);
+        const dateStr=d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+', '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        const method=p.payment_type||'lightning';
+        const methodIcon=method==='lightning'?'⚡':method==='onchain'?'₿':'$';
+        const methodLabel=method==='lightning'?'Lightning':method==='onchain'?'On-Chain':'USDC';
+        const status=p.status||'new';
+        const loc=[p.city,p.country].filter(Boolean).join(', ');
+        const invShort=(p.invoice_id||'').substring(0,12)+'…';
+        const btcpayLink=`${BTCPAY}/invoices/${p.invoice_id}`;
+        
+        rows+=`<tr>
+        <td><span style="font-family:monospace;font-size:11px;color:rgba(255,255,255,.6)">${invShort}</span></td>
+        <td><strong style="color:#fff">$${parseFloat(p.amount||0).toFixed(2)}</strong></td>
+        <td><span class="method-pill ${method}">${methodIcon} ${methodLabel}</span></td>
+        <td><span class="badge ${status}"><span class="bdot"></span>${status.toUpperCase()}</span></td>
+        <td><span class="loc-tag">📍 ${loc||'—'}</span></td>
+        <td style="color:rgba(255,255,255,.5);font-size:12px">${dateStr}</td>
+        <td><a href="${btcpayLink}" target="_blank" class="inv-link">View →</a></td>
+        </tr>`;
+    }
+    document.getElementById('payTable').innerHTML=rows;
+    
+    // Pagination
+    const pages=Math.ceil(total/PER_PAGE);
+    let pag='';
+    if(pages > 1){
+        pag+=`<button class="page-btn" onclick="goPage(${curPage-1})" ${curPage<=1?'disabled':''}>‹</button>`;
+        const start2=Math.max(1,curPage-2),end2=Math.min(pages,curPage+2);
+        for(let i=start2;i<=end2;i++){pag+=`<button class="page-btn ${i===curPage?'active':''}" onclick="goPage(${i})">${i}</button>`;}
+        pag+=`<button class="page-btn" onclick="goPage(${curPage+1})" ${curPage>=pages?'disabled':''}>›</button>`;
+    }
+    document.getElementById('payPag').innerHTML=pag;
+}
+function goPage(p){curPage=p;renderTable();}
+
+// ── Withdrawals Table ──
+function renderWithdrawals(){
+    const wds=allWithdrawals;
+    document.getElementById('wdCount').textContent=wds.length+' records';
+    if(!wds.length){
+        document.getElementById('wdTable').innerHTML='<tr><td colspan="3" class="empty">No withdrawals recorded</td></tr>';
+        return;
+    }
+    let rows='';
+    for(const w of wds){
+        const d=new Date(w.created_at);
+        const dateStr=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        rows+=`<tr>
+        <td style="color:rgba(255,255,255,.5);font-size:12px">${dateStr}</td>
+        <td><strong style="color:#ff6b6b">-$${parseFloat(w.amount||0).toFixed(2)}</strong></td>
+        <td style="color:rgba(255,255,255,.4);font-size:12px">${w.note||'—'}</td>
+        </tr>`;
+    }
+    document.getElementById('wdTable').innerHTML=rows;
+}
+
+// ── Record Withdrawal (Secured) ──
+async function recordWithdrawal(){
+    const amt=parseFloat(document.getElementById('wdAmt').value);
+    const note=document.getElementById('wdNote').value.trim();
+    if(!amt||amt<=0){showToast('Enter a valid amount','error');return;}
+    try{
+        const token = sessionStorage.getItem('vadmin_token') || ANON;
+        const res=await fetch(`${SB_URL}/rest/v1/withdrawals`,{
+            method:'POST',
+            headers:{'apikey':ANON,'Authorization':'Bearer '+token,'Content-Type':'application/json','Prefer':'return=minimal'},
+            body:JSON.stringify({amount:amt,note:note||null})
+        });
+        if(res.ok){
+            document.getElementById('wdAmt').value='';
+            document.getElementById('wdNote').value='';
+            showToast('Withdrawal recorded: $'+amt.toFixed(2));
+            await loadAll();
+        }else{
+            showToast('Failed to record withdrawal','error');
+        }
+    }catch(e){showToast('Error: '+e.message,'error');}
+}
+
+// ── Tab switch ──
+function showTab(t){
+    curTab=t;
+    document.querySelectorAll('.ptab').forEach((el,i)=>el.classList.toggle('active',['payments','withdrawals'][i]===t));
+    document.getElementById('tab-payments').style.display=t==='payments'?'block':'none';
+    document.getElementById('tab-withdrawals').style.display=t==='withdrawals'?'block':'none';
+}
+
+// ── Toast ──
+function showToast(msg,type='success'){
+    const t=document.getElementById('toast');
+    t.textContent=msg;
+    t.style.color=type==='error'?'#ff6b6b':'#00D632';
+    t.style.borderColor=type==='error'?'rgba(255,80,80,.3)':'rgba(0,214,50,.3)';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// Auto refresh every 30s
+setInterval(()=>{if(sessionStorage.getItem('vadmin_token'))loadAll();},30000);
+</script>
+</body>
+</html>
