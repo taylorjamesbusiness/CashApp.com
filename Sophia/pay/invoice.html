@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Invoice – Sophia</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2300D632'/><text x='50' y='72' font-size='65' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>$</text></svg>" type="image/svg+xml">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@ html, body {
   font-family:'DM Sans',sans-serif;
   background:#000;
   color:#fff;
+  overflow-x:hidden;
 }
 body {
   min-height:100dvh;
@@ -22,7 +23,6 @@ body {
   justify-content:center;
   padding:16px;
   position:relative;
-  overflow-x:hidden;
 }
 
 body::before {
@@ -55,6 +55,7 @@ body::before {
 .s2-topbar {
   display:flex;align-items:center;justify-content:space-between;
   padding:16px 20px 0;
+  gap:8px;
 }
 .back-btn {
   display:flex;align-items:center;gap:6px;
@@ -65,6 +66,8 @@ body::before {
   font-size:13px;font-weight:600;cursor:pointer;
   font-family:'DM Sans',sans-serif;
   transition:background 0.2s;
+  white-space:nowrap;
+  flex-shrink:0;
 }
 .back-btn:hover { background:rgba(255,255,255,0.1); }
 .how-btn {
@@ -76,6 +79,8 @@ body::before {
   font-size:13px;font-weight:600;cursor:pointer;
   font-family:'DM Sans',sans-serif;
   transition:background 0.2s;
+  white-space:nowrap;
+  flex-shrink:0;
 }
 .how-btn:hover { background:rgba(0,200,81,0.18); }
 
@@ -128,21 +133,22 @@ body::before {
   padding:11px 0;
   border-bottom:1px solid rgba(255,255,255,0.05);
   font-size:14px;
+  gap:8px;
 }
 .inv-row:last-of-type { border-bottom:none; }
-.inv-key { color:rgba(255,255,255,0.4);font-weight:600; }
-.inv-val { font-weight:700;font-size:12px;color:#fff; }
+.inv-key { color:rgba(255,255,255,0.4);font-weight:600;flex-shrink:0; }
+.inv-val { font-weight:700;font-size:12px;color:#fff;word-break:break-all;text-align:right; }
 .status-badge {
   background:rgba(0,200,81,0.1);border:1px solid rgba(0,200,81,0.3);
   color:#00C851;padding:4px 12px;border-radius:999px;
   font-size:10px;font-weight:700;text-transform:uppercase;
   display:flex;align-items:center;gap:5px;
   transition:all 0.3s;
+  white-space:nowrap;
 }
 .status-dot { width:6px;height:6px;background:currentColor;border-radius:50%;animation:pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
 
-/* 💡 Premium Copy Button - Optimized padding and line-height for text wrapping */
 .copy-btn-small {
   width:100%;margin-bottom:12px;
   background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);
@@ -151,7 +157,7 @@ body::before {
   transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;
   line-height:1.4;text-align:center;
 }
-.copy-btn-small svg { flex-shrink:0; margin-top:2px; }
+.copy-btn-small svg { flex-shrink:0; }
 .copy-btn-small:hover { background:rgba(255,255,255,0.1);border-color:rgba(0,200,81,0.4); }
 
 .pay-now-btn {
@@ -196,35 +202,38 @@ body::before {
 }
 .reload-btn:hover { transform:translateY(-2px); }
 
-/* HOW TO PAY MODAL */
+/* HOW TO PAY MODAL — FIXED */
 #howToPayModal {
   display:none;
   position:fixed;inset:0;
   background:rgba(0,0,0,0.85);
   backdrop-filter:blur(4px);
   z-index:200;
-  align-items:center;justify-content:center;
-  padding:18px;
+  align-items:flex-end;
+  justify-content:center;
+  padding:0;
 }
 #howToPayModal.open { display:flex; }
 .modal-inner {
-  width:100%;max-width:360px;
+  width:100%;max-width:480px;
   background:#111;
-  border-radius:24px;
-  padding:24px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.8);
-  max-height:90vh;
+  border-radius:24px 24px 0 0;
+  padding:24px 20px 36px;
+  box-shadow:0 -8px 40px rgba(0,0,0,0.8);
+  max-height:85vh;
   overflow-y:auto;
+  border-top:1px solid rgba(0,200,81,0.15);
 }
 .modal-head {
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:24px;
 }
-.modal-title { font-size:18px;font-weight:800;color:#fff}
+.modal-title { font-size:18px;font-weight:800;color:#fff; }
 .modal-close {
   background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);
   width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:background 0.2s;
+  font-family:'DM Sans',sans-serif;
 }
 .modal-close:hover{background:rgba(255,255,255,0.2);}
 .steps { display:flex;flex-direction:column;gap:20px; }
@@ -255,8 +264,8 @@ body::before {
 .modal-got-it:active{transform:scale(0.98);}
 
 @media (max-width:480px) {
-  body { padding:0;align-items:flex-end; }
-  .card { border-radius:24px 24px 0 0;max-width:100%; }
+  body { padding:0; align-items:flex-end; }
+  .card { border-radius:24px 24px 0 0; max-width:100%; width:100%; }
 }
 </style>
 </head>
@@ -299,7 +308,7 @@ body::before {
 
       <div class="invoice-box">
         <div class="timer-label">Time Remaining</div>
-        <div class="timer-val" id="timer">60 : 00</div> 
+        <div class="timer-val" id="timer">60 : 00</div>
         <div class="inv-row">
           <span class="inv-key">Reference</span>
           <span class="inv-val" id="invoiceIdDisplay">Loading…</span>
@@ -312,7 +321,6 @@ body::before {
         </div>
       </div>
 
-      <!-- 💡 Updated text & responsive structure for clean line break -->
       <button class="copy-btn-small" id="copyBtn" onclick="copyInvoice()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
         <span id="copyBtnTxt">Copy BTC Lightning Address & send BTC from your Cash App or any other wallet.</span>
@@ -331,13 +339,48 @@ body::before {
     <div class="success-icon"><svg width="42" height="42" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
     <div class="success-title">Payment Received!</div>
     <div class="success-sub">Thank you for your payment</div>
-    <div class="success-amt" id="successAmt">$0.00</div>
+    <div class="success-amount" id="successAmt">$0.00</div>
     <button class="reload-btn" onclick="clearSessionAndReload()">Make Another Payment</button>
   </div>
 </div>
 
-<div id="modal"><div class="modal-inner"><div class="modal-header"><div class="modal-title" id="modalTitle">How to Pay</div><button class="modal-close" onclick="closeModal()">×</button></div><div id="modalContent"></div><button class="modal-ok" onclick="closeModal()">Got it!</button></div></div>
-<div id="toast"></div>
+<!-- HOW TO PAY MODAL -->
+<div id="howToPayModal">
+  <div class="modal-inner">
+    <div class="modal-head">
+      <div class="modal-title">How to Pay</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Open Cash App</div>
+          <div class="step-desc">Tap the green "Open in Cash App" button below, or scan the QR code with your camera.</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Send Bitcoin (BTC)</div>
+          <div class="step-desc">In Cash App, go to the Bitcoin section and send the exact amount shown. Or copy the Lightning address and paste it in any wallet.</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Wait for Confirmation</div>
+          <div class="step-desc">Payment usually confirms within seconds via the Lightning Network.</div>
+        </div>
+      </div>
+    </div>
+    <div class="warn-box">
+      <span style="font-size:16px;">⚠️</span>
+      <div class="warn-text"><strong>Important:</strong> Send the exact amount shown. Invoice expires after the timer runs out.</div>
+    </div>
+    <button class="modal-got-it" onclick="closeModal()">Got it!</button>
+  </div>
+</div>
 
 <script>
 const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
@@ -359,16 +402,13 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   try {
     const { amount, cashAppUrl, invoiceId, bolt11, secondsLeft, savedAt } = JSON.parse(saved);
-    
     const elapsed = Math.floor((Date.now() - savedAt) / 1000);
     const remaining = secondsLeft - elapsed;
-    
     if(remaining <= 0) {
       sessionStorage.removeItem('invoiceSession');
       window.location.href = '../index.html';
       return;
     }
-    
     currentLightningInvoice = bolt11;
     showStep(2);
     renderInvoice(amount, cashAppUrl, invoiceId, bolt11, remaining);
@@ -426,7 +466,6 @@ function startTimer(sec, invoiceId) {
     document.getElementById('timer').textContent =
       String(m).padStart(2,'0') + ' : ' + String(s).padStart(2,'0');
     if(t <= 300) document.getElementById('timer').classList.add('urgent');
-      
     if(t % 5 === 0) {
       const saved = sessionStorage.getItem('invoiceSession');
       if (saved) {
@@ -455,7 +494,7 @@ function startPolling(invoiceId, amount) {
         clearInterval(timerInterval);
         sessionStorage.removeItem('invoiceSession');
         showStep(3);
-        document.getElementById('successAmount').textContent = '$' + parseFloat(amount).toFixed(2);
+        document.getElementById('successAmt').textContent = '$' + parseFloat(amount).toFixed(2);
       } else if (data?.status === 'expired') {
         clearInterval(pollInterval);
         clearInterval(timerInterval);
@@ -471,9 +510,7 @@ function copyInvoice() {
   const btnText = document.getElementById('copyBtnTxt');
   const original = btnText.innerHTML;
   btnText.innerHTML = '✓ Address Copied Successfully!';
-  setTimeout(() => {
-    btnText.innerHTML = original;
-  }, 2000);
+  setTimeout(() => { btnText.innerHTML = original; }, 2000);
 }
 
 function goBack() {
@@ -483,7 +520,7 @@ function goBack() {
   window.location.href = '../index.html';
 }
 
-function clearSession() {
+function clearSessionAndReload() {
   sessionStorage.removeItem('invoiceSession');
   window.location.href = '../index.html';
 }
