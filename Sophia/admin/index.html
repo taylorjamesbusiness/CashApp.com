@@ -209,7 +209,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 </head>
 <body>
 
-<!-- ═══ LOGIN PAGE ═══ -->
 <div class="login-wrap" id="loginPage">
   <div class="login-card">
     <div class="login-logo">$</div>
@@ -225,7 +224,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
   </div>
 </div>
 
-<!-- ═══ DASHBOARD ═══ -->
 <div id="dashboard">
   <div class="topbar">
     <div class="topbar-logo">
@@ -243,7 +241,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 
   <div class="content">
 
-    <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card green">
         <div class="stat-icon">💰</div>
@@ -271,13 +268,11 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
       </div>
     </div>
 
-    <!-- TABS -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('payments', this)">💳 Payments</button>
       <button class="tab-btn" onclick="switchTab('withdrawals', this)">💸 Withdrawals</button>
     </div>
 
-    <!-- PAYMENTS TAB -->
     <div id="tab-payments">
       <div class="filter-bar">
         <select class="filter-select" id="filterStatus" onchange="renderPayments()">
@@ -296,7 +291,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
         <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
       </div>
       <div class="table-wrap">
-        <!-- DESKTOP TABLE -->
         <div class="table-scroll">
           <table>
             <thead>
@@ -316,7 +310,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
             </tbody>
           </table>
         </div>
-        <!-- MOBILE CARDS -->
         <div class="mobile-list" id="mobilePaymentsList">
           <div class="m-empty">Loading...</div>
         </div>
@@ -324,7 +317,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
       </div>
     </div>
 
-    <!-- WITHDRAWALS TAB -->
     <div id="tab-withdrawals" style="display:none;">
       <div class="filter-bar">
         <select class="filter-select" id="filterWStatus" onchange="renderWithdrawals()">
@@ -335,7 +327,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
         <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
       </div>
       <div class="table-wrap">
-        <!-- DESKTOP -->
         <div class="table-scroll">
           <table>
             <thead>
@@ -353,7 +344,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
             </tbody>
           </table>
         </div>
-        <!-- MOBILE -->
         <div class="mobile-list" id="mobileWithdrawalsList">
           <div class="m-empty">Loading...</div>
         </div>
@@ -365,8 +355,9 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 </div>
 
 <script>
-const SUPABASE_URL = 'https://pbxpdppibnmtyxfoyydr.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBieHBkcHBpYm5tdHl4Zm95eWRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzY5MjgsImV4cCI6MjA5MzU1MjkyOH0.iRtrUJImt_Wvhc4dSITge_o09jrvc6jbYNM9K2413lo';
+// আপডেট করা প্রজেক্ট ইউআরএল এবং এনন কী
+const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
 
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'Sophia@2026';
