@@ -69,14 +69,15 @@ serve(async (req: Request) => {
         })
       }
 
-      let paymentMethods: string[]
-      if (paymentType === 'lightning') {
-        paymentMethods = ['BTC-LightningNetwork']
-      } else if (paymentType === 'onchain') {
-        paymentMethods = ['BTC']
-      } else {
-        paymentMethods = ['BTC-LightningNetwork', 'BTC']
-      }
+       let paymentMethods: string[]
+if (paymentType === 'lightning' || paymentType === 'usdc') {
+  // 💡 FIX: USDC এর জন্য আমরা শুধু লাইটনিং ইনভয়েস চাইবো, অন-চেইন ট্র্যাকিং বন্ধ রাখবো
+  paymentMethods = ['BTC-LightningNetwork']
+} else if (paymentType === 'onchain') {
+  paymentMethods = ['BTC']
+} else {
+  paymentMethods = ['BTC-LightningNetwork', 'BTC']
+}
 
       // Create BTCPay Invoice
       const invoiceRes = await fetch(
