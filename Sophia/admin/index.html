@@ -128,13 +128,28 @@ body { font-family:'DM Sans',sans-serif; background:#000; color:#fff; min-height
 }
 .refresh-btn:hover { background:rgba(0,200,81,0.18); }
 
+/* ══════ PAGINATION ══════ */
+.pagination {
+  display: flex; justify-content: center; align-items: center; gap: 8px;
+  padding: 16px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.page-btn {
+  background: #111; border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7); width: 32px; height: 32px;
+  border-radius: 8px; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.page-btn:hover:not(:disabled) { background: #222; border-color: rgba(0,200,81,0.3); }
+.page-btn.active { background: rgba(0,200,81,0.2); border-color: rgba(0,200,81,0.5); color: #00C851; }
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
 /* ══════ TABLE (DESKTOP) ══════ */
 .table-wrap {
   background:#0d0d0d; border:1px solid rgba(255,255,255,0.07);
   border-radius:18px; overflow:hidden;
 }
-
-/* Desktop table — hidden on mobile */
 .table-scroll { overflow-x:auto; display:none; }
 @media (min-width:700px) { .table-scroll { display:block; } }
 table { width:100%; border-collapse:collapse; }
@@ -209,6 +224,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 </head>
 <body>
 
+<!-- ═══ LOGIN PAGE ═══ -->
 <div class="login-wrap" id="loginPage">
   <div class="login-card">
     <div class="login-logo">$</div>
@@ -224,6 +240,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
   </div>
 </div>
 
+<!-- ═══ DASHBOARD ═══ -->
 <div id="dashboard">
   <div class="topbar">
     <div class="topbar-logo">
@@ -241,6 +258,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 
   <div class="content">
 
+    <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card green">
         <div class="stat-icon">💰</div>
@@ -268,29 +286,32 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
       </div>
     </div>
 
+    <!-- TABS -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('payments', this)">💳 Payments</button>
       <button class="tab-btn" onclick="switchTab('withdrawals', this)">💸 Withdrawals</button>
     </div>
 
+    <!-- PAYMENTS TAB -->
     <div id="tab-payments">
       <div class="filter-bar">
-        <select class="filter-select" id="filterStatus" onchange="renderPayments()">
+        <select class="filter-select" id="filterStatus" onchange="resetAndRenderPayments()">
           <option value="">All Status</option>
           <option value="new">Pending</option>
           <option value="settled">Settled</option>
           <option value="expired">Expired</option>
         </select>
-        <select class="filter-select" id="filterDate" onchange="renderPayments()">
+        <select class="filter-select" id="filterDate" onchange="resetAndRenderPayments()">
           <option value="">All Time</option>
           <option value="today">Today</option>
           <option value="week">This Week</option>
           <option value="month">This Month</option>
         </select>
-        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search invoice ID..." oninput="renderPayments()">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search invoice ID..." oninput="resetAndRenderPayments()">
         <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
       </div>
       <div class="table-wrap">
+        <!-- DESKTOP TABLE -->
         <div class="table-scroll">
           <table>
             <thead>
@@ -310,13 +331,17 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
             </tbody>
           </table>
         </div>
+        <!-- MOBILE CARDS -->
         <div class="mobile-list" id="mobilePaymentsList">
           <div class="m-empty">Loading...</div>
         </div>
+        <!-- PAGINATION UI -->
+        <div class="pagination" id="payPagination"></div>
         <div class="table-footer" id="paymentsFooter"></div>
       </div>
     </div>
 
+    <!-- WITHDRAWALS TAB -->
     <div id="tab-withdrawals" style="display:none;">
       <div class="filter-bar">
         <select class="filter-select" id="filterWStatus" onchange="renderWithdrawals()">
@@ -327,6 +352,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
         <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
       </div>
       <div class="table-wrap">
+        <!-- DESKTOP -->
         <div class="table-scroll">
           <table>
             <thead>
@@ -344,6 +370,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
             </tbody>
           </table>
         </div>
+        <!-- MOBILE -->
         <div class="mobile-list" id="mobileWithdrawalsList">
           <div class="m-empty">Loading...</div>
         </div>
@@ -355,16 +382,17 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 </div>
 
 <script>
-// আপডেট করা প্রজেক্ট ইউআরএল এবং এনন কী
 const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
 
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'Sophia@2026';
 const INVOICE_EXPIRE_MINUTES = 15;
+const PER_PAGE = 25; // Pagination limit
 
 let allPayments = [];
 let allWithdrawals = [];
+let currentPayPage = 1;
 
 // ─── AUTH ───
 function doLogin() {
@@ -469,7 +497,7 @@ function getExpireHtml(p, effectiveStatus) {
   return '-';
 }
 
-// ─── PAYMENTS RENDER ───
+// ─── PAYMENTS RENDER (WITH PAGINATION) ───
 function getFilteredPayments() {
   const statusFilter = document.getElementById('filterStatus').value;
   const dateFilter = document.getElementById('filterDate').value;
@@ -488,25 +516,43 @@ function getFilteredPayments() {
   });
 }
 
+function resetAndRenderPayments() {
+  currentPayPage = 1;
+  renderPayments();
+}
+
+function changePage(page) {
+  currentPayPage = page;
+  renderPayments();
+}
+
 function renderPayments() {
   const filtered = getFilteredPayments();
-  // Desktop
   const tbody = document.getElementById('paymentsBody');
-  // Mobile
   const mList = document.getElementById('mobilePaymentsList');
+  const pagUI = document.getElementById('payPagination');
 
   if (!filtered.length) {
     tbody.innerHTML = '<tr><td colspan="8" class="m-empty">No payments found</td></tr>';
     mList.innerHTML = '<div class="m-empty">No payments found</div>';
+    pagUI.innerHTML = '';
     document.getElementById('paymentsFooter').textContent = '';
     return;
   }
 
-  tbody.innerHTML = filtered.map((p,i) => {
+  // Pagination Logic
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
+  if (currentPayPage > totalPages) currentPayPage = totalPages;
+  const start = (currentPayPage - 1) * PER_PAGE;
+  const paginated = filtered.slice(start, start + PER_PAGE);
+
+  // Render Table
+  tbody.innerHTML = paginated.map((p, index) => {
     const es = p._uiExpired ? 'expired' : p.status;
     const shortId = p.invoice_id.substring(0,18) + '...';
+    const globalIndex = start + index + 1;
     return `<tr>
-      <td style="color:rgba(255,255,255,0.28);">${i+1}</td>
+      <td style="color:rgba(255,255,255,0.28);">${globalIndex}</td>
       <td>
         <div style="font-family:monospace;font-size:12px;color:rgba(255,255,255,0.55);" title="${p.invoice_id}">${shortId}</div>
         <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">${fmtTime(p.created_at)}</div>
@@ -520,7 +566,8 @@ function renderPayments() {
     </tr>`;
   }).join('');
 
-  mList.innerHTML = filtered.map((p,i) => {
+  // Render Mobile
+  mList.innerHTML = paginated.map((p) => {
     const es = p._uiExpired ? 'expired' : p.status;
     const shortId = p.invoice_id.substring(0,22) + '...';
     let expirePart = '';
@@ -549,9 +596,26 @@ function renderPayments() {
     </div>`;
   }).join('');
 
+  // Pagination UI Setup
+  if (totalPages > 1) {
+    let pButtons = `<button class="page-btn" onclick="changePage(${currentPayPage - 1})" ${currentPayPage === 1 ? 'disabled' : ''}>‹</button>`;
+    
+    let startPage = Math.max(1, currentPayPage - 2);
+    let endPage = Math.min(totalPages, currentPayPage + 2);
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pButtons += `<button class="page-btn ${i === currentPayPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+    }
+    
+    pButtons += `<button class="page-btn" onclick="changePage(${currentPayPage + 1})" ${currentPayPage === totalPages ? 'disabled' : ''}>›</button>`;
+    pagUI.innerHTML = pButtons;
+  } else {
+    pagUI.innerHTML = '';
+  }
+
   const total = filtered.reduce((s,p) => s+parseFloat(p.amount), 0);
   document.getElementById('paymentsFooter').textContent =
-    `${filtered.length} of ${allPayments.length} payments · $${total.toFixed(2)}`;
+    `Showing ${start + 1}-${Math.min(start + PER_PAGE, filtered.length)} of ${filtered.length} filtered payments · $${total.toFixed(2)}`;
 }
 
 // ─── WITHDRAWALS RENDER ───
@@ -622,9 +686,10 @@ function switchTab(tab, btn) {
   document.getElementById('tab-withdrawals').style.display = tab==='withdrawals' ? 'block' : 'none';
 }
 
-// ─── COUNTDOWN TICK ───
+// ─── COUNTDOWN TICK (OPTIMIZED) ───
 function startCountdownTick() {
   setInterval(() => {
+    // Only query elements currently visible in the DOM
     document.querySelectorAll('[data-expire]').forEach(el => {
       const diff = Math.max(0, Math.floor((new Date(el.dataset.expire) - new Date()) / 1000));
       const m = Math.floor(diff/60), s = diff%60;
