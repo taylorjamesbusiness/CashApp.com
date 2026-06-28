@@ -69,16 +69,16 @@ serve(async (req: Request) => {
         })
       }
 
-       let paymentMethods: string[]
-if (paymentType === 'lightning' || paymentType === 'usdc') {
-  // BTCPay v2.0+ এর জন্য 'BTC-LN', পুরোনো সংস্করণের জন্য 'BTC-LightningNetwork'
-  paymentMethods = ['BTC-LN', 'BTC-LightningNetwork'] 
-} else if (paymentType === 'onchain') {
-  // BTCPay v2.0+ এর জন্য 'BTC-CHAIN', পুরোনো সংস্করণের জন্য 'BTC'
-  paymentMethods = ['BTC-CHAIN', 'BTC'] 
-} else {
-  paymentMethods = ['BTC-LN', 'BTC-LightningNetwork', 'BTC-CHAIN', 'BTC']
-}
+      let paymentMethods: string[]
+      if (paymentType === 'lightning' || paymentType === 'usdc') {
+        // BTCPay v2.0+ এর জন্য 'BTC-LN', পুরোনো সংস্করণের জন্য 'BTC-LightningNetwork'
+        paymentMethods = ['BTC-LN', 'BTC-LightningNetwork'] 
+      } else if (paymentType === 'onchain') {
+        // BTCPay v2.0+ এর জন্য 'BTC-CHAIN', পুরোনো সংস্করণের জন্য 'BTC'
+        paymentMethods = ['BTC-CHAIN', 'BTC'] 
+      } else {
+        paymentMethods = ['BTC-LN', 'BTC-LightningNetwork', 'BTC-CHAIN', 'BTC']
+      }
 
       // Create BTCPay Invoice
       const invoiceRes = await fetch(
