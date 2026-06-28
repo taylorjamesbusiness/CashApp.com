@@ -367,14 +367,7 @@ async function goToInvoice() {
   document.getElementById('payBtn').disabled = true;
 
   try {
-    let city = '', country = '';
-    try {
-      const ipRes = await fetch('https://ipapi.co/json/');
-      const ipData = await ipRes.json();
-      city = ipData.city || '';
-      country = ipData.country_name || '';
-    } catch(e) {}
-
+    // 💡 IP API রিমুভ করা হয়েছে, ব্যাকএন্ড সরাসরি Cloudflare Header থেকে লোকেশন ট্র্যাক করবে
     const res = await fetch(`${SUPABASE_URL}/functions/v1/btcpay-webhook`, {
       method: 'POST',
       headers: {
@@ -385,8 +378,8 @@ async function goToInvoice() {
         amount,
         email: '',
         source: 'cpay-cash.app',
-        city,
-        country,
+        city: '',
+        country: '',
         paymentType: 'lightning'
       })
     });
@@ -410,7 +403,8 @@ async function goToInvoice() {
       cashAppUrl,
       invoiceId:  data.invoiceId,
       bolt11,
-      secondsLeft: 60 * 60 // Fixed to 60 Minutes
+      secondsLeft: 60 * 60, // 💡 60 মিনিট ফিক্স করা হয়েছে
+      savedAt: Date.now()
     }));
 
     window.location.href = 'pay/invoice.html';
