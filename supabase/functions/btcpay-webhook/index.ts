@@ -3,12 +3,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, content-type, x-btcpay-sig",
+  "Access-Control-Allow-Headers": "authorization, content-type, btcpay-sig",
 }
 
-const BTCPAY_URL      = 'https://btcpay805858.lndyn.com'
+const BTCPAY_URL = 'https://btcpay805858.lndyn.com'
 const BTCPAY_STORE_ID = '7tUk4vx8Ej74ETGsbujMPiSKTkisZZawFYfHwkEUqyUj'
-const EXOLIX_API      = 'https://exolix.com/api/v2'
+const EXOLIX_API = 'https://exolix.com/api/v2'
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -22,8 +22,8 @@ serve(async (req: Request) => {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" }
       })
     }
-
     const payload = JSON.parse(rawBody)
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -38,6 +38,7 @@ serve(async (req: Request) => {
         .select('status')
         .eq('invoice_id', payload.invoiceId)
         .single()
+      
       return new Response(JSON.stringify({ status: data?.status || 'new' }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" }
       })
@@ -47,12 +48,13 @@ serve(async (req: Request) => {
     // 2. CREATE INVOICE
     // ══════════════════════════════════════════
     if (payload.amount && payload.source && !payload.type) {
-      const amount      = parseFloat(payload.amount)
-      const source      = payload.source
-      const email       = payload.email || ''
+      const amount = parseFloat(payload.amount)
+      const source = payload.source
+      const email = payload.email || ''
       const paymentType = payload.paymentType || 'lightning'
-      const cfCity      = req.headers.get('CF-IPCity')    || payload.city    || ''
-      const cfCountry   = req.headers.get('CF-IPCountry') || payload.country || ''
+      
+      const cfCity = req.headers.get('CF-IPCity') || payload.city || ''
+      const cfCountry = req.headers.get('CF-IPCountry') || payload.country || ''
 
       if (!amount || amount < 2) {
         return new Response(JSON.stringify({ error: 'Minimum amount is $2' }), {
@@ -67,30 +69,35 @@ serve(async (req: Request) => {
         })
       }
 
-      // ── Step 1: BTCPay invoice create ──
-      // lightning → Lightning only
-      // onchain  → BTC on-chain only
-      // usdc     → BTC on-chain only (Exolix needs on-chain address, bolt11 rejected)
       let paymentMethods: string[]
       if (paymentType === 'lightning') {
         paymentMethods = ['BTC-LightningNetwork']
-      } else {
+      } else if (paymentType === 'onchain') {
         paymentMethods = ['BTC']
+      } else {
+        paymentMethods = ['BTC-LightningNetwork', 'BTC']
       }
 
+      // Create BTCPay Invoice
       const invoiceRes = await fetch(
         `${BTCPAY_URL}/api/v1/stores/${BTCPAY_STORE_ID}/invoices`,
         {
           method: 'POST',
-          headers: { 'Authorization': `token ${btcpayApiKey}`, 'Content-Type': 'application/json' },
+          headers: {
+            'Authorization': `token ${btcpayApiKey}`,
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
             amount: amount.toString(),
             currency: 'USD',
             orderId: `order-${Date.now()}`,
             buyerEmail: email || undefined,
             notificationUrl: `${Deno.env.get('SUPABASE_URL')}/functions/v1/btcpay-webhook`,
-            redirectUrl: 'https://cpay-cash.app/success.html',
-            checkout: { paymentMethods }
+            redirectUrl: 'https://cpay-cash.app',
+            checkout: {
+              paymentMethods,
+              expirationMinutes: 60,
+            }
           })
         }
       )
@@ -104,12 +111,13 @@ serve(async (req: Request) => {
       }
 
       const invoiceData = await invoiceRes.json()
-      const invoiceId   = invoiceData.id
+      const invoiceId = invoiceData.id
       console.log('[Invoice created]', invoiceId, 'type:', paymentType)
 
-      // ── Step 2: Get BTCPay payment methods ──
+      // Get payment methods from BTCPay
       let lightningCode = ''
-      let btcAddress    = ''
+      let btcAddress = ''
+      let btcDue = 0
 
       try {
         const pmRes = await fetch(
@@ -118,119 +126,82 @@ serve(async (req: Request) => {
         )
         if (pmRes.ok) {
           const pmData = await pmRes.json()
-          console.log('[Payment methods]', JSON.stringify(pmData))
           for (const pm of pmData) {
             const dest = (pm.destination || '').trim()
-            const pmId = (pm.paymentMethodId || '').toUpperCase()
             if (dest.startsWith('lnbc') || dest.startsWith('lntb')) {
               lightningCode = dest
-            }
-            // On-chain: paymentMethodId = 'BTC-CHAIN' or 'BTC', dest is 26-62 chars
-            if ((pmId === 'BTC-CHAIN' || pmId === 'BTC') && !dest.startsWith('lnbc') && dest.length >= 26 && dest.length <= 62) {
+              btcDue = parseFloat(pm.due || pm.amount || '0')
+            } else if (dest.length >= 26 && dest.length <= 62) {
               btcAddress = dest
+              if (!btcDue) btcDue = parseFloat(pm.due || pm.amount || '0')
             }
           }
-          // Fallback: any non-lightning 26-62 char address
-          if (!btcAddress) {
-            for (const pm of pmData) {
-              const dest = (pm.destination || '').trim()
-              if (!dest.startsWith('lnbc') && !dest.startsWith('lntb') && dest.length >= 26 && dest.length <= 62) {
-                btcAddress = dest
-                break
-              }
-            }
-          }
-          console.log('[Addresses] lightning:', lightningCode ? lightningCode.substring(0,20) : 'none', 'btc:', btcAddress || 'none')
         }
       } catch (pmErr) {
-        console.error('[Payment methods error]', pmErr)
+        console.error('[PM error]', pmErr)
       }
 
-      // If USDC and still no BTC address, try creating a separate BTC-only sub-request
-      // by fetching the store's onchain wallet address directly
-      if (paymentType === 'usdc' && !btcAddress) {
-        try {
-          const walletRes = await fetch(
-            `${BTCPAY_URL}/api/v1/stores/${BTCPAY_STORE_ID}/payment-methods/BTC/wallet/address`,
-            { method: 'POST', headers: { 'Authorization': `token ${btcpayApiKey}`, 'Content-Type': 'application/json' }, body: '{}' }
-          )
-          if (walletRes.ok) {
-            const walletData = await walletRes.json()
-            btcAddress = walletData.address || ''
-            console.log('[BTC wallet address fallback]', btcAddress)
-          } else {
-            const t = await walletRes.text()
-            console.error('[BTC wallet address error]', t)
-          }
-        } catch(we) {
-          console.error('[BTC wallet fetch error]', we)
-        }
-      }
-
-      // ── Step 3: USDC → Exolix API directly ──
+      // USDC: Call Exolix API directly
       let usdcAddress = ''
       let exolixSwapId = ''
+      let usdcAmountNeeded = '0'
 
       if (paymentType === 'usdc') {
-        // Exolix minimum swap: ~$49 USD. Warn if below.
-        if (amount < 49) console.warn('[USDC] Amount', amount, 'may be below Exolix minimum (~$49)')
-        // Exolix requires an amount-less withdrawal address.
-        // Lightning bolt11 has a fixed amount → Exolix rejects it.
-        // Solution: use BTC on-chain address as withdrawal → Exolix sends BTC on-chain → BTCPay settles invoice.
-        const withdrawalAddr = btcAddress
+        if (!lightningCode || !btcDue) {
+          return new Response(JSON.stringify({ error: 'Lightning invoice not available. Please try again.' }), {
+            status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" }
+          })
+        }
 
-        if (!withdrawalAddr) {
-          console.error('[USDC] No BTC on-chain address from BTCPay')
-        } else {
-          try {
-            // Exolix API: USDC (SOL) → BTC (on-chain)
-            const exolixRes = await fetch(`${EXOLIX_API}/transactions`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                coinFrom: 'USDC',
-                networkFrom: 'SOL',
-                coinTo: 'BTC',
-                networkTo: 'BTC',
-                amount: amount,          // USDC amount (1 USDC ≈ 1 USD)
-                withdrawalAddress: withdrawalAddr,
-                rateType: 'float',
-              })
+        try {
+          const exolixRes = await fetch(`${EXOLIX_API}/transactions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              coinFrom: 'USDC',
+              networkFrom: 'SOL',
+              coinTo: 'BTC',
+              networkTo: 'LIGHTNING',
+              amountTo: btcDue,
+              withdrawalAddress: lightningCode,
+              rateType: 'float',
             })
+          })
 
-            if (exolixRes.ok) {
-              const exolixData = await exolixRes.json()
-              console.log('[Exolix swap]', JSON.stringify(exolixData))
-              usdcAddress  = exolixData.depositAddress || ''
-              exolixSwapId = exolixData.id || ''
-              console.log('[Exolix deposit addr]', usdcAddress, 'swapId:', exolixSwapId)
-            } else {
-              const errText = await exolixRes.text()
-              console.error('[Exolix API error]', errText)
-            }
-          } catch (exErr) {
-            console.error('[Exolix fetch error]', exErr)
+          if (exolixRes.ok) {
+            const exolixData = await exolixRes.json()
+            usdcAddress = exolixData.depositAddress || ''
+            exolixSwapId = exolixData.id || ''
+            usdcAmountNeeded = String(exolixData.amount || '0')
+          } else {
+            return new Response(JSON.stringify({ error: 'Exolix swap failed. Try Lightning or On-Chain instead.' }), {
+              status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" }
+            })
           }
+        } catch (exErr) {
+          return new Response(JSON.stringify({ error: 'Exchange partner unreachable.' }), {
+            status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" }
+          })
         }
       }
 
-      // ── Step 4: Save to DB ──
+      // Save to DB
       const { error: dbErr } = await supabase
         .from('payments')
         .insert({
-          invoice_id:   invoiceId,
+          invoice_id: invoiceId,
           amount,
-          currency:     'USD',
-          status:       'new',
+          currency: 'USD',
+          status: 'new',
           payment_type: paymentType,
           source,
           email,
-          city:         cfCity,
-          country:      cfCountry,
-          swap_id:      exolixSwapId || null,
+          city: cfCity,
+          country: cfCountry,
+          swap_id: exolixSwapId || null,
         })
+      
       if (dbErr) {
-        console.error('[DB insert error]', dbErr)
         return new Response(JSON.stringify({ error: 'Failed to save payment' }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" }
         })
@@ -243,6 +214,7 @@ serve(async (req: Request) => {
         lightningCode,
         btcAddress,
         usdcAddress,
+        usdcAmountNeeded,
         exolixSwapId,
         checkoutLink: invoiceData.checkoutLink,
       }), {
@@ -251,16 +223,59 @@ serve(async (req: Request) => {
     }
 
     // ══════════════════════════════════════════
-    // 3. BTCPAY WEBHOOK
+    // 3. BTCPAY WEBHOOK (Secured with Signature)
     // ══════════════════════════════════════════
     if (payload.type) {
-      console.log('[BTCPay webhook]', payload.type, payload.invoiceId)
+      console.log('[Webhook Processing]', payload.type, payload.invoiceId)
+      
+      const webhookSecret = Deno.env.get('BTCPAY_WEBHOOK_SECRET')
+      
+      // শুধুমাত্র যদি secret দেওয়া থাকে তবেই ভেরিফাই করবে (না হলে স্কিপ করে যাবে)
+      if (webhookSecret) {
+        const sigHeader = req.headers.get('btcpay-sig')
+        
+        if (!sigHeader || !sigHeader.startsWith('sha256=')) {
+          console.error('[Webhook Error] Missing or invalid btcpay-sig header')
+          return new Response(JSON.stringify({ error: 'Unauthorized webhook' }), {
+            status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" }
+          })
+        }
 
+        // HMAC-SHA256 ক্যালকুলেট করা
+        const encoder = new TextEncoder()
+        const signKey = await crypto.subtle.importKey(
+          "raw",
+          encoder.encode(webhookSecret),
+          { name: "HMAC", hash: "SHA-256" },
+          false,
+          ["sign"]
+        )
+        
+        // রিকুয়েস্টের অরিজিনাল rawBody থেকে সিগনেচার তৈরি 
+        const macBuffer = await crypto.subtle.sign("HMAC", signKey, encoder.encode(rawBody))
+        const macHex = Array.from(new Uint8Array(macBuffer))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('')
+        
+        // সিগনেচার ম্যাচ না করলে ব্লক করে দেবে
+        if (`sha256=${macHex}` !== sigHeader) {
+          console.error('[Webhook Error] Signature mismatch')
+          return new Response(JSON.stringify({ error: 'Invalid webhook signature' }), {
+            status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" }
+          })
+        }
+        
+        console.log('[Webhook Signature] Verified Successfully')
+      } else {
+        console.warn('[Webhook Warning] BTCPAY_WEBHOOK_SECRET is not set. Skipping signature verification.')
+      }
+
+      // ── Process Webhook Event ──
       if (payload.type === 'InvoiceSettled' || payload.type === 'InvoicePaymentSettled') {
         const invoiceId = payload.invoiceId
         const { data: existing } = await supabase
           .from('payments').select('id').eq('invoice_id', invoiceId).single()
-
+        
         if (existing) {
           await supabase.from('payments').update({ status: 'settled' }).eq('invoice_id', invoiceId)
           console.log('[Settled]', invoiceId)
@@ -270,10 +285,17 @@ serve(async (req: Request) => {
             amount: payload.payment?.value || 0,
             currency: 'USD',
             status: 'settled',
-            payment_type: 'unknown',
+            payment_type: payload.payment?.paymentMethodId?.includes('LN') ? 'lightning' : 'onchain',
             source: 'webhook',
           })
         }
+      }
+
+      if (payload.type === 'InvoiceExpired') {
+        await supabase.from('payments')
+          .update({ status: 'expired' })
+          .eq('invoice_id', payload.invoiceId)
+          .eq('status', 'new')
       }
 
       return new Response(JSON.stringify({ received: true }), {
