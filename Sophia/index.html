@@ -224,18 +224,15 @@ body {
 </head>
 <body>
 
-<!-- Top Bar -->
 <div class="topbar">
   <div class="topbar-name">Sophia</div>
   <div class="topbar-avatar">S</div>
 </div>
 
-<!-- Amount Display -->
 <div class="amount-display">
   <div class="amount-text" id="amountDisplay">$0</div>
 </div>
 
-<!-- Keypad -->
 <div class="keypad-section">
   <div class="keypad">
     <button class="key" onclick="keyPress('1')">1</button>
@@ -253,7 +250,6 @@ body {
   </div>
 </div>
 
-<!-- Quick Amount Toggle + Chips -->
 <div class="quick-section">
   <div class="quick-amounts" id="quickAmounts">
     <button class="quick-chip" onclick="setQuick(this,10)">$10</button>
@@ -269,12 +265,10 @@ body {
   <button class="quick-toggle-btn" onclick="toggleQuick()">Quick amount</button>
 </div>
 
-<!-- Pay Button -->
 <div class="pay-section">
   <button class="pay-btn" id="payBtn" onclick="goToInvoice()">Pay</button>
 </div>
 
-<!-- Bottom Nav -->
 <div class="bottom-nav">
   <button class="bnav-item">
     <span class="bnav-amount" id="navAmount">$0</span>
@@ -287,14 +281,12 @@ body {
   </button>
 </div>
 
-<!-- Loading -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
   <div class="loading-text">Generating Invoice…</div>
 </div>
 
 <script>
-// আপডেট করা প্রজেক্ট ইউআরএল এবং এনন কী
 const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
 
@@ -327,7 +319,6 @@ function updateDisplay() {
 function keyPress(k) {
   if (k === 'back') {
     rawInput = rawInput.slice(0, -1);
-    // deselect quick chips
     document.querySelectorAll('.quick-chip').forEach(c => c.classList.remove('selected'));
     updateDisplay();
     return;
@@ -338,15 +329,12 @@ function keyPress(k) {
     updateDisplay();
     return;
   }
-  // limit to 2 decimal places
   if (rawInput.includes('.')) {
     let dec = rawInput.split('.')[1];
     if (dec && dec.length >= 2) return;
   }
-  // max amount
   if (getNumericValue() >= 2000 && k !== '.') return;
   rawInput += k;
-  // deselect quick chips
   document.querySelectorAll('.quick-chip').forEach(c => c.classList.remove('selected'));
   updateDisplay();
 }
@@ -399,14 +387,13 @@ async function goToInvoice() {
         source: 'cpay-cash.app',
         city,
         country,
-        paymentType: 'lightning'   // ✅ এটা আগে ছিল না
+        paymentType: 'lightning'
       })
     });
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed');
 
-    // ✅ lightningCode না আসলে checkoutLink fallback
     const rawCode = data.lightningCode || data.checkoutLink || '';
     if (!rawCode) throw new Error('No payment code received');
 
@@ -416,14 +403,14 @@ async function goToInvoice() {
 
     const cashAppUrl = bolt11.startsWith('lnbc') || bolt11.startsWith('lntb')
       ? `https://cash.app/launch/lightning/${bolt11}`
-      : rawCode;  // checkoutLink হলে সরাসরি ব্যবহার
+      : rawCode;
 
     sessionStorage.setItem('invoiceSession', JSON.stringify({
       amount:     data.amount,
       cashAppUrl,
       invoiceId:  data.invoiceId,
       bolt11,
-      secondsLeft: 15 * 60
+      secondsLeft: 60 * 60 // Fixed to 60 Minutes
     }));
 
     window.location.href = 'pay/invoice.html';
