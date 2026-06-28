@@ -142,14 +142,16 @@ body::before {
 .status-dot { width:6px;height:6px;background:currentColor;border-radius:50%;animation:pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
 
-/* 💡 Premium Copy Button - Positioned ABOVE Pay Now */
+/* 💡 Premium Copy Button - Optimized padding and line-height for text wrapping */
 .copy-btn-small {
   width:100%;margin-bottom:12px;
   background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);
-  color:#fff;border-radius:12px;padding:13px;
-  font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
-  transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;
+  color:#fff;border-radius:12px;padding:12px 16px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;
+  line-height:1.4;text-align:center;
 }
+.copy-btn-small svg { flex-shrink:0; margin-top:2px; }
 .copy-btn-small:hover { background:rgba(255,255,255,0.1);border-color:rgba(0,200,81,0.4); }
 
 .pay-now-btn {
@@ -194,7 +196,7 @@ body::before {
 }
 .reload-btn:hover { transform:translateY(-2px); }
 
-/* 💡 Perfected How to Pay Modal (Match CashApp Image) */
+/* HOW TO PAY MODAL */
 #howToPayModal {
   display:none;
   position:fixed;inset:0;
@@ -218,7 +220,7 @@ body::before {
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:24px;
 }
-.modal-title { font-size:18px;font-weight:800;color:#fff; }
+.modal-title { font-size:18px;font-weight:800;color:#fff}
 .modal-close {
   background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.7);
   width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;
@@ -310,9 +312,10 @@ body::before {
         </div>
       </div>
 
+      <!-- 💡 Updated text & responsive structure for clean line break -->
       <button class="copy-btn-small" id="copyBtn" onclick="copyInvoice()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-        <span id="copyBtnTxt">Copy BTC Lightning Address</span>
+        <span id="copyBtnTxt">Copy BTC Lightning Address & send BTC from your Cash App or any other wallet.</span>
       </button>
 
       <a id="payNowBtn" href="#" target="_blank" class="pay-now-btn">
@@ -325,68 +328,16 @@ body::before {
   </div>
 
   <div id="step3">
-    <div class="success-icon">
-      <svg width="44" height="44" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-      </svg>
-    </div>
+    <div class="success-icon"><svg width="42" height="42" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></div>
     <div class="success-title">Payment Received!</div>
     <div class="success-sub">Thank you for your payment</div>
-    <div class="success-amount" id="successAmount">$0.00</div>
-    <button class="reload-btn" onclick="clearSession()">Make Another Payment</button>
+    <div class="success-amt" id="successAmt">$0.00</div>
+    <button class="reload-btn" onclick="clearSessionAndReload()">Make Another Payment</button>
   </div>
 </div>
 
-<div id="howToPayModal">
-  <div class="modal-inner">
-    <div class="modal-head">
-      <div class="modal-title">How to Pay</div>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="steps">
-      <div class="step-row">
-        <div class="step-num">1</div>
-        <div>
-          <div class="step-title">Open CashApp</div>
-          <div class="step-desc">Open the CashApp on your phone and log in</div>
-        </div>
-      </div>
-      <div class="step-row">
-        <div class="step-num">2</div>
-        <div style="width:100%;">
-          <div class="step-title">Go to Bitcoin section</div>
-          <div class="step-desc">Tap the <strong style="color:#ffc800;">Bitcoin ($)</strong> icon on the home screen</div>
-          <div class="warn-box">
-            <span style="font-size:16px;">⚠️</span>
-            <div class="warn-text">If your BTC balance is <strong>$0</strong>, you need to <strong>buy Bitcoin first</strong>. Tap <em>"Buy"</em> and purchase at least the required amount.</div>
-          </div>
-        </div>
-      </div>
-      <div class="step-row">
-        <div class="step-num">3</div>
-        <div>
-          <div class="step-title">Tap "Pay Now" button</div>
-          <div class="step-desc">Or scan the QR code using CashApp camera</div>
-        </div>
-      </div>
-      <div class="step-row">
-        <div class="step-num">4</div>
-        <div>
-          <div class="step-title">Confirm Payment</div>
-          <div class="step-desc">Review the amount carefully and confirm in CashApp</div>
-        </div>
-      </div>
-      <div class="step-row">
-        <div class="step-num">5</div>
-        <div>
-          <div class="step-title">Done! 🎉</div>
-          <div class="step-desc">Payment confirmed automatically — this page will update</div>
-        </div>
-      </div>
-    </div>
-    <button class="modal-got-it" onclick="closeModal()">Got it!</button>
-  </div>
-</div>
+<div id="modal"><div class="modal-inner"><div class="modal-header"><div class="modal-title" id="modalTitle">How to Pay</div><button class="modal-close" onclick="closeModal()">×</button></div><div id="modalContent"></div><button class="modal-ok" onclick="closeModal()">Got it!</button></div></div>
+<div id="toast"></div>
 
 <script>
 const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
@@ -409,7 +360,6 @@ window.addEventListener('DOMContentLoaded', () => {
   try {
     const { amount, cashAppUrl, invoiceId, bolt11, secondsLeft, savedAt } = JSON.parse(saved);
     
-    // 💡 Timer Persistence Check
     const elapsed = Math.floor((Date.now() - savedAt) / 1000);
     const remaining = secondsLeft - elapsed;
     
@@ -447,7 +397,6 @@ function renderInvoice(amount, cashAppUrl, invoiceId, bolt11, secondsLeft) {
   startPolling(invoiceId, amount);
 }
 
-// 💡 Expired UI Handler
 function markExpired() {
   document.getElementById('scanTip').textContent = 'Invoice Expired. Please try again.';
   document.getElementById('scanTip').style.color = '#ff4d4d';
@@ -478,7 +427,6 @@ function startTimer(sec, invoiceId) {
       String(m).padStart(2,'0') + ' : ' + String(s).padStart(2,'0');
     if(t <= 300) document.getElementById('timer').classList.add('urgent');
       
-    // Sync session every 5 seconds
     if(t % 5 === 0) {
       const saved = sessionStorage.getItem('invoiceSession');
       if (saved) {
@@ -518,12 +466,11 @@ function startPolling(invoiceId, amount) {
   }, 5000);
 }
 
-// 💡 Redesigned Copy Action
 function copyInvoice() {
   navigator.clipboard.writeText(currentLightningInvoice);
   const btnText = document.getElementById('copyBtnTxt');
   const original = btnText.innerHTML;
-  btnText.innerHTML = 'Address Copied!';
+  btnText.innerHTML = '✓ Address Copied Successfully!';
   setTimeout(() => {
     btnText.innerHTML = original;
   }, 2000);
@@ -541,18 +488,10 @@ function clearSession() {
   window.location.href = '../index.html';
 }
 
-function openModal() {
-  document.getElementById('howToPayModal').classList.add('open');
-}
-function closeModal() {
-  document.getElementById('howToPayModal').classList.remove('open');
-}
-document.getElementById('howToPayModal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
-});
+function openModal() { document.getElementById('howToPayModal').classList.add('open'); }
+function closeModal() { document.getElementById('howToPayModal').classList.remove('open'); }
+document.getElementById('howToPayModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
 </script>
 </body>
 </html>
