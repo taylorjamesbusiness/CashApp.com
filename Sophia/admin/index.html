@@ -188,7 +188,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 /* ══════ WITHDRAWAL MOBILE ══════ */
 .m-card-w { padding:16px; border-bottom:1px solid rgba(255,255,255,0.05); }
 .m-card-w:last-child { border-bottom:none; }
-.m-addr { font-family:monospace; font-size:12px; color:rgba(255,255,255,0.45); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px; }
 
 /* ══════ BADGES ══════ */
 .badge {
@@ -224,7 +223,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 </head>
 <body>
 
-<!-- ═══ LOGIN PAGE ═══ -->
 <div class="login-wrap" id="loginPage">
   <div class="login-card">
     <div class="login-logo">$</div>
@@ -240,7 +238,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
   </div>
 </div>
 
-<!-- ═══ DASHBOARD ═══ -->
 <div id="dashboard">
   <div class="topbar">
     <div class="topbar-logo">
@@ -258,7 +255,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 
   <div class="content">
 
-    <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card green">
         <div class="stat-icon">💰</div>
@@ -266,12 +262,14 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
         <div class="stat-val" id="statSettled">$0.00</div>
         <div class="stat-sub" id="statSettledCount">0 payments</div>
       </div>
+      
       <div class="stat-card">
-        <div class="stat-icon">📅</div>
-        <div class="stat-label">Today's Earnings</div>
-        <div class="stat-val" id="statToday" style="color:#00C851;">$0.00</div>
-        <div class="stat-sub" id="statTodayCount">0 payments</div>
+        <div class="stat-icon">🏦</div>
+        <div class="stat-label">Available Balance</div>
+        <div class="stat-val" id="statAvailable" style="color:#00C851;">$0.00</div>
+        <div class="stat-sub">Total Settled - Withdrawn</div>
       </div>
+
       <div class="stat-card">
         <div class="stat-icon">⏳</div>
         <div class="stat-label">Pending</div>
@@ -286,13 +284,11 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
       </div>
     </div>
 
-    <!-- TABS -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('payments', this)">💳 Payments</button>
       <button class="tab-btn" onclick="switchTab('withdrawals', this)">💸 Withdrawals</button>
     </div>
 
-    <!-- PAYMENTS TAB -->
     <div id="tab-payments">
       <div class="filter-bar">
         <select class="filter-select" id="filterStatus" onchange="resetAndRenderPayments()">
@@ -311,7 +307,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
         <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
       </div>
       <div class="table-wrap">
-        <!-- DESKTOP TABLE -->
         <div class="table-scroll">
           <table>
             <thead>
@@ -331,46 +326,41 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
             </tbody>
           </table>
         </div>
-        <!-- MOBILE CARDS -->
         <div class="mobile-list" id="mobilePaymentsList">
           <div class="m-empty">Loading...</div>
         </div>
-        <!-- PAGINATION UI -->
         <div class="pagination" id="payPagination"></div>
         <div class="table-footer" id="paymentsFooter"></div>
       </div>
     </div>
 
-    <!-- WITHDRAWALS TAB -->
     <div id="tab-withdrawals" style="display:none;">
-      <div class="filter-bar">
-        <select class="filter-select" id="filterWStatus" onchange="renderWithdrawals()">
-          <option value="">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="completed">Completed</option>
-        </select>
+      
+      <div class="filter-bar" style="justify-content:space-between;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap; flex:1;">
+          <input type="number" id="wdAmount" class="search-input" placeholder="Amount ($)" style="max-width:120px;" min="1">
+          <input type="text" id="wdNote" class="search-input" placeholder="Note (e.g. to CashApp)">
+          <button class="refresh-btn" onclick="submitWithdrawal()" style="background:rgba(0,200,81,0.15); border-color:rgba(0,200,81,0.4);">💳 Withdraw</button>
+        </div>
         <button class="refresh-btn" onclick="loadData()">⟳ Refresh</button>
       </div>
+
       <div class="table-wrap">
-        <!-- DESKTOP -->
         <div class="table-scroll">
           <table>
             <thead>
               <tr>
                 <th>#</th>
                 <th>Amount</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th>Action</th>
-                <th>Created At</th>
+                <th>Note</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody id="withdrawalsBody">
-              <tr><td colspan="6" class="m-empty">Loading...</td></tr>
+              <tr><td colspan="4" class="m-empty">Loading...</td></tr>
             </tbody>
           </table>
         </div>
-        <!-- MOBILE -->
         <div class="mobile-list" id="mobileWithdrawalsList">
           <div class="m-empty">Loading...</div>
         </div>
@@ -457,18 +447,21 @@ async function fetchWithdrawals() {
   } catch(e) { console.error(e); }
 }
 
+// 💡 Update Stats (Calculates Available Balance)
 function updateStats() {
   const settled = allPayments.filter(p => p.status === 'settled');
   const pending = allPayments.filter(p => p.status === 'new' && !p._uiExpired);
   const expired = allPayments.filter(p => p.status === 'expired' || p._uiExpired);
+  
   const totalSettled = settled.reduce((s,p) => s + parseFloat(p.amount), 0);
+  const totalWithdrawn = allWithdrawals.reduce((s,w) => s + parseFloat(w.amount), 0);
+  const available = totalSettled - totalWithdrawn;
+  
   document.getElementById('statSettled').textContent = '$' + totalSettled.toFixed(2);
   document.getElementById('statSettledCount').textContent = settled.length + ' payments';
-  const today = new Date(); today.setHours(0,0,0,0);
-  const todayP = settled.filter(p => new Date(p.created_at) >= today);
-  const todayTotal = todayP.reduce((s,p) => s + parseFloat(p.amount), 0);
-  document.getElementById('statToday').textContent = '$' + todayTotal.toFixed(2);
-  document.getElementById('statTodayCount').textContent = todayP.length + ' today';
+  
+  document.getElementById('statAvailable').textContent = '$' + available.toFixed(2);
+  
   document.getElementById('statPending').textContent = pending.length;
   document.getElementById('statTotal').textContent = allPayments.length;
   document.getElementById('statExpired').textContent = expired.length + ' expired';
@@ -544,11 +537,19 @@ function renderPayments() {
     const es = p._uiExpired ? 'expired' : p.status;
     const shortId = p.invoice_id.substring(0,18) + '...';
     const globalIndex = start + index + 1;
+    
+    // 💡 Method Badge Logic (Desktop)
+    const methodStr = p.payment_type ? p.payment_type.toUpperCase() : 'LIGHTNING';
+    const methodColor = methodStr === 'USDC' ? '#00C851' : (methodStr === 'ONCHAIN' ? '#f7931a' : '#ffc400');
+
     return `<tr>
       <td style="color:rgba(255,255,255,0.28);">${globalIndex}</td>
       <td>
         <div style="font-family:monospace;font-size:12px;color:rgba(255,255,255,0.55);" title="${p.invoice_id}">${shortId}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">${fmtTime(p.created_at)}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+          <span style="font-size:9px;font-weight:700;color:${methodColor};background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">${methodStr}</span>
+          <div style="font-size:10px;color:rgba(255,255,255,0.25);">${fmtTime(p.created_at)}</div>
+        </div>
       </td>
       <td style="font-weight:800;color:#fff;font-size:15px;">$${parseFloat(p.amount).toFixed(2)}</td>
       <td><span class="badge ${es}"><span class="badge-dot"></span>${es}</span></td>
@@ -562,6 +563,11 @@ function renderPayments() {
   mList.innerHTML = paginated.map((p) => {
     const es = p._uiExpired ? 'expired' : p.status;
     const shortId = p.invoice_id.substring(0,22) + '...';
+    
+    // 💡 Method Badge Logic (Mobile)
+    const methodStr = p.payment_type ? p.payment_type.toUpperCase() : 'LIGHTNING';
+    const methodColor = methodStr === 'USDC' ? '#00C851' : (methodStr === 'ONCHAIN' ? '#f7931a' : '#ffc400');
+
     let expirePart = '';
     if (es === 'expired') expirePart = '<span class="m-expired-pill">Expired</span>';
     else if (p.status === 'new' && !p._uiExpired) {
@@ -574,7 +580,10 @@ function renderPayments() {
       <div class="m-row">
         <div class="m-left">
           <div class="m-invoice" title="${p.invoice_id}">${shortId}</div>
-          <div class="m-time">${fmtDate(p.created_at)}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+            <span style="font-size:9px;font-weight:700;color:${methodColor};background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">${methodStr}</span>
+            <div class="m-time" style="margin-top:0;">${fmtDate(p.created_at)}</div>
+          </div>
         </div>
         <div style="text-align:right;">
           <div class="m-amount">$${parseFloat(p.amount).toFixed(2)}</div>
@@ -606,43 +615,37 @@ function renderPayments() {
     `Showing ${start + 1}-${Math.min(start + PER_PAGE, filtered.length)} of ${filtered.length} filtered payments · $${total.toFixed(2)}`;
 }
 
+// 💡 Simple Render Withdrawals Logic
 function renderWithdrawals() {
-  const statusFilter = document.getElementById('filterWStatus').value;
-  const filtered = allWithdrawals.filter(w => !statusFilter || w.status === statusFilter);
+  const filtered = allWithdrawals;
   const tbody = document.getElementById('withdrawalsBody');
   const mList = document.getElementById('mobileWithdrawalsList');
 
   if (!filtered.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="m-empty">No withdrawals found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="m-empty">No withdrawals found</td></tr>';
     mList.innerHTML = '<div class="m-empty">No withdrawals found</div>';
     document.getElementById('withdrawalsFooter').textContent = '';
     return;
   }
 
   tbody.innerHTML = filtered.map((w,i) => {
-    const shortAddr = w.address.length>22 ? w.address.substring(0,22)+'...' : w.address;
     return `<tr>
       <td style="color:rgba(255,255,255,0.28);">${i+1}</td>
-      <td style="font-weight:800;color:#fff;font-size:15px;">$${parseFloat(w.amount).toFixed(2)}</td>
-      <td style="font-family:monospace;font-size:12px;color:rgba(255,255,255,0.45);" title="${w.address}">${shortAddr}</td>
-      <td><span class="badge ${w.status}"><span class="badge-dot"></span>${w.status}</span></td>
-      <td>${w.status==='pending'?`<button class="mark-btn" onclick="markCompleted('${w.id}')">Mark Done</button>`:'✓'}</td>
+      <td style="font-weight:800;color:#ff4d4d;font-size:15px;">-$${parseFloat(w.amount).toFixed(2)}</td>
+      <td style="color:rgba(255,255,255,0.6);">${w.note || '-'}</td>
       <td style="color:rgba(255,255,255,0.35);font-size:12px;">${fmtDate(w.created_at)}</td>
     </tr>`;
   }).join('');
 
   mList.innerHTML = filtered.map((w,i) => {
-    const shortAddr = w.address.length>28 ? w.address.substring(0,28)+'...' : w.address;
     return `<div class="m-card-w">
       <div class="m-row">
         <div class="m-left">
-          <div class="m-amount" style="font-size:20px;font-weight:800;">$${parseFloat(w.amount).toFixed(2)}</div>
-          <div class="m-addr" title="${w.address}">${shortAddr}</div>
-          <div class="m-time">${fmtDate(w.created_at)}</div>
+          <div class="m-amount" style="font-size:20px;font-weight:800;color:#ff4d4d;">-$${parseFloat(w.amount).toFixed(2)}</div>
+          <div class="m-addr" style="color:rgba(255,255,255,0.6);">${w.note || 'No note'}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-          <span class="badge ${w.status}"><span class="badge-dot"></span>${w.status}</span>
-          ${w.status==='pending'?`<button class="mark-btn" onclick="markCompleted('${w.id}')">Mark Done</button>`:'<span style="font-size:18px;">✓</span>'}
+          <div class="m-time">${fmtDate(w.created_at)}</div>
         </div>
       </div>
     </div>`;
@@ -651,18 +654,27 @@ function renderWithdrawals() {
   document.getElementById('withdrawalsFooter').textContent = `${filtered.length} withdrawals`;
 }
 
-async function markCompleted(id) {
-  await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?id=eq.${id}`, {
-    method:'PATCH',
-    headers:{
-      'apikey':SUPABASE_ANON_KEY,
-      'Authorization':`Bearer ${SUPABASE_ANON_KEY}`,
-      'Content-Type':'application/json',
-      'Prefer':'return=minimal'
-    },
-    body:JSON.stringify({status:'completed'})
-  });
-  await loadData();
+// 💡 Handle Withdrawal Submission
+async function submitWithdrawal() {
+  const amt = parseFloat(document.getElementById('wdAmount').value);
+  const note = document.getElementById('wdNote').value || '';
+  if (!amt || amt <= 0) return alert('Enter a valid amount');
+  
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/withdrawals`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ amount: amt, note: note })
+    });
+    document.getElementById('wdAmount').value = '';
+    document.getElementById('wdNote').value = '';
+    loadData(); // Reloads all data including available balance
+  } catch(e) { console.error(e); }
 }
 
 function switchTab(tab, btn) {
