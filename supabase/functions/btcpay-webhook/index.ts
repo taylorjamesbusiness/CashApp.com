@@ -176,53 +176,16 @@ serve(async (req: Request) => {
             exolixSwapId = exolixData.id || ''
             usdcAmountNeeded = String(exolixData.amount || '0')
           } else {
-  
-const
- errBody = 
-await
- exolixRes.text().catch(
-() =>
- 
-''
-)
-  
-console
-.error(
-'[Exolix failed]'
-, exolixRes.status, errBody)
-  
-return
- 
-new
- Response(
-JSON
-.stringify({
-    
-error
-: 
-'Exolix swap failed'
-,
-    
-status
-: exolixRes.status,
-    
-details
-: errBody,
-  }), {
-    
-status
-: 
-502
-,
-    
-headers
-: { ...corsHeaders, 
-"Content-Type"
-: 
-"application/json"
- }
-  })
-}
+            return new Response(JSON.stringify({ error: 'Exolix swap failed. Try Lightning or On-Chain instead.' }), {
+              status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" }
+            })
+          }
+        } catch (exErr) {
+          return new Response(JSON.stringify({ error: 'Exchange partner unreachable.' }), {
+            status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" }
+          })
+        }
+      }
 
       // Save to DB
       const { error: dbErr } = await supabase
