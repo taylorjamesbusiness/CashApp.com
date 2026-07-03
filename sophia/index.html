@@ -74,7 +74,7 @@ html, body { width:100%; height:100%; font-family:'DM Sans',sans-serif; backgrou
     <div class="amount-inner">
       <div class="method-strip">
         <div class="method-inner">
-          <button class="method-pill" data-method="lightning" onclick="selectMethod('lightning')">
+          <button class="method-pill active" data-method="lightning" onclick="selectMethod('lightning')">
             <span class="title">Lightning</span>
             <span class="sub">Instant</span>
           </button>
@@ -82,7 +82,7 @@ html, body { width:100%; height:100%; font-family:'DM Sans',sans-serif; backgrou
             <span class="title">On-Chain</span>
             <span class="sub">~60 min</span>
           </button>
-          <button class="method-pill active" data-method="usdc" onclick="selectMethod('usdc')">
+          <button class="method-pill" data-method="usdc" onclick="selectMethod('usdc')">
             <span class="title">Cash App</span>
             <span class="sub">USDC · Fast</span>
           </button>
@@ -159,7 +159,7 @@ const BTC_SECONDS       = 60 * 60;
 
 let rawInput       = '';
 let quickVisible   = false;
-let selectedMethod = 'usdc';
+let selectedMethod = 'lightning'; // Default updated here
 
 function selectMethod(method) {
   selectedMethod = method;
@@ -370,7 +370,7 @@ async function submitPayment() {
     sessionStorage.setItem('invoiceSession', JSON.stringify(session));
 
     if (session.paymentType === 'usdc') {
-      window.location.href = '/pay/invoice-usdc.html';
+      window.location.href = 'pay/invoice-usdc.html';
     } else {
       window.location.href = 'pay/invoice-btc.html';
     }
