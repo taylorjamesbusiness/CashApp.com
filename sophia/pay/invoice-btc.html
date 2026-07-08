@@ -3,83 +3,251 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BTC Invoice – Sophia</title>
+<title>Invoice – Sophia</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2300D632'/><text x='50' y='72' font-size='65' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>$</text></svg>" type="image/svg+xml">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-html, body { width:100%; min-height:100dvh; font-family:'DM Sans',sans-serif; background:#000; color:#fff; }
-body { display:flex; align-items:center; justify-content:center; padding:16px; position:relative; }
-body::before { content:''; position:fixed; inset:0; background:radial-gradient(circle at 20% 40%, rgba(0,200,81,0.08) 0%, transparent 55%), radial-gradient(circle at 80% 70%, rgba(0,200,81,0.05) 0%, transparent 50%); pointer-events:none; z-index:0; }
+html, body {
+  width:100%; height:100%;
+  font-family:'DM Sans',sans-serif;
+  background:#000;
+  color:#fff;
+}
+body {
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  position:relative;
+  overflow-x:hidden;
+}
 
-.card { position:relative; z-index:1; width:100%; max-width:400px; background:#0d0d0d; border-radius:24px; border:1px solid rgba(0,200,81,0.2); box-shadow:0 8px 40px rgba(0,0,0,0.8); overflow:hidden; animation:slideIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-@keyframes slideIn { from{transform:translateY(30px);opacity:0;} to{transform:translateY(0);opacity:1;} }
-.drag-bar { width:36px; height:4px; background:rgba(255,255,255,0.1); border-radius:4px; margin:12px auto 0; }
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(circle at 20% 40%, rgba(0,200,81,0.08) 0%, transparent 55%),
+    radial-gradient(circle at 80% 70%, rgba(0,200,81,0.05) 0%, transparent 50%);
+  pointer-events:none;z-index:0;
+}
 
-.s2-topbar { display:flex; align-items:center; justify-content:space-between; padding:16px 20px 0; }
-.back-btn { display:flex; align-items:center; gap:6px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); padding:7px 14px; }
-.how-btn { display:flex; align-items:center; gap:6px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; background:rgba(0,200,81,0.1); border:1px solid rgba(0,200,81,0.3); color:#00C851; padding:7px 14px; }
+.card {
+  position:relative;z-index:1;
+  width:100%;max-width:400px;
+  background:#0d0d0d;
+  border-radius:24px;
+  border:1px solid rgba(0,200,81,0.2);
+  box-shadow:0 8px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,200,81,0.08);
+  overflow:hidden;
+  animation:slideIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes slideIn {
+  from{transform:translateY(30px);opacity:0;}
+  to{transform:translateY(0);opacity:1;}
+}
+.drag-bar { width:36px;height:4px;background:rgba(255,255,255,0.1);border-radius:4px;margin:12px auto 0; }
 
-.s2-body { padding:16px 20px 24px; text-align:center; }
-.amount-label { font-size:11px; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.12em; font-weight:600; }
-.amount-val { font-size:44px; font-weight:800; color:#fff; margin:6px 0 2px; letter-spacing:-1px; }
-.btc-amount { font-size:13px; color:rgba(255,255,255,0.35); margin-bottom:14px; font-weight:500; }
-.scan-tip { font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:16px; }
+#step2 { padding:0; }
 
-/* QR */
-.qr-outer { display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
-.qr-wrap { background:#fff; border-radius:18px; padding:12px; position:relative; display:inline-block; box-shadow:0 6px 24px rgba(0,0,0,0.5); cursor:pointer; transition:transform 0.2s; }
+.s2-topbar {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 0;
+}
+.back-btn {
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.7);
+  padding:7px 14px;border-radius:10px;
+  font-size:13px;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:background 0.2s;
+}
+.back-btn:hover { background:rgba(255,255,255,0.1); }
+.how-btn {
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,200,81,0.1);
+  border:1px solid rgba(0,200,81,0.3);
+  color:#00C851;
+  padding:7px 14px;border-radius:10px;
+  font-size:13px;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:background 0.2s;
+}
+.how-btn:hover { background:rgba(0,200,81,0.18); }
+
+.s2-body { padding:16px 20px 24px; text-align: center; }
+
+.amount-label { font-size:11px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.12em;font-weight:600; }
+.amount-val { font-size:44px;font-weight:800;color:#fff;margin:6px 0 2px;letter-spacing:-1px; }
+.btc-val { font-size:14px; color:#f7931a; font-weight:700; margin-bottom:12px; display:none; }
+.scan-tip { font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:18px; }
+
+.qr-outer {
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.qr-wrap {
+  background:#fff;
+  border-radius:18px;
+  padding:12px;
+  position:relative;
+  cursor:pointer;
+  transition:transform 0.2s;
+  box-shadow:0 6px 24px rgba(0,0,0,0.5);
+  display:inline-block;
+}
 .qr-wrap:hover { transform:scale(1.02); }
-.qr-logo-overlay { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:#fff; padding:3px; border-radius:8px; }
-.qr-logo-inner { width:30px; height:30px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:900; color:#fff; }
-.logo-lightning { background:#00C851; }
-.logo-btc { background:#f7931a; }
+.qr-logo-overlay {
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  background:#fff;padding:3px;border-radius:8px;
+}
+.qr-logo-inner {
+  background:#00C851;
+  width:30px;height:30px;
+  border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;font-weight:900;color:#fff;
+}
 
-/* Invoice Box */
-.invoice-box { background:#111; border:1px solid rgba(0,200,81,0.12); border-radius:16px; padding:16px; margin-bottom:14px; text-align:left; }
-.timer-label { font-size:10px; color:#00C851; font-weight:700; text-transform:uppercase; letter-spacing:0.15em; text-align:center; }
-.timer-val { font-size:30px; font-weight:800; color:#fff; text-align:center; letter-spacing:0.12em; margin:6px 0 14px; }
-.inv-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:14px; }
+.invoice-box {
+  background:#111;
+  border:1px solid rgba(0,200,81,0.12);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+  text-align: left;
+}
+.timer-label { font-size:10px;color:#00C851;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;text-align:center; }
+.timer-val { font-size:30px;font-weight:800;color:#fff;text-align:center;letter-spacing:0.12em;margin:6px 0 14px; }
+.inv-row {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  font-size:14px;
+}
 .inv-row:last-of-type { border-bottom:none; }
-.inv-key { color:rgba(255,255,255,0.4); font-weight:600; }
-.inv-val { font-weight:700; font-size:12px; color:#fff; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.status-badge { background:rgba(0,200,81,0.1); border:1px solid rgba(0,200,81,0.3); color:#00C851; padding:4px 12px; border-radius:999px; font-size:10px; font-weight:700; text-transform:uppercase; display:flex; align-items:center; gap:5px; }
-.status-dot { width:6px; height:6px; background:#00C851; border-radius:50%; animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.inv-key { color:rgba(255,255,255,0.4);font-weight:600; }
+.inv-val { font-weight:700;font-size:12px;color:#fff; }
+.status-badge {
+  background:rgba(0,200,81,0.1);border:1px solid rgba(0,200,81,0.3);
+  color:#00C851;padding:4px 12px;border-radius:999px;
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  display:flex;align-items:center;gap:5px;
+}
+.status-dot { width:6px;height:6px;background:#00C851;border-radius:50%;animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
 
-/* Buttons */
-.pay-now-btn { width:100%; background:linear-gradient(135deg,#00C851,#00a040); color:#fff; border:none; border-radius:14px; padding:15px; font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; box-shadow:0 6px 20px rgba(0,200,81,0.3); font-family:'DM Sans',sans-serif; transition:all 0.2s; }
-.pay-now-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(0,200,81,0.45); }
-.copy-btn { width:100%; margin-top:10px; background:none; border:none; color:rgba(255,255,255,0.3); font-size:12px; font-weight:600; cursor:pointer; text-decoration:underline; font-family:'DM Sans',sans-serif; transition:color 0.2s; }
+.pay-now-btn {
+  width:100%;
+  background:linear-gradient(135deg,#00C851,#00a040);
+  color:#fff;border:none;border-radius:14px;padding:15px;
+  font-size:16px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  text-decoration:none;
+  box-shadow:0 6px 20px rgba(0,200,81,0.3);
+  font-family:'DM Sans',sans-serif;
+  transition:all 0.2s;
+}
+.pay-now-btn:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,200,81,0.45); }
+
+.copy-btn {
+  width:100%;margin-top:10px;
+  background:none;border:none;color:rgba(255,255,255,0.3);
+  font-size:12px;font-weight:600;cursor:pointer;
+  text-decoration:underline;font-family:'DM Sans',sans-serif;
+  transition:color 0.2s;
+}
 .copy-btn:hover { color:rgba(255,255,255,0.6); }
 
-/* Success */
-#successBody { display:none; padding:48px 24px; text-align:center; }
-.success-icon { width:80px; height:80px; background:linear-gradient(135deg,#00C851,#00a040); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; box-shadow:0 0 40px rgba(0,200,81,0.45); animation:pop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-@keyframes pop { from{transform:scale(0);opacity:0;} to{transform:scale(1);opacity:1;} }
-.success-title { font-size:24px; font-weight:800; color:#fff; margin-bottom:6px; }
-.success-sub { color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:8px; }
-.success-amount { font-size:44px; font-weight:800; color:#00C851; margin-bottom:28px; }
-.reload-btn { width:100%; background:linear-gradient(135deg,#00C851,#00a040); color:#fff; border:none; border-radius:14px; padding:15px; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; box-shadow:0 6px 20px rgba(0,200,81,0.3); }
+#step3 { display:none;padding:48px 24px;text-align:center; }
+.success-icon {
+  width:80px;height:80px;
+  background:linear-gradient(135deg,#00C851,#00a040);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;
+  box-shadow:0 0 40px rgba(0,200,81,0.45);
+  animation:pop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes pop {
+  0%{transform:scale(0);opacity:0;}
+  60%{transform:scale(1.15);}
+  100%{transform:scale(1);opacity:1;}
+}
+.success-title { font-size:24px;font-weight:800;color:#fff;margin-bottom:6px; }
+.success-sub { color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:8px; }
+.success-amount { font-size:44px;font-weight:800;color:#00C851;margin-bottom:28px; }
+.reload-btn {
+  width:100%;
+  background:linear-gradient(135deg,#00C851,#00a040);
+  color:#fff;border:none;border-radius:14px;padding:15px;
+  font-size:15px;font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  box-shadow:0 6px 20px rgba(0,200,81,0.3);
+  transition:all 0.2s;
+}
+.reload-btn:hover { transform:translateY(-2px); }
 
-/* Modal */
-#howToPayModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; padding:20px; }
+#howToPayModal {
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.88);
+  backdrop-filter:blur(4px);
+  z-index:200;
+  align-items:center;justify-content:center;
+  padding:20px;
+}
 #howToPayModal.open { display:flex; }
-.modal-inner { width:100%; max-width:360px; background:#0a0a0a; border:1px solid rgba(0,200,81,0.22); border-radius:20px; padding:24px; max-height:90vh; overflow-y:auto; }
-.modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
-.modal-title { font-size:16px; font-weight:800; color:#fff; }
-.modal-close { background:rgba(255,255,255,0.08); border:none; color:rgba(255,255,255,0.6); width:30px; height:30px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.steps { display:flex; flex-direction:column; gap:16px; }
-.step-row { display:flex; gap:14px; align-items:flex-start; }
-.step-num { min-width:32px; height:32px; background:linear-gradient(135deg,#00C851,#00a040); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; flex-shrink:0; }
-.step-title { font-size:14px; font-weight:700; color:#fff; margin-bottom:3px; }
-.step-desc { font-size:12px; color:rgba(255,255,255,0.5); line-height:1.5; }
-.modal-got-it { width:100%; margin-top:20px; background:linear-gradient(135deg,#00C851,#00a040); color:#fff; border:none; border-radius:12px; padding:13px; font-size:14px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; }
+.modal-inner {
+  width:100%;max-width:360px;
+  background:#0a0a0a;
+  border:1px solid rgba(0,200,81,0.22);
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.8);
+}
+.modal-head {
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+}
+.modal-title { font-size:16px;font-weight:800;color:#fff; }
+.modal-close {
+  background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.6);
+  width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.steps { display:flex;flex-direction:column;gap:16px; }
+.step-row { display:flex;gap:14px;align-items:flex-start; }
+.step-num {
+  min-width:32px;height:32px;
+  background:linear-gradient(135deg,#00C851,#00a040);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:#fff;
+}
+.step-title { font-size:14px;font-weight:700;color:#fff;margin-bottom:3px; }
+.step-desc { font-size:12px;color:rgba(255,255,255,0.5); }
+.warn-box {
+  margin-top:8px;
+  background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.22);
+  border-radius:8px;padding:8px 10px;
+  display:flex;gap:8px;align-items:flex-start;
+}
+.warn-text { font-size:11px;color:rgba(255,200,0,0.9);line-height:1.5; }
+.modal-got-it {
+  width:100%;margin-top:20px;
+  background:linear-gradient(135deg,#00C851,#00a040);
+  color:#fff;border:none;border-radius:12px;padding:13px;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+}
 
 @media (max-width:480px) {
-  body { padding:0; align-items:flex-end; }
-  .card { border-radius:24px 24px 0 0; max-width:100%; }
+  body { padding:0;align-items:flex-end; }
+  .card { border-radius:24px 24px 0 0;max-width:100%; }
 }
 </style>
 </head>
@@ -88,15 +256,18 @@ body::before { content:''; position:fixed; inset:0; background:radial-gradient(c
 <div class="card">
   <div class="drag-bar"></div>
 
-  <!-- ── Invoice View ── -->
-  <div id="invoiceBody">
+  <div id="step2">
     <div class="s2-topbar">
       <button class="back-btn" onclick="goBack()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
         Back
       </button>
       <button class="how-btn" onclick="openModal()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
         How to Pay
       </button>
     </div>
@@ -104,271 +275,250 @@ body::before { content:''; position:fixed; inset:0; background:radial-gradient(c
     <div class="s2-body">
       <div class="amount-label">Amount Due</div>
       <div class="amount-val">$<span id="displayAmount">0.00</span></div>
-      <div class="btc-amount" id="btcAmountLine"></div>
-      <div class="scan-tip" id="scanTip">Scan QR or tap button below to pay</div>
+      <div class="btc-val" id="btcAmountDisplay">0.00000000 BTC</div>
+      <div class="scan-tip">Scan or tap to pay</div>
 
-      <!-- QR Code -->
       <div class="qr-outer">
         <a id="qrLink" href="#" target="_blank">
           <div class="qr-wrap">
             <div id="qrcode"></div>
             <div class="qr-logo-overlay">
-              <div class="qr-logo-inner" id="qrLogo">₿</div>
+              <div class="qr-logo-inner">₿</div>
             </div>
           </div>
         </a>
       </div>
 
-      <!-- Invoice Details -->
       <div class="invoice-box">
         <div class="timer-label">Time Remaining</div>
-        <div class="timer-val" id="timer">60 : 00</div>
+        <div class="timer-val" id="timer">60 : 00</div> 
         <div class="inv-row">
           <span class="inv-key">Reference</span>
           <span class="inv-val" id="invoiceIdDisplay">Loading…</span>
         </div>
         <div class="inv-row">
-          <span class="inv-key">Method</span>
-          <span class="inv-val" id="methodDisplay">Bitcoin</span>
-        </div>
-        <div class="inv-row">
           <span class="inv-key">Status</span>
           <span class="status-badge" id="statusBadge">
-            <span class="status-dot"></span>
-            <span id="statusText">Awaiting Payment</span>
+            <span class="status-dot"></span> Awaiting Payment
           </span>
         </div>
       </div>
 
-            <!-- CTA Button -->
       <a id="payNowBtn" href="#" target="_blank" class="pay-now-btn">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-        <span id="payNowBtnText">Open your CashApp</span>
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        Open your CashApp
       </a>
-      <button class="copy-btn" id="copyBtn" onclick="copyData()">Copy address / invoice</button>
+      <button class="copy-btn" onclick="copyInvoice()">Copy Payment Address</button>
     </div>
   </div>
 
-  <!-- ── Success View ── -->
-  <div id="successBody">
+  <div id="step3">
     <div class="success-icon">
-      <svg width="44" height="44" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      <svg width="44" height="44" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+      </svg>
     </div>
     <div class="success-title">Payment Received!</div>
     <div class="success-sub">Thank you for your payment</div>
     <div class="success-amount" id="successAmount">$0.00</div>
-    <button class="reload-btn" onclick="window.location.href='../index.html'">Make Another Payment</button>
+    <button class="reload-btn" onclick="clearSession()">Make Another Payment</button>
   </div>
 </div>
 
-<!-- ── How to Pay Modal ── -->
 <div id="howToPayModal">
   <div class="modal-inner">
     <div class="modal-head">
-      <div class="modal-title" id="modalTitle">How to Pay</div>
+      <div class="modal-title">How to Pay</div>
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
-    <div class="steps" id="modalSteps"></div>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Open CashApp</div>
+          <div class="step-desc">Open the CashApp on your phone and log in</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Go to Bitcoin section</div>
+          <div class="step-desc">Tap the <strong style="color:#ffc800;">Bitcoin (₿)</strong> icon on the home screen</div>
+          <div class="warn-box">
+            <span style="font-size:14px;">⚠️</span>
+            <div class="warn-text">If your BTC balance is <strong>$0</strong>, you need to <strong>buy Bitcoin first</strong>. Tap <em>"Buy"</em> and purchase at least the required amount.</div>
+          </div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Tap "Pay Now" button</div>
+          <div class="step-desc">Or scan the QR code using CashApp camera</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div>
+          <div class="step-title">Confirm Payment</div>
+          <div class="step-desc">Review the amount carefully and confirm in CashApp</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">5</div>
+        <div>
+          <div class="step-title">Done! 🎉</div>
+          <div class="step-desc">Payment confirmed automatically — this page will update</div>
+        </div>
+      </div>
+    </div>
     <button class="modal-got-it" onclick="closeModal()">Got it!</button>
   </div>
 </div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────
 const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
-const ANON_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
-const BTCPAY_URL   = `${SUPABASE_URL}/functions/v1/btcpay-webhook`;
-const POLL_MS      = 5000;
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
 
-// ─── STATE ────────────────────────────────────────────────
-let timerInterval = null;
-let pollInterval  = null;
-let session       = null;
+let timerInterval, pollInterval;
+let currentPayCode = '';
 
-// ─── HOW TO PAY CONTENT ───────────────────────────────────
-const HOW_TO_PAY = {
-  lightning: {
-    title: 'How to Pay (Lightning)',
-    steps: [
-      { n:1, title:'Open Cash App',            desc:'Log in and tap the Bitcoin (₿) tab at the bottom' },
-      { n:2, title:'Tap "Send via Lightning"', desc:'Choose the Lightning option inside the Bitcoin section' },
-      { n:3, title:'Scan QR or paste invoice', desc:'Use the QR code or tap the button below to open Cash App directly' },
-      { n:4, title:'Confirm & Send ✓',          desc:'Complete the payment — this page auto-updates instantly' },
-    ]
-  },
-  onchain: {
-    title: 'How to Pay (Bitcoin On-Chain)',
-    steps: [
-      { n:1, title:'Open Cash App or any BTC wallet', desc:'Bitcoin.com, BlueWallet, Coinbase, Exodus, etc.' },
-      { n:2, title:'Tap "Send"',                      desc:'Choose Bitcoin (BTC) and enter the exact BTC amount shown' },
-      { n:3, title:'Scan QR or paste address',        desc:'Use the QR code above or copy the address below' },
-      { n:4, title:'Confirm & Send ✓',                desc:'On-chain payments take ~10–60 min to confirm' },
-    ]
-  }
-};
+function showStep(n) {
+  document.getElementById('step2').style.display = n === 2 ? 'block' : 'none';
+  document.getElementById('step3').style.display = n === 3 ? 'block' : 'none';
+}
 
-// ─── INIT ─────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  const raw = sessionStorage.getItem('invoiceSession');
-
-  if (!raw) {
+  const saved = sessionStorage.getItem('invoiceSession');
+  if (!saved) {
     window.location.href = '../index.html';
     return;
   }
-
-  try { session = JSON.parse(raw); }
-  catch { window.location.href = '../index.html'; return; }
-
-  // USDC redirect
-  if (session.paymentType === 'usdc') {
-    window.location.href = 'invoice-usdc.html';
-    return;
+  try {
+    const sessionData = JSON.parse(saved);
+    // payCode or bolt11 fallback for backward compatibility
+    currentPayCode = sessionData.payCode || sessionData.bolt11;
+    
+    showStep(2);
+    renderInvoice(sessionData);
+  } catch(e) {
+    sessionStorage.removeItem('invoiceSession');
+    window.location.href = '../index.html';
   }
-
-  renderInvoice();
-
-  // Modal backdrop click
-  document.getElementById('howToPayModal')
-    .addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 });
 
-// ─── RENDER ───────────────────────────────────────────────
-function renderInvoice() {
-  const {
-    amount      = 0,
-    invoiceId   = '',
-    paymentType = 'onchain',
-    payCode     = '',
-    qrText      = '',
-    cashAppUrl  = '',
-    btcAmount   = 0,
-    secondsLeft = 3600,
-    expiresAt   = null,
-  } = session;
+function renderInvoice(data) {
+  const { amount, cashAppUrl, invoiceId, btcAmount, secondsLeft } = data;
+  
+  document.getElementById('displayAmount').textContent = parseFloat(amount).toFixed(2);
+  
+  // Show BTC Amount if On-chain
+  if (btcAmount) {
+    const btcEl = document.getElementById('btcAmountDisplay');
+    btcEl.style.display = 'block';
+    btcEl.textContent = `${btcAmount} BTC`;
+  }
 
-  const isLightning = paymentType === 'lightning';
+  let shortId = invoiceId.substring(0, 16).replace(/(.{4})/g, '$1-').slice(0, -1);
+  document.getElementById('invoiceIdDisplay').textContent = shortId;
 
-  // Amounts
-  document.getElementById('displayAmount').textContent  = Number(amount).toFixed(2);
-  document.getElementById('invoiceIdDisplay').textContent = invoiceId;
-  document.getElementById('methodDisplay').textContent    = isLightning ? 'Bitcoin Lightning' : 'Bitcoin On-Chain';
-
-  // QR & CTA
-  const qrEl = document.getElementById('qrcode');
-  qrEl.innerHTML = '';
-  new QRCode(qrEl, {
-    text: qrText,
-    width: 180,
-    height: 180,
-    colorDark: '#000000',
-    colorLight: '#ffffff',
+  document.getElementById('qrcode').innerHTML = '';
+  new QRCode(document.getElementById('qrcode'), {
+    text: cashAppUrl,
+    width: 200, height: 200,
+    colorDark: '#000', colorLight: '#fff',
     correctLevel: QRCode.CorrectLevel.M
   });
 
-  const logoEl = document.getElementById('qrLogo');
-  logoEl.className = 'qr-logo-inner ' + (isLightning ? 'logo-lightning' : 'logo-btc');
-  logoEl.textContent = isLightning ? '⚡' : '₿';
-
-  document.getElementById('qrLink').href     = cashAppUrl || '#';
-  document.getElementById('payNowBtn').href  = cashAppUrl || '#';
-  document.getElementById('payNowBtnText').textContent = isLightning ? 'Pay with Lightning' : 'Pay with Bitcoin';
-
-  if (!isLightning && btcAmount > 0) {
-    document.getElementById('btcAmountLine').textContent = `${btcAmount} BTC`;
-  }
-
-  // Timer
-  let timeLeft = secondsLeft;
-  if (expiresAt) {
-    const end = new Date(expiresAt).getTime();
-    timeLeft = Math.max(0, Math.floor((end - Date.now()) / 1000));
-  }
-
-  startTimer(timeLeft);
-  startPolling(invoiceId);
+  document.getElementById('qrLink').href = cashAppUrl;
+  document.getElementById('payNowBtn').href = cashAppUrl;
+  
+  startTimer(secondsLeft || 3600, invoiceId);
+  startPolling(invoiceId, amount);
 }
 
-function startTimer(sec) {
-  const el = document.getElementById('timer');
-  const update = () => {
-    if (sec <= 0) {
-      el.textContent = 'EXPIRED';
-      el.style.color = '#ff4444';
+function startTimer(sec, invoiceId) {
+  clearInterval(timerInterval);
+  let t = sec;
+  timerInterval = setInterval(() => {
+    if (t <= 0) {
       clearInterval(timerInterval);
+      clearInterval(pollInterval);
+      sessionStorage.removeItem('invoiceSession');
+      document.getElementById('timer').textContent = '00 : 00';
       return;
     }
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    el.textContent = `${m} : ${s < 10 ? '0' + s : s}`;
-    sec--;
-  };
-  update();
-  timerInterval = setInterval(update, 1000);
+    let m = Math.floor(t / 60), s = t % 60;
+    document.getElementById('timer').textContent =
+      String(m).padStart(2,'0') + ' : ' + String(s).padStart(2,'0');
+    
+    const saved = sessionStorage.getItem('invoiceSession');
+    if (saved) {
+      const obj = JSON.parse(saved);
+      obj.secondsLeft = t;
+      sessionStorage.setItem('invoiceSession', JSON.stringify(obj));
+    }
+    t--;
+  }, 1000);
 }
 
-// ─── POLLING ──────────────────────────────────────────────
-async function startPolling(invoiceId) {
-  if (pollInterval) clearInterval(pollInterval);
+function startPolling(invoiceId, amount) {
+  clearInterval(pollInterval);
   pollInterval = setInterval(async () => {
     try {
-      const res = await fetch(BTCPAY_URL, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/btcpay-webhook`, {
         method: 'POST',
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': `Bearer ${ANON_KEY}`
-        },
-        body: JSON.stringify({ action: 'check_status', invoiceId })
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ checkStatus: true, invoiceId })
       });
       const data = await res.json();
-      if (data.status === 'Settled') {
+      if (data?.status === 'settled' || data?.status === 'Processing') {
         clearInterval(pollInterval);
         clearInterval(timerInterval);
-        showSuccess();
-      } else if (data.status === 'Expired') {
-        clearInterval(pollInterval);
+        sessionStorage.removeItem('invoiceSession');
+        showStep(3);
+        document.getElementById('successAmount').textContent = '$' + parseFloat(amount).toFixed(2);
       }
-    } catch (e) { console.error('Poll error:', e); }
-  }, POLL_MS);
+    } catch(e) {}
+  }, 5000);
 }
 
-function showSuccess() {
-  document.getElementById('invoiceBody').style.display = 'none';
-  document.getElementById('successBody').style.display = 'block';
-  document.getElementById('successAmount').textContent = '$' + Number(session.amount).toFixed(2);
+function copyInvoice() {
+  if(!currentPayCode) return;
+  navigator.clipboard.writeText(currentPayCode);
+  const btn = document.querySelector('.copy-btn');
+  const originalText = btn.textContent;
+  btn.textContent = '✓ Copied!';
+  btn.style.color = '#00C851';
+  setTimeout(() => {
+    btn.textContent = originalText;
+    btn.style.color = '';
+  }, 2000);
 }
 
 function goBack() {
+  clearInterval(timerInterval);
+  clearInterval(pollInterval);
+  sessionStorage.removeItem('invoiceSession');
   window.location.href = '../index.html';
 }
 
-function copyData() {
-  const txt = session.payCode;
-  navigator.clipboard.writeText(txt).then(() => {
-    const btn = document.getElementById('copyBtn');
-    const old = btn.textContent;
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = old, 2000);
-  });
+function clearSession() {
+  sessionStorage.removeItem('invoiceSession');
+  window.location.href = '../index.html';
 }
 
-// ─── MODAL ────────────────────────────────────────────────
 function openModal() {
-  const type = session.paymentType === 'lightning' ? 'lightning' : 'onchain';
-  const data = HOW_TO_PAY[type];
-  document.getElementById('modalTitle').textContent = data.title;
-  const container = document.getElementById('modalSteps');
-  container.innerHTML = data.steps.map(s => `
-    <div class="step-row">
-      <div class="step-num">${s.n}</div>
-      <div>
-        <div class="step-title">${s.title}</div>
-        <div class="step-desc">${s.desc}</div>
-      </div>
-    </div>
-  `).join('');
   document.getElementById('howToPayModal').classList.add('open');
 }
-function closeModal() { document.getElementById('howToPayModal').classList.remove('open'); }
+function closeModal() {
+  document.getElementById('howToPayModal').classList.remove('open');
+}
+document.getElementById('howToPayModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
 </script>
 </body>
 </html>
