@@ -3,3 +3,9 @@
 
 [functions."btcpay-webhook"]
 verify_jwt = false
+
+[functions."create-usdc-payment"]
+verify_jwt = false
+
+[functions."usdc-webhook"]
+verify_jwt = false
