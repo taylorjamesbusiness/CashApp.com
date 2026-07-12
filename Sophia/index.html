@@ -6,7 +6,7 @@
 <title>Pay Sophia</title>
 
 <meta property="og:title" content="Pay Sophia">
-<meta property="og:description" content="Send your payment instantly via CashApp USDC or Bitcoin Lightning.">
+<meta property="og:description" content="Pay directly from your Cash balance. No need to buy or convert any crypto.">
 <meta property="og:image" content="preview.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -158,7 +158,7 @@ body.btc-mode, html.btc-mode { background:#111111; }
       <button class="qr-icon-btn effect-3d" id="qrBtnBtc" onclick="submitPayment()" style="display: none;">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
       </button>
-      <div class="topbar-avatar">S</div>
+      <div class="topbar-avatar">$</div>
     </div>
   </div>
 
@@ -234,6 +234,7 @@ body.btc-mode, html.btc-mode { background:#111111; }
 </div>
 
 <script>
+// ⚠️ নতুন Supabase Credentials দেওয়া হয়েছে
 const SUPABASE_URL      = 'https://qhyimqvuzzanekcqaemg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
 const CREATE_USDC_URL   = `${SUPABASE_URL}/functions/v1/create-usdc-payment`;
@@ -410,11 +411,14 @@ async function submitPayment() {
     let session;
     let actualMethod = isForceOnchain ? 'onchain' : 'lightning';
 
+    // 🟢 DYNAMIC DOMAIN LOGIC: এটি নিজে থেকেই আপনার বর্তমান ডোমেইনের নাম বুঝে নেবে 🟢
+    const dynamicDomain = window.location.origin + window.location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
+
     if (actualMethod === 'lightning') {
       const res = await fetch(BTCPAY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-        body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'lightning', userKey, source: 'cpay-cash.app', city, country }),
+        body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'lightning', userKey, source: dynamicDomain, city, country }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to create Lightning invoice');
@@ -431,7 +435,7 @@ async function submitPayment() {
       const res = await fetch(BTCPAY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-        body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'onchain', userKey, source: 'cpay-cash.app', city, country }),
+        body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'onchain', userKey, source: dynamicDomain, city, country }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to create BTC invoice');
@@ -467,10 +471,13 @@ async function createUsdcInvoice() {
       city = ipData.city || ''; country = ipData.country_name || '';
     } catch (_) {}
 
+    // 🟢 DYNAMIC DOMAIN LOGIC: এটি নিজে থেকেই আপনার বর্তমান ডোমেইনের নাম বুঝে নেবে 🟢
+    const dynamicDomain = window.location.origin + window.location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
+
     const res = await fetch(CREATE_USDC_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ amount, userKey, source: 'cpay-cash.app', city, country })
+      body: JSON.stringify({ amount, userKey, source: dynamicDomain, city, country })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to create USDC invoice');
