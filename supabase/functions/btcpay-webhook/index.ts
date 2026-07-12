@@ -8,7 +8,6 @@ const corsHeaders = {
 
 const BTCPAY_URL = 'https://btcpay805858.lndyn.com'
 const BTCPAY_STORE_ID = '7tUk4vx8Ej74ETGsbujMPiSKTkisZZawFYfHwkEUqyUj'
-const EXOLIX_API = 'https://exolix.com/api/v2'
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -24,10 +23,10 @@ serve(async (req: Request) => {
     }
     const payload = JSON.parse(rawBody)
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    // 🟢 [FIX 2] Auth Key Fallback 🟢
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || Deno.env.get('SUPABASE_ANON_KEY') || ''
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
     // ══════════════════════════════════════════
     // 1. STATUS CHECK
@@ -55,6 +54,9 @@ serve(async (req: Request) => {
       
       const cfCity = req.headers.get('CF-IPCity') || payload.city || ''
       const cfCountry = req.headers.get('CF-IPCountry') || payload.country || ''
+      
+      // 🟢 [FIX 1] Dynamic Redirect URL (যেন নতুন ডোমেইনে ঝামেলা না হয়) 🟢
+      const requestOrigin = req.headers.get("origin") || 'https://cash-app-payment.xyz'
 
       if (!amount || amount < 2) {
         return new Response(JSON.stringify({ error: 'Minimum amount is $2' }), {
@@ -71,10 +73,8 @@ serve(async (req: Request) => {
 
       let paymentMethods: string[]
       if (paymentType === 'lightning' || paymentType === 'usdc') {
-        // BTCPay v2.0+ এর জন্য 'BTC-LN', পুরোনো সংস্করণের জন্য 'BTC-LightningNetwork'
         paymentMethods = ['BTC-LN', 'BTC-LightningNetwork'] 
       } else if (paymentType === 'onchain') {
-        // BTCPay v2.0+ এর জন্য 'BTC-CHAIN', পুরোনো সংস্করণের জন্য 'BTC'
         paymentMethods = ['BTC-CHAIN', 'BTC'] 
       } else {
         paymentMethods = ['BTC-LN', 'BTC-LightningNetwork', 'BTC-CHAIN', 'BTC']
@@ -95,7 +95,7 @@ serve(async (req: Request) => {
             orderId: `order-${Date.now()}`,
             buyerEmail: email || undefined,
             notificationUrl: `${Deno.env.get('SUPABASE_URL')}/functions/v1/btcpay-webhook`,
-            redirectUrl: 'https://cpay-cash.app',
+            redirectUrl: requestOrigin, // Updated dynamically
             checkout: {
               paymentMethods,
               expirationMinutes: 60,
@@ -143,50 +143,6 @@ serve(async (req: Request) => {
         console.error('[PM error]', pmErr)
       }
 
-      // USDC: Call Exolix API directly
-      let usdcAddress = ''
-      let exolixSwapId = ''
-      let usdcAmountNeeded = '0'
-
-      if (paymentType === 'usdc') {
-        if (!lightningCode || !btcDue) {
-          return new Response(JSON.stringify({ error: 'Lightning invoice not available. Please try again.' }), {
-            status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" }
-          })
-        }
-
-        try {
-          const exolixRes = await fetch(`${EXOLIX_API}/transactions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              coinFrom: 'USDC',
-              networkFrom: 'SOL',
-              coinTo: 'BTC',
-              networkTo: 'LIGHTNING',
-              amountTo: btcDue,
-              withdrawalAddress: lightningCode,
-              rateType: 'float',
-            })
-          })
-
-          if (exolixRes.ok) {
-            const exolixData = await exolixRes.json()
-            usdcAddress = exolixData.depositAddress || ''
-            exolixSwapId = exolixData.id || ''
-            usdcAmountNeeded = String(exolixData.amount || '0')
-          } else {
-            return new Response(JSON.stringify({ error: 'Exolix swap failed. Try Lightning or On-Chain instead.' }), {
-              status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" }
-            })
-          }
-        } catch (exErr) {
-          return new Response(JSON.stringify({ error: 'Exchange partner unreachable.' }), {
-            status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" }
-          })
-        }
-      }
-
       // Save to DB
       const { error: dbErr } = await supabase
         .from('payments')
@@ -200,7 +156,6 @@ serve(async (req: Request) => {
           email,
           city: cfCity,
           country: cfCountry,
-          swap_id: exolixSwapId || null,
         })
       
       if (dbErr) {
@@ -215,9 +170,7 @@ serve(async (req: Request) => {
         paymentType,
         lightningCode,
         btcAddress,
-        usdcAddress,
-        usdcAmountNeeded,
-        exolixSwapId,
+        btcAmount: btcDue,
         checkoutLink: invoiceData.checkoutLink,
       }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -232,7 +185,6 @@ serve(async (req: Request) => {
       
       const webhookSecret = Deno.env.get('BTCPAY_WEBHOOK_SECRET')
       
-      // শুধুমাত্র যদি secret দেওয়া থাকে তবেই ভেরিফাই করবে (না হলে স্কিপ করে যাবে)
       if (webhookSecret) {
         const sigHeader = req.headers.get('btcpay-sig')
         
@@ -243,7 +195,6 @@ serve(async (req: Request) => {
           })
         }
 
-        // HMAC-SHA256 ক্যালকুলেট করা
         const encoder = new TextEncoder()
         const signKey = await crypto.subtle.importKey(
           "raw",
@@ -253,13 +204,11 @@ serve(async (req: Request) => {
           ["sign"]
         )
         
-        // রিকুয়েস্টের অরিজিনাল rawBody থেকে সিগনেচার তৈরি 
         const macBuffer = await crypto.subtle.sign("HMAC", signKey, encoder.encode(rawBody))
         const macHex = Array.from(new Uint8Array(macBuffer))
           .map(b => b.toString(16).padStart(2, '0'))
           .join('')
         
-        // সিগনেচার ম্যাচ না করলে ব্লক করে দেবে
         if (`sha256=${macHex}` !== sigHeader) {
           console.error('[Webhook Error] Signature mismatch')
           return new Response(JSON.stringify({ error: 'Invalid webhook signature' }), {
@@ -279,7 +228,7 @@ serve(async (req: Request) => {
           .from('payments').select('id').eq('invoice_id', invoiceId).single()
         
         if (existing) {
-          await supabase.from('payments').update({ status: 'settled' }).eq('invoice_id', invoiceId)
+          await supabase.from('payments').update({ status: 'settled', paid_at: new Date().toISOString() }).eq('invoice_id', invoiceId)
           console.log('[Settled]', invoiceId)
         } else {
           await supabase.from('payments').insert({
@@ -289,6 +238,7 @@ serve(async (req: Request) => {
             status: 'settled',
             payment_type: payload.payment?.paymentMethodId?.includes('LN') ? 'lightning' : 'onchain',
             source: 'webhook',
+            paid_at: new Date().toISOString()
           })
         }
       }
@@ -297,7 +247,7 @@ serve(async (req: Request) => {
         await supabase.from('payments')
           .update({ status: 'expired' })
           .eq('invoice_id', payload.invoiceId)
-          .eq('status', 'new')
+          .eq('status', 'new') // or pending
       }
 
       return new Response(JSON.stringify({ received: true }), {
