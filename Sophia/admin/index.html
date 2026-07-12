@@ -3,72 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel</title>
+<title>Admin Panel - Sophia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body { font-family:'DM Sans',sans-serif; background:#000; color:#fff; min-height:100vh; }
 
 /* ══════ LOGIN ══════ */
-.login-wrap {
-  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
-  background: radial-gradient(circle at 30% 50%, rgba(0,200,81,0.10) 0%, transparent 65%);
-}
-.login-card {
-  width:100%; max-width:380px; background:#0d0d0d;
-  border:1px solid rgba(0,200,81,0.22); border-radius:24px; padding:38px 30px;
-  box-shadow:0 12px 60px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.03) inset;
-}
-.login-logo {
-  width:60px; height:60px; background:linear-gradient(135deg,#00C851,#00903c);
-  border-radius:18px; display:flex; align-items:center; justify-content:center;
-  font-size:28px; font-weight:900; color:#fff; margin:0 auto 22px;
-  box-shadow:0 6px 28px rgba(0,200,81,0.45);
-}
+.login-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; background: radial-gradient(circle at 30% 50%, rgba(0,200,81,0.10) 0%, transparent 65%); }
+.login-card { width:100%; max-width:380px; background:#0d0d0d; border:1px solid rgba(0,200,81,0.22); border-radius:24px; padding:38px 30px; box-shadow:0 12px 60px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.03) inset; }
+.login-logo { width:60px; height:60px; background:linear-gradient(135deg,#00C851,#00903c); border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:900; color:#fff; margin:0 auto 22px; box-shadow:0 6px 28px rgba(0,200,81,0.45); }
 .login-title { text-align:center; font-size:21px; font-weight:800; margin-bottom:5px; letter-spacing:-0.3px; }
 .login-sub { text-align:center; color:rgba(255,255,255,0.35); font-size:13px; margin-bottom:30px; font-weight:500; }
 .field-label { font-size:11px; font-weight:700; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:7px; }
-.field-input {
-  width:100%; background:#161616; border:1.5px solid rgba(255,255,255,0.09);
-  border-radius:14px; padding:13px 16px; font-size:15px; color:#fff;
-  outline:none; font-family:'DM Sans',sans-serif; margin-bottom:18px; transition:all 0.25s;
-}
+.field-input { width:100%; background:#161616; border:1.5px solid rgba(255,255,255,0.09); border-radius:14px; padding:13px 16px; font-size:15px; color:#fff; outline:none; font-family:'DM Sans',sans-serif; margin-bottom:18px; transition:all 0.25s; }
 .field-input:focus { border-color:rgba(0,200,81,0.6); box-shadow:0 0 0 4px rgba(0,200,81,0.10); }
-.login-btn {
-  width:100%; background:linear-gradient(135deg,#00C851,#00903c);
-  color:#fff; border:none; border-radius:14px; padding:14px;
-  font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
-  box-shadow:0 5px 24px rgba(0,200,81,0.35); transition:all 0.25s; letter-spacing:0.02em;
-}
+.login-btn { width:100%; background:linear-gradient(135deg,#00C851,#00903c); color:#fff; border:none; border-radius:14px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; box-shadow:0 5px 24px rgba(0,200,81,0.35); transition:all 0.25s; letter-spacing:0.02em; }
 .login-btn:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,200,81,0.45); }
 .login-btn:active { transform:translateY(0); }
 .login-error { color:#ff4d4d; font-size:13px; text-align:center; margin-top:14px; display:none; font-weight:600; }
 
 /* ══════ DASHBOARD ══════ */
 #dashboard { display:none; }
-.topbar {
-  background:rgba(10,10,10,0.95); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  padding:13px 20px; display:flex; align-items:center; justify-content:space-between;
-  position:sticky; top:0; z-index:100;
-}
+.topbar { background:rgba(10,10,10,0.95); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.06); padding:13px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
 .topbar-logo { display:flex; align-items:center; gap:10px; }
-.topbar-icon {
-  width:36px; height:36px; background:linear-gradient(135deg,#00C851,#00903c);
-  border-radius:10px; display:flex; align-items:center; justify-content:center;
-  font-size:17px; font-weight:900; color:#fff; box-shadow:0 3px 12px rgba(0,200,81,0.35);
-}
+.topbar-icon { width:36px; height:36px; background:linear-gradient(135deg,#00C851,#00903c); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:900; color:#fff; box-shadow:0 3px 12px rgba(0,200,81,0.35); }
 .topbar-title { font-size:16px; font-weight:800; letter-spacing:-0.2px; }
 .topbar-sub { font-size:11px; color:rgba(255,255,255,0.3); font-weight:500; }
 .topbar-right { display:flex; align-items:center; gap:10px; }
 .last-updated { font-size:11px; color:rgba(255,255,255,0.25); display:none; }
 .last-updated.show { display:block; }
-.logout-btn {
-  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09);
-  color:rgba(255,255,255,0.55); padding:7px 15px; border-radius:9px;
-  font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;
-  transition:all 0.2s;
-}
+.logout-btn { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09); color:rgba(255,255,255,0.55); padding:7px 15px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
 .logout-btn:hover { background:rgba(255,80,80,0.12); border-color:rgba(255,80,80,0.3); color:#ff6b6b; }
 
 .content { padding:20px; max-width:1200px; margin:0 auto; }
@@ -76,16 +41,8 @@ body { font-family:'DM Sans',sans-serif; background:#000; color:#fff; min-height
 /* ══════ STAT CARDS ══════ */
 .stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:24px; }
 @media (min-width:640px) { .stats-grid { grid-template-columns:repeat(4,1fr); gap:14px; } }
-.stat-card {
-  background:#0d0d0d; border:1px solid rgba(255,255,255,0.07);
-  border-radius:18px; padding:18px 16px; position:relative; overflow:hidden;
-}
-.stat-card::before {
-  content:''; position:absolute; top:0; right:0;
-  width:60px; height:60px; border-radius:50%;
-  background:radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
-  transform:translate(20px,-20px);
-}
+.stat-card { background:#0d0d0d; border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:18px 16px; position:relative; overflow:hidden; }
+.stat-card::before { content:''; position:absolute; top:0; right:0; width:60px; height:60px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%); transform:translate(20px,-20px); }
 .stat-card.green { border-color:rgba(0,200,81,0.18); background:linear-gradient(135deg,#0d0d0d,#0a1a0f); }
 .stat-card.green::before { background:radial-gradient(circle, rgba(0,200,81,0.08) 0%, transparent 70%); }
 .stat-icon { font-size:20px; margin-bottom:10px; }
@@ -96,82 +53,41 @@ body { font-family:'DM Sans',sans-serif; background:#000; color:#fff; min-height
 
 /* ══════ TABS ══════ */
 .tabs { display:flex; gap:8px; margin-bottom:18px; }
-.tab-btn {
-  background:#111; border:1px solid rgba(255,255,255,0.08);
-  color:rgba(255,255,255,0.45); padding:9px 18px; border-radius:11px;
-  font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
-  transition:all 0.22s; flex:1; text-align:center;
-}
+.tab-btn { background:#111; border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.45); padding:9px 18px; border-radius:11px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.22s; flex:1; text-align:center; }
 @media (min-width:480px) { .tab-btn { flex:none; } }
 .tab-btn.active { background:rgba(0,200,81,0.12); border-color:rgba(0,200,81,0.3); color:#00C851; }
 
 /* ══════ FILTER BAR ══════ */
 .filter-bar { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
-.filter-select {
-  background:#111; border:1px solid rgba(255,255,255,0.09); color:#fff;
-  padding:9px 13px; border-radius:11px; font-size:13px; font-family:'DM Sans',sans-serif;
-  outline:none; cursor:pointer; font-weight:500;
-}
+.filter-select { background:#111; border:1px solid rgba(255,255,255,0.09); color:#fff; padding:9px 13px; border-radius:11px; font-size:13px; font-family:'DM Sans',sans-serif; outline:none; cursor:pointer; font-weight:500; }
 .filter-select option { background:#111; }
-.search-input {
-  background:#111; border:1px solid rgba(255,255,255,0.09); color:#fff;
-  padding:9px 13px; border-radius:11px; font-size:13px; font-family:'DM Sans',sans-serif;
-  outline:none; flex:1; min-width:160px; font-weight:500;
-}
+.search-input { background:#111; border:1px solid rgba(255,255,255,0.09); color:#fff; padding:9px 13px; border-radius:11px; font-size:13px; font-family:'DM Sans',sans-serif; outline:none; flex:1; min-width:160px; font-weight:500; }
 .search-input::placeholder { color:rgba(255,255,255,0.22); }
 .search-input:focus, .filter-select:focus { border-color:rgba(0,200,81,0.5); box-shadow:0 0 0 3px rgba(0,200,81,0.08); }
-.refresh-btn {
-  background:rgba(0,200,81,0.09); border:1px solid rgba(0,200,81,0.28);
-  color:#00C851; padding:9px 16px; border-radius:11px;
-  font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
-  transition:all 0.2s; white-space:nowrap;
-}
+.refresh-btn { background:rgba(0,200,81,0.09); border:1px solid rgba(0,200,81,0.28); color:#00C851; padding:9px 16px; border-radius:11px; font-size:13px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; white-space:nowrap; }
 .refresh-btn:hover { background:rgba(0,200,81,0.18); }
 
 /* ══════ PAGINATION ══════ */
-.pagination {
-  display: flex; justify-content: center; align-items: center; gap: 8px;
-  padding: 16px; border-top: 1px solid rgba(255,255,255,0.06);
-}
-.page-btn {
-  background: #111; border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.7); width: 32px; height: 32px;
-  border-radius: 8px; font-size: 13px; font-weight: 600;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-}
+.pagination { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
+.page-btn { background: #111; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); width: 32px; height: 32px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
 .page-btn:hover:not(:disabled) { background: #222; border-color: rgba(0,200,81,0.3); }
 .page-btn.active { background: rgba(0,200,81,0.2); border-color: rgba(0,200,81,0.5); color: #00C851; }
 .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-/* ══════ TABLE (DESKTOP) ══════ */
-.table-wrap {
-  background:#0d0d0d; border:1px solid rgba(255,255,255,0.07);
-  border-radius:18px; overflow:hidden;
-}
+/* ══════ TABLE ══════ */
+.table-wrap { background:#0d0d0d; border:1px solid rgba(255,255,255,0.07); border-radius:18px; overflow:hidden; }
 .table-scroll { overflow-x:auto; display:none; }
 @media (min-width:700px) { .table-scroll { display:block; } }
 table { width:100%; border-collapse:collapse; }
-thead th {
-  background:#111; padding:12px 16px; text-align:left;
-  font-size:10px; font-weight:700; color:rgba(255,255,255,0.35);
-  text-transform:uppercase; letter-spacing:0.1em; white-space:nowrap;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-tbody td {
-  padding:14px 16px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04); white-space:nowrap;
-}
+thead th { background:#111; padding:12px 16px; text-align:left; font-size:10px; font-weight:700; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:0.1em; white-space:nowrap; border-bottom:1px solid rgba(255,255,255,0.06); }
+tbody td { padding:14px 16px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04); white-space:nowrap; }
 tbody tr:last-child td { border-bottom:none; }
 tbody tr:hover { background:rgba(255,255,255,0.02); }
 
 /* ══════ MOBILE CARDS ══════ */
 .mobile-list { display:block; }
 @media (min-width:700px) { .mobile-list { display:none; } }
-.m-card {
-  padding:16px; border-bottom:1px solid rgba(255,255,255,0.05);
-  transition:background 0.15s;
-}
+.m-card { padding:16px; border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.15s; }
 .m-card:last-child { border-bottom:none; }
 .m-card:active { background:rgba(255,255,255,0.02); }
 .m-row { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
@@ -184,38 +100,21 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 .m-expire { font-size:12px; color:rgba(255,200,0,0.85); font-weight:700; background:rgba(255,200,0,0.07); padding:3px 9px; border-radius:999px; }
 .m-expired-pill { font-size:12px; color:#ff5050; font-weight:700; background:rgba(255,80,80,0.07); padding:3px 9px; border-radius:999px; }
 .m-empty { text-align:center; padding:48px 20px; color:rgba(255,255,255,0.28); font-size:14px; }
-
-/* ══════ WITHDRAWAL MOBILE ══════ */
 .m-card-w { padding:16px; border-bottom:1px solid rgba(255,255,255,0.05); }
 .m-card-w:last-child { border-bottom:none; }
 
 /* ══════ BADGES ══════ */
-.badge {
-  display:inline-flex; align-items:center; gap:5px;
-  padding:4px 10px; border-radius:999px; font-size:11px; font-weight:700; text-transform:uppercase;
-}
-.badge.settled, .badge.completed { background:rgba(0,200,81,0.12); border:1px solid rgba(0,200,81,0.28); color:#00C851; }
-.badge.new { background:rgba(255,200,0,0.10); border:1px solid rgba(255,200,0,0.28); color:#ffc800; }
+.badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:700; text-transform:uppercase; }
+.badge.settled, .badge.completed, .badge.paid { background:rgba(0,200,81,0.12); border:1px solid rgba(0,200,81,0.28); color:#00C851; }
+.badge.new, .badge.pending { background:rgba(255,200,0,0.10); border:1px solid rgba(255,200,0,0.28); color:#ffc800; }
 .badge.expired { background:rgba(255,80,80,0.10); border:1px solid rgba(255,80,80,0.28); color:#ff5050; }
-.badge.pending { background:rgba(100,180,255,0.10); border:1px solid rgba(100,180,255,0.28); color:#64b4ff; }
+.badge.processing { background:rgba(100,180,255,0.10); border:1px solid rgba(100,180,255,0.28); color:#64b4ff; }
 .badge-dot { width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
 
 /* ══════ MISC ══════ */
 .expire-text { font-size:12px; color:rgba(255,200,0,0.85); font-weight:700; }
 .expired-text { font-size:12px; color:#ff5050; font-weight:600; }
-.table-footer {
-  padding:13px 16px; border-top:1px solid rgba(255,255,255,0.06);
-  font-size:12px; color:rgba(255,255,255,0.28); font-weight:500;
-}
-.mark-btn {
-  background:rgba(0,200,81,0.12); border:1px solid rgba(0,200,81,0.28);
-  color:#00C851; padding:6px 13px; border-radius:9px;
-  font-size:12px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif;
-  transition:all 0.2s;
-}
-.mark-btn:hover { background:rgba(0,200,81,0.22); }
-
-/* ══════ SCROLLBAR ══════ */
+.table-footer { padding:13px 16px; border-top:1px solid rgba(255,255,255,0.06); font-size:12px; color:rgba(255,255,255,0.28); font-weight:500; }
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:99px; }
@@ -254,7 +153,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
   </div>
 
   <div class="content">
-
     <div class="stats-grid">
       <div class="stat-card green">
         <div class="stat-icon">💰</div>
@@ -293,7 +191,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
       <div class="filter-bar">
         <select class="filter-select" id="filterStatus" onchange="resetAndRenderPayments()">
           <option value="">All Status</option>
-          <option value="new">Pending</option>
+          <option value="pending">Pending</option>
           <option value="settled">Settled</option>
           <option value="expired">Expired</option>
         </select>
@@ -335,7 +233,6 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
     </div>
 
     <div id="tab-withdrawals" style="display:none;">
-      
       <div class="filter-bar" style="justify-content:space-between;">
         <div style="display:flex; gap:8px; flex-wrap:wrap; flex:1;">
           <input type="number" id="wdAmount" class="search-input" placeholder="Amount ($)" style="max-width:120px;" min="1">
@@ -372,12 +269,12 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 </div>
 
 <script>
+// Sophia Supabase Credentials
 const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
+const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
 
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'Sophia@2026';
-const INVOICE_EXPIRE_MINUTES = 60; 
 const PER_PAGE = 25;
 
 let allPayments = [];
@@ -426,16 +323,28 @@ async function fetchPayments() {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?select=*&order=created_at.desc`, {
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
     });
-    allPayments = await res.json();
+    let data = await res.json();
+    
+    // Check if error
+    if (data.error) {
+      console.error("Supabase Error:", data.error);
+      return;
+    }
+    
     const now = new Date();
-    allPayments = allPayments.map(p => {
-      if (p.status === 'new') {
+    
+    allPayments = data.map(p => {
+      // Dynamic Expiration Logic: USDC = 15m, BTC = 60m
+      p._expireMins = (p.payment_type && p.payment_type.toLowerCase() === 'usdc') ? 15 : 60;
+      
+      // Fix: Check for both 'new' and 'pending'
+      if (p.status === 'new' || p.status === 'pending') {
         const diffMin = (now - new Date(p.created_at)) / 60000;
-        if (diffMin > INVOICE_EXPIRE_MINUTES) p._uiExpired = true;
+        if (diffMin > p._expireMins) p._uiExpired = true;
       }
       return p;
     });
-  } catch(e) { console.error(e); }
+  } catch(e) { console.error("Fetch Payments Error:", e); }
 }
 
 async function fetchWithdrawals() {
@@ -443,18 +352,19 @@ async function fetchWithdrawals() {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals?select=*&order=created_at.desc`, {
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
     });
-    allWithdrawals = await res.json();
-  } catch(e) { console.error(e); }
+    let data = await res.json();
+    if(data.error) return;
+    allWithdrawals = data;
+  } catch(e) { console.error("Fetch Withdrawals Error:", e); }
 }
 
-// 💡 Update Stats (Calculates Available Balance)
 function updateStats() {
-  const settled = allPayments.filter(p => p.status === 'settled');
-  const pending = allPayments.filter(p => p.status === 'new' && !p._uiExpired);
+  const settled = allPayments.filter(p => p.status === 'settled' || p.status === 'completed' || p.status === 'paid');
+  const pending = allPayments.filter(p => (p.status === 'new' || p.status === 'pending') && !p._uiExpired);
   const expired = allPayments.filter(p => p.status === 'expired' || p._uiExpired);
   
-  const totalSettled = settled.reduce((s,p) => s + parseFloat(p.amount), 0);
-  const totalWithdrawn = allWithdrawals.reduce((s,w) => s + parseFloat(w.amount), 0);
+  const totalSettled = settled.reduce((s,p) => s + parseFloat(p.amount || 0), 0);
+  const totalWithdrawn = allWithdrawals.reduce((s,w) => s + parseFloat(w.amount || 0), 0);
   const available = totalSettled - totalWithdrawn;
   
   document.getElementById('statSettled').textContent = '$' + totalSettled.toFixed(2);
@@ -475,10 +385,11 @@ function fmtDate(str) {
 function fmtTime(str) {
   return new Date(str).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
+
 function getExpireHtml(p, effectiveStatus) {
   if (effectiveStatus === 'expired') return '<span class="expired-text">Expired</span>';
-  if (p.status === 'new' && !p._uiExpired) {
-    const expireAt = new Date(new Date(p.created_at).getTime() + INVOICE_EXPIRE_MINUTES * 60000);
+  if ((p.status === 'new' || p.status === 'pending') && !p._uiExpired) {
+    const expireAt = new Date(new Date(p.created_at).getTime() + p._expireMins * 60000);
     const diff = Math.max(0, Math.floor((expireAt - new Date()) / 1000));
     const m = Math.floor(diff/60), s = diff%60;
     return `<span class="expire-text" data-expire="${expireAt.toISOString()}">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</span>`;
@@ -490,10 +401,16 @@ function getFilteredPayments() {
   const statusFilter = document.getElementById('filterStatus').value;
   const dateFilter = document.getElementById('filterDate').value;
   const search = document.getElementById('searchInput').value.toLowerCase();
+  
   return allPayments.filter(p => {
-    const es = p._uiExpired ? 'expired' : p.status;
-    if (statusFilter && es !== statusFilter) return false;
-    if (search && !p.invoice_id.toLowerCase().includes(search)) return false;
+    let es = p.status;
+    if (p._uiExpired) es = 'expired';
+    
+    // Fix: Treat 'new' and 'pending' as the same thing for the filter
+    if (statusFilter === 'pending' && (es !== 'pending' && es !== 'new')) return false;
+    else if (statusFilter && statusFilter !== 'pending' && es !== statusFilter) return false;
+    
+    if (search && !(p.invoice_id||'').toLowerCase().includes(search)) return false;
     if (dateFilter) {
       const d = new Date(p.created_at), now = new Date();
       if (dateFilter === 'today') { const t=new Date(); t.setHours(0,0,0,0); if(d<t) return false; }
@@ -534,11 +451,11 @@ function renderPayments() {
   const paginated = filtered.slice(start, start + PER_PAGE);
 
   tbody.innerHTML = paginated.map((p, index) => {
-    const es = p._uiExpired ? 'expired' : p.status;
-    const shortId = p.invoice_id.substring(0,18) + '...';
+    let es = p.status;
+    if (p._uiExpired) es = 'expired';
+    const shortId = (p.invoice_id||'').substring(0,18) + '...';
     const globalIndex = start + index + 1;
     
-    // 💡 Method Badge Logic (Desktop)
     const methodStr = p.payment_type ? p.payment_type.toUpperCase() : 'LIGHTNING';
     const methodColor = methodStr === 'USDC' ? '#00C851' : (methodStr === 'ONCHAIN' ? '#f7931a' : '#ffc400');
 
@@ -551,7 +468,7 @@ function renderPayments() {
           <div style="font-size:10px;color:rgba(255,255,255,0.25);">${fmtTime(p.created_at)}</div>
         </div>
       </td>
-      <td style="font-weight:800;color:#fff;font-size:15px;">$${parseFloat(p.amount).toFixed(2)}</td>
+      <td style="font-weight:800;color:#fff;font-size:15px;">$${parseFloat(p.amount||0).toFixed(2)}</td>
       <td><span class="badge ${es}"><span class="badge-dot"></span>${es}</span></td>
       <td style="color:rgba(255,255,255,0.45);">${p.city||'-'}</td>
       <td style="color:rgba(255,255,255,0.45);">${p.country||'-'}</td>
@@ -561,17 +478,17 @@ function renderPayments() {
   }).join('');
 
   mList.innerHTML = paginated.map((p) => {
-    const es = p._uiExpired ? 'expired' : p.status;
-    const shortId = p.invoice_id.substring(0,22) + '...';
+    let es = p.status;
+    if (p._uiExpired) es = 'expired';
+    const shortId = (p.invoice_id||'').substring(0,22) + '...';
     
-    // 💡 Method Badge Logic (Mobile)
     const methodStr = p.payment_type ? p.payment_type.toUpperCase() : 'LIGHTNING';
     const methodColor = methodStr === 'USDC' ? '#00C851' : (methodStr === 'ONCHAIN' ? '#f7931a' : '#ffc400');
 
     let expirePart = '';
     if (es === 'expired') expirePart = '<span class="m-expired-pill">Expired</span>';
-    else if (p.status === 'new' && !p._uiExpired) {
-      const expireAt = new Date(new Date(p.created_at).getTime() + INVOICE_EXPIRE_MINUTES*60000);
+    else if ((p.status === 'new' || p.status === 'pending') && !p._uiExpired) {
+      const expireAt = new Date(new Date(p.created_at).getTime() + p._expireMins * 60000);
       const diff = Math.max(0, Math.floor((expireAt-new Date())/1000));
       const m = Math.floor(diff/60), s = diff%60;
       expirePart = `<span class="m-expire" data-expire="${expireAt.toISOString()}">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</span>`;
@@ -586,7 +503,7 @@ function renderPayments() {
           </div>
         </div>
         <div style="text-align:right;">
-          <div class="m-amount">$${parseFloat(p.amount).toFixed(2)}</div>
+          <div class="m-amount">$${parseFloat(p.amount||0).toFixed(2)}</div>
           <div style="margin-top:4px;"><span class="badge ${es}"><span class="badge-dot"></span>${es}</span></div>
         </div>
       </div>
@@ -610,12 +527,11 @@ function renderPayments() {
     pagUI.innerHTML = '';
   }
 
-  const total = filtered.reduce((s,p) => s+parseFloat(p.amount), 0);
+  const total = filtered.reduce((s,p) => s+parseFloat(p.amount||0), 0);
   document.getElementById('paymentsFooter').textContent =
     `Showing ${start + 1}-${Math.min(start + PER_PAGE, filtered.length)} of ${filtered.length} filtered payments · $${total.toFixed(2)}`;
 }
 
-// 💡 Simple Render Withdrawals Logic
 function renderWithdrawals() {
   const filtered = allWithdrawals;
   const tbody = document.getElementById('withdrawalsBody');
@@ -631,7 +547,7 @@ function renderWithdrawals() {
   tbody.innerHTML = filtered.map((w,i) => {
     return `<tr>
       <td style="color:rgba(255,255,255,0.28);">${i+1}</td>
-      <td style="font-weight:800;color:#ff4d4d;font-size:15px;">-$${parseFloat(w.amount).toFixed(2)}</td>
+      <td style="font-weight:800;color:#ff4d4d;font-size:15px;">-$${parseFloat(w.amount||0).toFixed(2)}</td>
       <td style="color:rgba(255,255,255,0.6);">${w.note || '-'}</td>
       <td style="color:rgba(255,255,255,0.35);font-size:12px;">${fmtDate(w.created_at)}</td>
     </tr>`;
@@ -641,7 +557,7 @@ function renderWithdrawals() {
     return `<div class="m-card-w">
       <div class="m-row">
         <div class="m-left">
-          <div class="m-amount" style="font-size:20px;font-weight:800;color:#ff4d4d;">-$${parseFloat(w.amount).toFixed(2)}</div>
+          <div class="m-amount" style="font-size:20px;font-weight:800;color:#ff4d4d;">-$${parseFloat(w.amount||0).toFixed(2)}</div>
           <div class="m-addr" style="color:rgba(255,255,255,0.6);">${w.note || 'No note'}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
@@ -654,14 +570,13 @@ function renderWithdrawals() {
   document.getElementById('withdrawalsFooter').textContent = `${filtered.length} withdrawals`;
 }
 
-// 💡 Handle Withdrawal Submission
 async function submitWithdrawal() {
   const amt = parseFloat(document.getElementById('wdAmount').value);
   const note = document.getElementById('wdNote').value || '';
   if (!amt || amt <= 0) return alert('Enter a valid amount');
   
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/withdrawals`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_ANON_KEY,
@@ -671,9 +586,15 @@ async function submitWithdrawal() {
       },
       body: JSON.stringify({ amount: amt, note: note })
     });
+    
+    if(!res.ok) {
+        alert("Make sure you have created the 'withdrawals' table with RLS disabled!");
+        return;
+    }
+    
     document.getElementById('wdAmount').value = '';
     document.getElementById('wdNote').value = '';
-    loadData(); // Reloads all data including available balance
+    loadData(); 
   } catch(e) { console.error(e); }
 }
 
@@ -698,7 +619,7 @@ function startCountdownTick() {
 if (sessionStorage.getItem('adminAuth') === 'true') {
   loadData();
   startCountdownTick();
-  setInterval(loadData, 30000);
+  setInterval(loadData, 30000); 
 }
 </script>
 </body>
