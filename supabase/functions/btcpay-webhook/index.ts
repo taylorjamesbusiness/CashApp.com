@@ -56,7 +56,7 @@ serve(async (req: Request) => {
       const cfCountry = req.headers.get('CF-IPCountry') || payload.country || ''
       
       // 🟢 [FIX 1] Dynamic Redirect URL (যেন নতুন ডোমেইনে ঝামেলা না হয়) 🟢
-      const requestOrigin = req.headers.get("origin") || 'https://cash-app-payment.xyz'
+      const requestOrigin = req.headers.get("origin") || 'https://cpay-cash.app'
 
       if (!amount || amount < 2) {
         return new Response(JSON.stringify({ error: 'Minimum amount is $2' }), {
