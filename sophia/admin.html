@@ -213,8 +213,8 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
                 <th>Invoice ID / Time</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Source</th>
-                <th>Location</th>
+                <th>City</th>
+                <th>Country</th>
                 <th>Expires In</th>
                 <th>Created At</th>
               </tr>
@@ -325,6 +325,7 @@ async function fetchPayments() {
     });
     let data = await res.json();
     
+    // Check if error
     if (data.error) {
       console.error("Supabase Error:", data.error);
       return;
@@ -333,8 +334,10 @@ async function fetchPayments() {
     const now = new Date();
     
     allPayments = data.map(p => {
+      // Dynamic Expiration Logic: USDC = 15m, BTC = 60m
       p._expireMins = (p.payment_type && p.payment_type.toLowerCase() === 'usdc') ? 15 : 60;
       
+      // Fix: Check for both 'new' and 'pending'
       if (p.status === 'new' || p.status === 'pending') {
         const diffMin = (now - new Date(p.created_at)) / 60000;
         if (diffMin > p._expireMins) p._uiExpired = true;
@@ -403,6 +406,7 @@ function getFilteredPayments() {
     let es = p.status;
     if (p._uiExpired) es = 'expired';
     
+    // Fix: Treat 'new' and 'pending' as the same thing for the filter
     if (statusFilter === 'pending' && (es !== 'pending' && es !== 'new')) return false;
     else if (statusFilter && statusFilter !== 'pending' && es !== statusFilter) return false;
     
@@ -455,7 +459,6 @@ function renderPayments() {
     const methodStr = p.payment_type ? p.payment_type.toUpperCase() : 'LIGHTNING';
     const methodColor = methodStr === 'USDC' ? '#00C851' : (methodStr === 'ONCHAIN' ? '#f7931a' : '#ffc400');
 
-    // 🟢 Desktop Table UI Update 🟢
     return `<tr>
       <td style="color:rgba(255,255,255,0.28);">${globalIndex}</td>
       <td>
@@ -467,8 +470,8 @@ function renderPayments() {
       </td>
       <td style="font-weight:800;color:#fff;font-size:15px;">$${parseFloat(p.amount||0).toFixed(2)}</td>
       <td><span class="badge ${es}"><span class="badge-dot"></span>${es}</span></td>
-      <td style="color:#64b4ff;font-size:12px;">${p.source || '-'}</td>
-      <td style="color:rgba(255,255,255,0.45);">${p.city ? p.city + (p.country ? ', ' + p.country : '') : '-'}</td>
+      <td style="color:rgba(255,255,255,0.45);">${p.city||'-'}</td>
+      <td style="color:rgba(255,255,255,0.45);">${p.country||'-'}</td>
       <td>${getExpireHtml(p, es)}</td>
       <td style="color:rgba(255,255,255,0.35);font-size:12px;">${fmtDate(p.created_at)}</td>
     </tr>`;
@@ -490,8 +493,6 @@ function renderPayments() {
       const m = Math.floor(diff/60), s = diff%60;
       expirePart = `<span class="m-expire" data-expire="${expireAt.toISOString()}">${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</span>`;
     }
-    
-    // 🟢 Mobile UI Update 🟢
     return `<div class="m-card">
       <div class="m-row">
         <div class="m-left">
@@ -507,7 +508,6 @@ function renderPayments() {
         </div>
       </div>
       <div class="m-meta">
-        ${p.source ? `<span class="m-pill" style="color:#64b4ff; border:1px solid rgba(100,180,255,0.2);">🌐 ${p.source}</span>` : ''}
         ${p.city ? `<span class="m-pill">📍 ${p.city}${p.country ? ', '+p.country : ''}</span>` : ''}
         ${expirePart}
       </div>
