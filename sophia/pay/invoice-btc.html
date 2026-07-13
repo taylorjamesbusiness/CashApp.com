@@ -19,7 +19,7 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
 }
 
 /* Top Nav */
-.s2-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.s2-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-shrink: 0; }
 .icon-btn, .help-btn {
   background: rgba(255, 255, 255, 0.08); border: none; border-radius: 12px;
   color: #fff; display: flex; align-items: center; justify-content: center;
@@ -28,8 +28,8 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
 .icon-btn { width: 44px; padding: 0; border-radius: 50%; }
 
 /* Title & QR */
-.scanner-title { font-size: 22px; font-weight: 700; margin-bottom: 15px; }
-.qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; }
+.scanner-title { font-size: 24px; font-weight: 700; line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.5px; flex-shrink: 0; }
+.qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 0; }
 .qr-outer-frame { border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 28px; padding: 12px; position: relative; }
 #qrcode { background: #fff; padding: 10px; border-radius: 16px; }
 #qrcode img { border-radius: 6px; }
@@ -39,16 +39,36 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
 /* Info Cards */
 .info-card {
   background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px; padding: 14px; margin-top: 12px; font-size: 13px; text-align: left;
-  line-height: 1.5; width: 100%;
+  border-radius: 16px; padding: 12px 14px; margin-top: 10px; font-size: 13px; text-align: left;
+  line-height: 1.4; width: 100%;
 }
 
 /* Footer Button */
-.action-footer { margin-top: 15px; width: 100%; display: flex; justify-content: center; }
+.action-footer { margin-top: 15px; width: 100%; display: flex; justify-content: center; flex-shrink: 0; }
 .pill-btn {
   background: #fff; color: #000; border: none; border-radius: 999px;
   padding: 16px 32px; font-size: 16px; font-weight: 700; width: 100%; max-width: 340px; cursor: pointer;
 }
+
+/* ====== SUCCESS UI (STEP 3) ====== */
+#step3 {
+  display: none; width: 100%; max-width: 430px; height: 100%;
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px 20px; text-align: center; margin: 0 auto;
+}
+.success-icon {
+  width: 80px; height: 80px; background: #00C851; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px; animation: pop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes pop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.success-title { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+.success-sub { color: rgba(255, 255, 255, 0.5); font-size: 14px; margin-bottom: 8px; }
+.success-amount { font-size: 44px; font-weight: 800; color: #00C851; margin-bottom: 40px; }
 
 /* Modal */
 #howToPayModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
@@ -66,7 +86,7 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
     <button class="help-btn" onclick="openModal()">Help</button>
   </div>
 
-  <div class="scanner-title">Scan QR to pay</div>
+  <div class="scanner-title">Scan a Bitcoin or<br>Lightning QR code</div>
 
   <div class="qr-container">
     <a id="qrLink" href="#" target="_blank">
@@ -89,6 +109,19 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
   <div class="action-footer">
     <button id="actionBtn" class="pill-btn" onclick="handleAction()">Copy address</button>
   </div>
+</div>
+
+<!-- SUCCESS UI (STEP 3) -->
+<div id="step3">
+  <div class="success-icon">
+    <svg width="44" height="44" fill="none" stroke="#000" stroke-width="3" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+    </svg>
+  </div>
+  <div class="success-title">Payment Received!</div>
+  <div class="success-sub">Thank you for your payment</div>
+  <div class="success-amount" id="successAmount">$0.00</div>
+  <button class="pill-btn" onclick="clearSession()">Done</button>
 </div>
 
 <!-- Modal -->
@@ -114,9 +147,15 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
 const SUPABASE_URL = 'https://dirokbqnuosazuwhbdhs.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpcm9rYnFudW9zYXp1d2hiZGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MDAwOTksImV4cCI6MjA5ODk3NjA5OX0.UTHzC66WjL37dNgc-VWNswH-nCvAvgvEDpz8KYsQp-A';
 
+let timerInterval, pollInterval;
 let currentPayCode = '';
 let hasCopiedBtn = false;
 let autoResetTimer;
+
+function showStep(n) {
+  document.getElementById('step2').style.display = n === 2 ? 'flex' : 'none';
+  document.getElementById('step3').style.display = n === 3 ? 'flex' : 'none';
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   const saved = sessionStorage.getItem('invoiceSession');
@@ -126,6 +165,9 @@ window.addEventListener('DOMContentLoaded', () => {
   
   new QRCode(document.getElementById('qrcode'), { text: data.cashAppUrl || currentPayCode, width: 200, height: 200 });
   document.getElementById('qrLink').href = data.cashAppUrl || '#';
+
+  startTimer(data.secondsLeft || 3600, data.invoiceId);
+  startPolling(data.invoiceId, data.amount);
 });
 
 function handleAction() {
@@ -134,15 +176,83 @@ function handleAction() {
     navigator.clipboard.writeText(currentPayCode);
     btn.textContent = 'Open Cash App';
     hasCopiedBtn = true;
-    setTimeout(() => { btn.textContent = 'Copy address'; hasCopiedBtn = false; }, 10000);
+    autoResetTimer = setTimeout(() => { resetActionBtn(); }, 10000);
   } else {
     window.location.href = document.getElementById('qrLink').href;
   }
 }
 
+function resetActionBtn() {
+  if (hasCopiedBtn) {
+    document.getElementById('actionBtn').textContent = 'Copy address';
+    hasCopiedBtn = false;
+  }
+}
+
+window.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') { resetActionBtn(); }
+});
+
 function openModal() { document.getElementById('howToPayModal').classList.add('open'); }
 function closeModal() { document.getElementById('howToPayModal').classList.remove('open'); }
-function goBack() { window.location.href = '../index.html'; }
+
+// Timer Logic
+function startTimer(sec, invoiceId) {
+  clearInterval(timerInterval);
+  let t = sec;
+  timerInterval = setInterval(() => {
+    if (t <= 0) {
+      clearInterval(timerInterval);
+      clearInterval(pollInterval);
+      sessionStorage.removeItem('invoiceSession');
+      window.location.href = '../index.html'; 
+      return;
+    }
+    const saved = sessionStorage.getItem('invoiceSession');
+    if (saved) {
+      const obj = JSON.parse(saved);
+      obj.secondsLeft = t;
+      sessionStorage.setItem('invoiceSession', JSON.stringify(obj));
+    }
+    t--;
+  }, 1000);
+}
+
+// Polling Logic
+function startPolling(invoiceId, amount) {
+  clearInterval(pollInterval);
+  pollInterval = setInterval(async () => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/btcpay-webhook`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ checkStatus: true, invoiceId })
+      });
+      const data = await res.json();
+      
+      if (data?.status === 'settled' || data?.status === 'Processing') {
+        clearInterval(pollInterval);
+        clearInterval(timerInterval);
+        sessionStorage.removeItem('invoiceSession');
+        showStep(3);
+        document.getElementById('successAmount').textContent = '$' + parseFloat(amount).toFixed(2);
+      }
+    } catch(e) {
+      console.error('Polling error', e);
+    }
+  }, 5000);
+}
+
+function goBack() { 
+    clearInterval(timerInterval);
+    clearInterval(pollInterval);
+    window.location.href = '../index.html'; 
+}
+
+function clearSession() {
+  sessionStorage.removeItem('invoiceSession');
+  window.location.href = '../index.html';
+}
 </script>
 </body>
 </html>
