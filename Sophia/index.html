@@ -19,189 +19,161 @@
 /* ====== RESET & BASE ====== */
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-html { background: #00C851; transition: background 0.4s ease; }
+html { background: #00D632; }
 body { 
   margin: 0; min-height: 100dvh; display: flex; flex-direction: column; 
-  background: #00C851; font-family: 'DM Sans', sans-serif; 
-  overscroll-behavior: none; transition: background 0.4s ease; 
+  background: #00D632; font-family: 'DM Sans', sans-serif; 
+  overscroll-behavior: none; color: #000;
 }
 
-body.btc-mode, html.btc-mode { background:#111111; }
-
-#step1-wrapper { 
-  flex: 1; width: 100%; display: flex; flex-direction: column; 
-  background: transparent; margin: 0 auto; position: relative; padding-bottom: 20px; 
-}
-
-/* ====== DESKTOP FIX ====== */
+/* ====== DESKTOP FIX (PREMIUM FEEL) ====== */
 @media (min-width: 600px) {
   html, body { background: #0a0a0a !important; align-items: center; justify-content: center; }
-  body.btc-mode, html.btc-mode { background: #000 !important; }
-  
-  #step1-wrapper { 
-    flex: none; width: 100%; max-width: 430px; 
-    height: 90vh; max-height: 880px; min-height: 800px;
-    background: #00C851 !important; border-radius: 34px; 
-    box-shadow: 0 20px 80px rgba(0,0,0,.45), 0 0 0 10px #111, 0 0 0 12px #222; 
-    overflow: hidden; 
+  #app-wrapper { 
+    width: 100%; max-width: 400px; height: 90vh; max-height: 850px; min-height: 750px;
+    background: #00D632 !important; border-radius: 36px; 
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 10px #111, 0 0 0 14px #222; 
+    overflow: hidden; position: relative;
   }
-  #step1-wrapper.btc-mode { background: #111111 !important; }
+}
+#app-wrapper {
+  flex: 1; width: 100%; display: flex; flex-direction: column; 
+  background: #00D632; margin: 0 auto;
 }
 
-/* ====== 3D EFFECTS ====== */
-.effect-3d { transition: transform 0.1s, box-shadow 0.1s; }
-.effect-3d:active { transform: translateY(4px) scale(0.98); box-shadow: 0 0px 0 rgba(0,0,0,0) !important; }
-
 /* ====== TOP BAR ====== */
-.topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 20px 0; }
-.topbar-left { display: flex; align-items: center; gap: 12px; }
-.topbar-name { font-size:18px; font-weight:700; color:#000; letter-spacing:-0.3px; transition: color 0.3s; }
-#step1-wrapper.btc-mode .topbar-name { color: #fff; }
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:16px 24px 0; }
+.topbar-name { font-size:18px; font-weight:700; color:#000; letter-spacing:-0.3px; }
+.topbar-avatar { 
+  width:36px; height:36px; background:rgba(0,0,0,0.12); border-radius:50%; 
+  display:flex; align-items:center; justify-content:center; 
+  font-size:15px; font-weight:800; color:#000;
+}
 
-.topbar-actions { display: flex; align-items: center; gap: 12px; }
-.topbar-avatar { width:38px; height:38px; background:rgba(0,0,0,0.18); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#000; box-shadow: inset 0 2px 4px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.2); transition: all 0.3s; }
-#step1-wrapper.btc-mode .topbar-avatar { background:rgba(255,255,255,0.12); color:#fff; }
-
-.qr-icon-btn { background:#fff; color:#000; border:none; border-radius:12px; width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: all 0.3s; }
-#step1-wrapper.btc-mode .qr-icon-btn { background:#32ade6; color:#000; box-shadow: 0 4px 0 #1b7a9e; }
-
-/* ====== AMOUNT ====== */
-.amount-display { flex:1; display:flex; align-items:center; justify-content:center; padding:10px 0; min-height: 150px; }
-.amount-inner { display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; }
-.amount-text { font-size:80px; font-weight:800; color:#000; letter-spacing:-3px; line-height:1; word-break:break-all; text-align:center; padding:0 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: color 0.3s, text-shadow 0.3s; }
-#step1-wrapper.btc-mode .amount-text { color:#32ade6; text-shadow: 0 4px 15px rgba(50,173,230,0.25); }
+/* ====== AMOUNT DISPLAY ====== */
+.amount-display { flex:1; display:flex; align-items:center; justify-content:center; padding:10px 20px; min-height: 140px; }
+.amount-text { 
+  font-size:80px; font-weight:700; color:#000; letter-spacing:-2px; 
+  line-height:1; word-break:break-all; text-align:center;
+}
 
 /* ====== KEYPAD ====== */
-.keypad-section { padding:0 24px 10px; }
-.keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; max-width:350px; margin:0 auto; }
-.key { background:rgba(255,255,255,0.15); border:none; border-radius: 14px; font-size:32px; font-weight:500; color:#000; padding:14px 0; cursor:pointer; font-family:'DM Sans',sans-serif; box-shadow: 0 4px 0 rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.2); transition: all 0.3s; }
-.key-backspace { font-size:24px; font-weight:700; }
-#step1-wrapper.btc-mode .key { background:rgba(255,255,255,0.06); color:#fff; box-shadow: 0 4px 0 rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.05); }
+.keypad-section { padding:0 30px 15px; }
+.keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:320px; margin:0 auto; }
+.key { 
+  background:transparent; border:none; border-radius: 16px; 
+  font-size:32px; font-weight:500; color:#000; padding:16px 0; 
+  cursor:pointer; font-family:'DM Sans',sans-serif; transition: all 0.15s ease; 
+}
+.key:active { background:rgba(0,0,0,0.08); transform:scale(0.95); }
+.key-backspace { font-size:26px; font-weight:600; display:flex; align-items:center; justify-content:center; }
 
-/* ====== QUICK AMOUNTS ====== */
-.quick-section { padding:0 12px 10px; max-width:400px; margin:0 auto; width:100%; flex-shrink: 0; }
-.quick-amounts { display:none; flex-wrap:wrap; gap:8px; justify-content:center; padding:0 6px 10px; }
+/* ====== QUICK AMOUNTS & PAY ACTION ====== */
+.action-section { padding:0 20px 20px; display:flex; flex-direction:column; gap:12px; }
+
+.quick-amounts { display:none; flex-wrap:wrap; gap:8px; justify-content:center; padding-bottom:10px; }
 .quick-amounts.visible { display:flex; animation: fadeInDown 0.3s ease; }
-.quick-chip { background:rgba(0,0,0,0.12); border:none; border-radius:999px; padding:10px 18px; font-size:15px; font-weight:700; color:#000; cursor:pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.15); transition: all 0.3s; }
-.quick-chip.selected { background:#000; color:#00C851; box-shadow: 0 4px 0 rgba(0,0,0,0.4); }
-.quick-toggle-btn { width:100%; background:rgba(0,0,0,0.12); border:none; border-radius:16px; padding:14px; font-size:16px; font-weight:700; color:#000; cursor:pointer; margin-bottom:5px; box-shadow: 0 4px 0 rgba(0,0,0,0.15); transition: all 0.3s; }
-#step1-wrapper.btc-mode .quick-chip, #step1-wrapper.btc-mode .quick-toggle-btn { background:rgba(255,255,255,0.08); color:#fff; box-shadow: 0 4px 0 rgba(0,0,0,0.4); }
-#step1-wrapper.btc-mode .quick-chip.selected { background:#32ade6; color:#000; }
+.quick-chip { 
+  background:rgba(0,0,0,0.1); border:none; border-radius:999px; 
+  padding:12px 20px; font-size:16px; font-weight:600; color:#000; cursor:pointer; 
+  transition: all 0.2s;
+}
+.quick-chip:active { transform: scale(0.95); }
+.quick-chip.selected { background:#000; color:#00D632; }
 
-/* ====== PAY BUTTON & INLINE SPINNER ====== */
-.pay-section { padding:0 12px 10px; max-width:400px; margin:0 auto; width:100%; flex-shrink: 0; }
-.pay-btn { width:100%; background:linear-gradient(145deg, #1a1a1a, #000); color:#fff; border:none; border-radius:18px; padding:18px; font-size:18px; font-weight:700; cursor:pointer; letter-spacing:0.5px; box-shadow: 0 6px 0 #000, 0 10px 20px rgba(0,0,0,0.3); transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.pay-btn:disabled { opacity:0.6; cursor:not-allowed; box-shadow: none; transform: translateY(6px); }
-.pay-btn.active-ready { background:linear-gradient(145deg, #00e65c, #00b347); color:#000; box-shadow: 0 6px 0 #007a30, 0 10px 20px rgba(0,0,0,0.3); }
-#step1-wrapper.btc-mode .pay-btn.active-ready { background:#32ade6; color:#000; box-shadow: 0 6px 0 #1b7a9e, 0 10px 20px rgba(50,173,230,0.25); }
+.quick-btn { 
+  width:100%; background:rgba(0,0,0,0.08); border:none; border-radius:18px; 
+  padding:16px; font-size:16px; font-weight:700; color:#000; cursor:pointer; 
+  transition: all 0.2s;
+}
+.quick-btn:active { background:rgba(0,0,0,0.15); transform:scale(0.98); }
 
-/* INLINE SPINNER FOR SEAMLESS TRANSITION */
-.btn-spinner { width: 22px; height: 22px; border: 3px solid rgba(0,0,0,0.2); border-top-color: #000; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
-#step1-wrapper.btc-mode .btn-spinner { border: 3px solid rgba(0,0,0,0.2); border-top-color: #000; }
+.pay-btn { 
+  width:100%; background:#000; color:#fff; border:none; border-radius:18px; 
+  padding:18px; font-size:18px; font-weight:700; cursor:pointer; 
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all 0.2s;
+}
+.pay-btn:active:not(:disabled) { transform:scale(0.98); opacity: 0.9; }
+.pay-btn:disabled { opacity:0.7; cursor:not-allowed; }
+
+/* SPINNER */
+.btn-spinner { 
+  width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); 
+  border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; 
+}
 .pay-btn.loading .btn-spinner { display: block; }
 
 @keyframes spin { to { transform:rotate(360deg); } }
 @keyframes fadeInDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
 
-/* ====== BOTTOM NAV & CHOOSER ====== */
-.bottom-nav { display:flex; align-items:center; justify-content:space-between; padding:10px 20px; flex-shrink: 0; margin-top: auto; }
-.bnav-left { width: 50px; display:flex; justify-content:flex-start; align-items:center;}
-.bnav-amount { font-size:14px; font-weight:700; color:#000; transition: color 0.3s; }
-#step1-wrapper.btc-mode .bnav-amount { color:#fff; }
+/* ====== BOTTOM NAV ====== */
+.bottom-nav { 
+  display:flex; align-items:center; justify-content:space-between; 
+  padding:15px 24px 20px; flex-shrink: 0; margin-top: auto;
+}
+.bnav-left { width: 40px; display:flex; justify-content:flex-start; align-items:center; }
+.bnav-amount { font-size:14px; font-weight:700; color:#000; }
 
-.currency-chooser { display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(0,0,0,0.15); padding:6px 8px; border-radius:30px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); transition: background 0.3s; }
-#step1-wrapper.btc-mode .currency-chooser { background:rgba(255,255,255,0.08); }
-.choose-btn { width:44px; height:44px; border-radius:50%; border:none; font-size:24px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(0,0,0,0.25); transition: all 0.2s; }
-.usd-btn { background:#0a0a0a; color:#00C851; }
-.btc-btn { background:#32ade6; color:#000; }
-.choose-text { font-size:13px; font-weight:700; color:#000; opacity:0.8; transition: color 0.3s; }
-#step1-wrapper.btc-mode .choose-text { color:#fff; opacity:0.9; }
+.bnav-center { 
+  width:44px; height:44px; background:#00D632; border-radius:50%; 
+  display:flex; align-items:center; justify-content:center; 
+  font-size:22px; font-weight:800; color:#fff; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.2);
+}
 
-.bnav-right { width: 50px; display:flex; justify-content:flex-end; }
-.bnav-clock { width:28px; height:28px; border:2.5px solid rgba(0,0,0,0.5); border-radius:50%; position:relative; transition: border-color 0.3s; }
-.bnav-clock::after { content:''; position:absolute; width:2px; height:7px; background:#000; top:4px; left:50%; transform:translateX(-50%); border-radius:1px; transition: background 0.3s; }
-.bnav-clock::before { content:''; position:absolute; width:6px; height:2px; background:#000; top:50%; left:50%; transform:translateY(-50%); border-radius:1px; transition: background 0.3s; }
-#step1-wrapper.btc-mode .bnav-clock { border-color:rgba(255,255,255,0.5); }
-#step1-wrapper.btc-mode .bnav-clock::after, #step1-wrapper.btc-mode .bnav-clock::before { background:#fff; }
+.bnav-right { width: 40px; display:flex; justify-content:flex-end; }
+.bnav-clock { 
+  width:24px; height:24px; border:2px solid #000; border-radius:50%; position:relative; 
+}
+.bnav-clock::after { content:''; position:absolute; width:2px; height:6px; background:#000; top:4px; left:50%; transform:translateX(-50%); border-radius:1px; }
+.bnav-clock::before { content:''; position:absolute; width:5px; height:2px; background:#000; top:50%; left:50%; transform:translateY(-50%); border-radius:1px; }
 
-@keyframes pulseGlow { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255,255,255,0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); } }
-.pulse-animation { animation: pulseGlow 2s infinite; }
-.choose-btn.selected-glow { border: 2px solid #fff; transform: scale(1.1); box-shadow: 0 0 15px rgba(255,255,255,0.4); }
-
-/* ====== TUTORIAL MODAL ====== */
-.tutorial-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s ease; padding: 20px; }
-.tutorial-overlay.visible { opacity:1; pointer-events:auto; }
-.tutorial-modal { background:#fff; width:100%; max-width:380px; border-radius:24px; padding:20px; display:flex; flex-direction:column; gap:15px; transform:translateY(50px); transition:transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.tutorial-overlay.visible .tutorial-modal { transform:translateY(0); }
-.tutorial-modal video { width:100%; border-radius:16px; background:#000; aspect-ratio: 9/16; max-height: 40vh; object-fit: cover; }
-.tutorial-text { font-size:14px; color:#333; line-height:1.5; font-weight:500; }
-.tutorial-text h4 { font-size:16px; color:#000; margin-bottom:8px; font-weight:800; }
-.tutorial-text ul { padding-left: 20px; margin-top:5px; }
-.tutorial-text li { margin-bottom: 4px; }
-.tutorial-close-btn { background:#ddd; color:#888; border:none; padding:14px; border-radius:14px; font-size:16px; font-weight:700; cursor:not-allowed; }
-.tutorial-close-btn.ready { background:#000; color:#00C851; cursor:pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.8); }
 </style>
 </head>
 <body>
 
-<div id="step1-wrapper">
+<div id="app-wrapper">
   
   <div class="topbar">
-    <div class="topbar-left">
-      <button class="qr-icon-btn effect-3d" id="qrBtnUsdc" onclick="submitPayment()" style="display: none;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-      </button>
-      <div class="topbar-name">Sophia</div>
-    </div>
-    
-    <div class="topbar-actions">
-      <button class="qr-icon-btn effect-3d" id="qrBtnBtc" onclick="submitPayment()" style="display: none;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-      </button>
-      <div class="topbar-avatar">$</div>
-    </div>
+    <div class="topbar-name">Sophia</div>
+    <div class="topbar-avatar">S</div>
   </div>
 
   <div class="amount-display">
-    <div class="amount-inner">
-      <div class="amount-text" id="amountDisplay">$0</div>
-    </div>
+    <div class="amount-text" id="amountDisplay">$0</div>
   </div>
 
   <div class="keypad-section">
     <div class="keypad">
-      <button class="key effect-3d" onclick="keyPress('1')">1</button>
-      <button class="key effect-3d" onclick="keyPress('2')">2</button>
-      <button class="key effect-3d" onclick="keyPress('3')">3</button>
-      <button class="key effect-3d" onclick="keyPress('4')">4</button>
-      <button class="key effect-3d" onclick="keyPress('5')">5</button>
-      <button class="key effect-3d" onclick="keyPress('6')">6</button>
-      <button class="key effect-3d" onclick="keyPress('7')">7</button>
-      <button class="key effect-3d" onclick="keyPress('8')">8</button>
-      <button class="key effect-3d" onclick="keyPress('9')">9</button>
-      <button class="key effect-3d" onclick="keyPress('.')">.</button>
-      <button class="key effect-3d" onclick="keyPress('0')">0</button>
-      <button class="key key-backspace effect-3d" onclick="keyPress('back')">&lt;</button>
+      <button class="key" onclick="keyPress('1')">1</button>
+      <button class="key" onclick="keyPress('2')">2</button>
+      <button class="key" onclick="keyPress('3')">3</button>
+      <button class="key" onclick="keyPress('4')">4</button>
+      <button class="key" onclick="keyPress('5')">5</button>
+      <button class="key" onclick="keyPress('6')">6</button>
+      <button class="key" onclick="keyPress('7')">7</button>
+      <button class="key" onclick="keyPress('8')">8</button>
+      <button class="key" onclick="keyPress('9')">9</button>
+      <button class="key" onclick="keyPress('.')">.</button>
+      <button class="key" onclick="keyPress('0')">0</button>
+      <button class="key key-backspace" onclick="keyPress('back')">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+      </button>
     </div>
   </div>
   
-  <div class="quick-section">
+  <div class="action-section">
     <div class="quick-amounts" id="quickAmounts">
-      <button class="quick-chip effect-3d" onclick="setQuick(this,10)">$10</button>
-      <button class="quick-chip effect-3d" onclick="setQuick(this,15)">$15</button>
-      <button class="quick-chip effect-3d" onclick="setQuick(this,20)">$20</button>
-      <button class="quick-chip effect-3d" onclick="setQuick(this,25)">$25</button>
-      <button class="quick-chip effect-3d" onclick="setQuick(this,50)">$50</button>
-      <button class="quick-chip effect-3d" onclick="setQuick(this,75)">$75</button>
-      <button class="quick-chip effect-3d" onclick="setQuick(this,100)">$100</button>
-      <button class="quick-chip effect-3d" onclick="setQuick(this,150)">$150</button>
-      <button class="quick-chip effect-3d" onclick="setQuick(this,200)">$200</button>
+      <button class="quick-chip" onclick="setQuick(this,10)">$10</button>
+      <button class="quick-chip" onclick="setQuick(this,25)">$25</button>
+      <button class="quick-chip" onclick="setQuick(this,50)">$50</button>
+      <button class="quick-chip" onclick="setQuick(this,100)">$100</button>
+      <button class="quick-chip" onclick="setQuick(this,200)">$200</button>
     </div>
-    <button class="quick-toggle-btn effect-3d" onclick="toggleQuick()">Quick amount</button>
-  </div>
-
-  <div class="pay-section">
-    <button class="pay-btn effect-3d" id="payBtn" onclick="submitPayment()" disabled>
+    <button class="quick-btn" onclick="toggleQuick()">Quick amount</button>
+    
+    <button class="pay-btn" id="payBtn" onclick="submitPayment()">
       <div class="btn-spinner"></div>
       <span id="payBtnText">Pay</span>
     </button>
@@ -211,106 +183,23 @@ body.btc-mode, html.btc-mode { background:#111111; }
     <div class="bnav-left">
       <span class="bnav-amount" id="navAmount">$0</span>
     </div>
-    <div class="currency-chooser">
-      <button class="choose-btn usd-btn pulse-animation effect-3d" id="chooseUsd" onclick="openTutorial('usd')">$</button>
-      <span class="choose-text" id="chooseText">Select</span>
-      <button class="choose-btn btc-btn pulse-animation effect-3d" id="chooseBtc" onclick="openTutorial('btc')">₿</button>
-    </div>
+    <div class="bnav-center">$</div>
     <div class="bnav-right">
       <div class="bnav-clock"></div>
-    </div>
-  </div>
-
-  <div class="tutorial-overlay" id="tutorialOverlay">
-    <div class="tutorial-modal">
-      <video id="tutorialVideo" src="" autoplay muted playsinline loop></video>
-      <div class="tutorial-text" id="tutorialText"></div>
-      <button class="tutorial-close-btn effect-3d" id="closeTutorialBtn" onclick="closeTutorial()" disabled>
-        Wait <span id="timerSpan">10</span>s...
-      </button>
     </div>
   </div>
 
 </div>
 
 <script>
-// ⚠️ নতুন Supabase Credentials দেওয়া হয়েছে
+// ⚠️ আপনার নতুন Supabase URL & Key (Admin প্যানেল থেকে নেওয়া)
 const SUPABASE_URL      = 'https://qhyimqvuzzanekcqaemg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
-const CREATE_USDC_URL   = `${SUPABASE_URL}/functions/v1/create-usdc-payment`;
 const BTCPAY_URL        = `${SUPABASE_URL}/functions/v1/btcpay-webhook`;
-const USDC_SECONDS      = 15 * 60;
-const BTC_SECONDS       = 60 * 60;
+const BTC_SECONDS       = 60 * 60; // 60 Minutes
 
-let rawInput       = '';
-let quickVisible   = false;
-let selectedMethod = null; 
-let timerInterval;
-let isForceOnchain = false; 
-
-const texts = {
-  btc: `<h4>Send Bitcoin via Lightning</h4><ul><li>Go to the <b>Money tab</b> in Cash App</li><li>Tap the <b>Bitcoin tile</b></li><li>Tap the <b>QR icon</b> in the top right corner</li><li>Scan the QR code or paste the Lightning invoice</li><li>Confirm the payment</li></ul>`,
-  usd: `<h4>To send USDC</h4><ul><li>Open the <b>Payments tab</b> in Cash App</li><li>Enter the amount and Tap <b>Pay</b></li><li>Paste the recipient's wallet address in the search bar</li><li>Select network (If you see only Solana, tap it. Or if 3 networks, tap 1)</li><li>Confirm the payment by tapping <b>Send</b></li></ul>`
-};
-
-function openTutorial(type) {
-  selectedMethod = type;
-  const bodyEl = document.body;
-  const htmlEl = document.documentElement;
-  const wrapperEl = document.getElementById('step1-wrapper');
-  
-  document.getElementById('chooseUsd').classList.remove('pulse-animation', 'selected-glow');
-  document.getElementById('chooseBtc').classList.remove('pulse-animation', 'selected-glow');
-  document.getElementById('chooseText').innerText = type === 'btc' ? 'Bitcoin' : 'USDC';
-  
-  if (type === 'btc') {
-    bodyEl.classList.add('btc-mode');
-    htmlEl.classList.add('btc-mode');
-    wrapperEl.classList.add('btc-mode');
-    document.getElementById('chooseBtc').classList.add('selected-glow');
-    document.getElementById('qrBtnBtc').style.display = 'flex';
-    document.getElementById('qrBtnUsdc').style.display = 'none';
-  } else {
-    bodyEl.classList.remove('btc-mode');
-    htmlEl.classList.remove('btc-mode');
-    wrapperEl.classList.remove('btc-mode');
-    document.getElementById('chooseUsd').classList.add('selected-glow');
-    document.getElementById('qrBtnBtc').style.display = 'none';
-    document.getElementById('qrBtnUsdc').style.display = 'flex';
-  }
-
-  const vidSrc = type === 'btc' ? 'assets/6931.mp4' : 'assets/6930.mp4';
-  document.getElementById('tutorialVideo').src = vidSrc;
-  document.getElementById('tutorialText').innerHTML = texts[type];
-
-  document.getElementById('tutorialOverlay').classList.add('visible');
-  
-  let timeLeft = 10;
-  const btn = document.getElementById('closeTutorialBtn');
-  btn.disabled = true;
-  btn.classList.remove('ready');
-  btn.innerHTML = `Wait <span id="timerSpan">${timeLeft}</span>s...`;
-
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    document.getElementById('timerSpan').innerText = timeLeft;
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      btn.disabled = false;
-      btn.classList.add('ready');
-      btn.innerHTML = 'Got it / Close';
-    }
-  }, 1000);
-}
-
-function closeTutorial() {
-  document.getElementById('tutorialOverlay').classList.remove('visible');
-  document.getElementById('tutorialVideo').pause();
-  const payBtn = document.getElementById('payBtn');
-  payBtn.disabled = false;
-  payBtn.classList.add('active-ready');
-}
+let rawInput     = '';
+let quickVisible = false;
 
 function formatDisplay(raw) {
   if (!raw || raw === '') return '$0';
@@ -363,8 +252,7 @@ function toggleQuick() {
   quickVisible ? el.classList.add('visible') : el.classList.remove('visible');
 }
 
-// Inline Spinner Loading Fix for Smooth Page Transition
-function showLoading(text) {
+function showLoading() {
   const btn = document.getElementById('payBtn');
   btn.disabled = true;
   btn.classList.add('loading');
@@ -387,15 +275,7 @@ function getUserKey() {
 async function submitPayment() {
   const amount = getNumericValue();
   if (!amount || amount < 2) {
-    alert('Please enter an amount (min $2)');
-    return;
-  }
-  if (!selectedMethod) {
-    alert('Please select $ or ₿ first!');
-    return;
-  }
-  if (selectedMethod === 'usd') {
-    await createUsdcInvoice(); 
+    alert('Minimum payment amount is $2');
     return;
   }
 
@@ -408,96 +288,33 @@ async function submitPayment() {
       city = ipData.city || ''; country = ipData.country_name || '';
     } catch (_) {}
     const userKey = getUserKey();
-    let session;
-    let actualMethod = isForceOnchain ? 'onchain' : 'lightning';
 
-    // 🟢 DYNAMIC DOMAIN LOGIC: এটি নিজে থেকেই আপনার বর্তমান ডোমেইনের নাম বুঝে নেবে 🟢
+    // 🟢 DYNAMIC DOMAIN LOGIC
     const dynamicDomain = window.location.origin + window.location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
 
-    if (actualMethod === 'lightning') {
-      const res = await fetch(BTCPAY_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-        body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'lightning', userKey, source: dynamicDomain, city, country }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to create Lightning invoice');
-
-      let bolt11 = data.lightningCode || '';
-      if (bolt11.toLowerCase().startsWith('lightning:')) bolt11 = bolt11.slice(10);
-
-      session = {
-        amount: Number(data.amount), invoiceId: data.invoiceId, paymentType: 'lightning',
-        payCode: bolt11, qrText: bolt11, cashAppUrl: `https://cash.app/launch/lightning/${bolt11}`,
-        secondsLeft: BTC_SECONDS, expiresAt: data.expiresAt || null,
-      };
-    } else {
-      const res = await fetch(BTCPAY_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-        body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'onchain', userKey, source: dynamicDomain, city, country }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to create BTC invoice');
-
-      const btcAddr = data.btcAddress || '';
-      const btcAmount = Number(data.btcAmount || 0);
-      const cashAppUrl = `bitcoin:${btcAddr}?amount=${btcAmount}`;
-
-      session = {
-        amount: Number(data.amount), invoiceId: data.invoiceId, paymentType: 'onchain',
-        payCode: btcAddr, qrText: cashAppUrl, cashAppUrl: cashAppUrl, btcAmount: btcAmount,
-        secondsLeft: BTC_SECONDS, expiresAt: data.expiresAt || null,
-      };
-    }
-
-    sessionStorage.setItem('invoiceSession', JSON.stringify(session));
-    window.location.href = 'pay/invoice-btc.html'; // This triggers the smooth bottom slide up!
-  } catch (e) {
-    hideLoading();
-    alert(`Error: ${e.message}`);
-  }
-}
-
-async function createUsdcInvoice() {
-  const amount = getNumericValue();
-  showLoading();
-  try {
-    const userKey = getUserKey();
-    let city = '', country = '';
-    try {
-      const ipRes = await fetch('https://ipapi.co/json/');
-      const ipData = await ipRes.json();
-      city = ipData.city || ''; country = ipData.country_name || '';
-    } catch (_) {}
-
-    // 🟢 DYNAMIC DOMAIN LOGIC: এটি নিজে থেকেই আপনার বর্তমান ডোমেইনের নাম বুঝে নেবে 🟢
-    const dynamicDomain = window.location.origin + window.location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
-
-    const res = await fetch(CREATE_USDC_URL, {
+    const res = await fetch(BTCPAY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ amount, userKey, source: dynamicDomain, city, country })
+      body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'lightning', userKey, source: dynamicDomain, city, country }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to create USDC invoice');
-
-    const walletAddress = data.address;
-    const assignedNetwork = data.network; 
-    const solanaPayUrl = data.solanaPayUrl || walletAddress;
     
+    if (!res.ok) throw new Error(data.error || 'Failed to create invoice');
+
+    let bolt11 = data.lightningCode || '';
+    if (bolt11.toLowerCase().startsWith('lightning:')) bolt11 = bolt11.slice(10);
+
     const session = {
-      amount: Number(data.amount), invoiceId: data.invoiceId, paymentType: 'usdc', network: assignedNetwork,
-      payCode: walletAddress, qrText: solanaPayUrl,
-      cashAppUrl: assignedNetwork === 'solana' ? `https://cash.app/launch/solana/${encodeURIComponent(solanaPayUrl)}` : walletAddress,
-      secondsLeft: USDC_SECONDS, expiresAt: data.expiresAt || null,
+      amount: Number(data.amount), invoiceId: data.invoiceId, paymentType: 'lightning',
+      payCode: bolt11, qrText: bolt11, cashAppUrl: `https://cash.app/launch/lightning/${bolt11}`,
+      secondsLeft: BTC_SECONDS, expiresAt: data.expiresAt || null,
     };
 
     sessionStorage.setItem('invoiceSession', JSON.stringify(session));
-    window.location.href = 'pay/invoice-usdc.html'; // This triggers the smooth bottom slide up!
-  } catch(err) {
+    window.location.href = 'pay/invoice-btc.html'; 
+  } catch (e) {
     hideLoading();
-    alert(err.message);
+    alert(`Error: ${e.message}`);
   }
 }
 
