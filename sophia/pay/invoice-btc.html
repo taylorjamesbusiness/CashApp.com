@@ -28,7 +28,7 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
 .icon-btn { width: 44px; padding: 0; border-radius: 50%; }
 
 /* Title & QR */
-.scanner-title { font-size: 23px; font-weight: 700; line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.5px; flex-shrink: 0; }
+.scanner-title { font-size: 24px; font-weight: 700; line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.5px; flex-shrink: 0; }
 .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 0; }
 
 /* Awaiting Payment Text */
@@ -96,10 +96,9 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
     <button class="help-btn" onclick="openModal()">Help</button>
   </div>
 
-  <div class="scanner-title">Scan QR to pay</div>
+  <div class="scanner-title">Scan a Bitcoin or<br>Lightning QR code</div>
 
   <div class="qr-container">
-    <!-- Awaiting Payment Text -->
     <div class="awaiting-text">Awaiting payment...</div>
     
     <a id="qrLink" href="#" target="_blank">
