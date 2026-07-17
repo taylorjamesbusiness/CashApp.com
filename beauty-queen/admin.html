@@ -127,9 +127,9 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
     <div class="login-logo">$</div>
     <div class="login-title">Admin Panel</div>
     <div class="login-sub">Beauty Queen</div>
-    <div class="field-label">admin</div>
+    <div class="field-label">username</div>
     <input type="text" id="loginUser" class="field-input" placeholder="Enter username" autocomplete="username">
-    <div class="field-label">beauty-queen@2026</div>
+    <div class="field-label">password</div>
     <input type="password" id="loginPass" class="field-input" placeholder="Enter password" autocomplete="current-password"
       onkeydown="if(event.key==='Enter') doLogin()">
     <button class="login-btn" onclick="doLogin()">Sign In →</button>
@@ -274,7 +274,7 @@ const SUPABASE_URL = 'https://dirokbqnuosazuwhbdhs.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpcm9rYnFudW9zYXp1d2hiZGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MDAwOTksImV4cCI6MjA5ODk3NjA5OX0.UTHzC66WjL37dNgc-VWNswH-nCvAvgvEDpz8KYsQp-A';
 
 const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'Beauty Queen@2026';
+const ADMIN_PASS = 'beauty-queen@2026';
 const PER_PAGE = 25;
 
 let allPayments = [];
