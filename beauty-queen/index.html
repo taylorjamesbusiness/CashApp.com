@@ -2,326 +2,299 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Pay Beauty Queen</title>
-
-<meta property="og:title" content="Pay Beauty Queen">
-<meta property="og:description" content="Pay directly from your Cash balance. No need to buy or convert any crypto.">
-<meta property="og:image" content="https://cpay-cash.app/beauty-queen/preview.png?v=2">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://cpay-cash.app/beauty-queen/preview.png?v=2">
-
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2300D632'/><text x='50' y='72' font-size='65' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>$</text></svg>" type="image/svg+xml">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Beauty Queen</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet">
+<!-- 🟢 UNPKG Supabase CDN (Bypass jsdelivr block) 🟢 -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
-/* ====== RESET & BASE ====== */
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'DM Sans',sans-serif; background:#000; color:#fff; min-height:100vh; }
 
-html { background: #00D632; }
-body { 
-  margin: 0; min-height: 100dvh; display: flex; flex-direction: column; 
-  background: #00D632; font-family: 'DM Sans', sans-serif; 
-  overscroll-behavior: none; color: #000;
-}
+/* ══════ LOGIN ══════ */
+.login-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; background: radial-gradient(circle at 30% 50%, rgba(236,72,153,0.10) 0%, transparent 65%); }
+.login-card { width:100%; max-width:380px; background:#0d0d0d; border:1px solid rgba(236,72,153,0.22); border-radius:24px; padding:38px 30px; box-shadow:0 12px 60px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.03) inset; }
+.login-logo { width:60px; height:60px; background:linear-gradient(135deg,#ec4899,#be185d); border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:900; color:#fff; margin:0 auto 22px; box-shadow:0 6px 28px rgba(236,72,153,0.45); }
+.login-title { text-align:center; font-size:21px; font-weight:800; margin-bottom:5px; letter-spacing:-0.3px; }
+.login-sub { text-align:center; color:rgba(255,255,255,0.35); font-size:13px; margin-bottom:30px; font-weight:500; }
+.field-label { font-size:11px; font-weight:700; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:7px; }
+.field-input { width:100%; background:#161616; border:1.5px solid rgba(255,255,255,0.09); border-radius:14px; padding:13px 16px; font-size:15px; color:#fff; outline:none; font-family:'DM Sans',sans-serif; margin-bottom:18px; transition:all 0.25s; }
+.field-input:focus { border-color:rgba(236,72,153,0.6); box-shadow:0 0 0 4px rgba(236,72,153,0.10); }
+.login-btn { width:100%; background:linear-gradient(135deg,#ec4899,#be185d); color:#fff; border:none; border-radius:14px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; box-shadow:0 5px 24px rgba(236,72,153,0.35); transition:all 0.25s; letter-spacing:0.02em; }
+.login-btn:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(236,72,153,0.45); }
+.login-error { color:#ff4d4d; font-size:13px; text-align:center; margin-top:14px; display:none; font-weight:600; }
 
-/* ====== DESKTOP FIX (PREMIUM FEEL) ====== */
-@media (min-width: 600px) {
-  html, body { background: #0a0a0a !important; align-items: center; justify-content: center; }
-  #app-wrapper { 
-    width: 100%; max-width: 400px; height: 90vh; max-height: 850px; min-height: 750px;
-    background: #00D632 !important; border-radius: 36px; 
-    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 10px #111, 0 0 0 14px #222; 
-    overflow: hidden; position: relative;
-  }
-}
-#app-wrapper {
-  flex: 1; width: 100%; display: flex; flex-direction: column; 
-  background: #00D632; margin: 0 auto;
-}
+/* ══════ DASHBOARD ══════ */
+#dashboard { display:none; }
+.topbar { background:rgba(10,10,10,0.95); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.06); padding:13px 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.topbar-logo { display:flex; align-items:center; gap:10px; }
+.topbar-icon { width:36px; height:36px; background:linear-gradient(135deg,#ec4899,#be185d); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:900; color:#fff; box-shadow:0 3px 12px rgba(236,72,153,0.35); }
+.topbar-title { font-size:16px; font-weight:800; letter-spacing:-0.2px; }
+.topbar-sub { font-size:11px; color:rgba(255,255,255,0.3); font-weight:500; }
+.topbar-right { display:flex; align-items:center; gap:10px; }
+.logout-btn { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09); color:rgba(255,255,255,0.55); padding:7px 15px; border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.logout-btn:hover { background:rgba(255,80,80,0.12); border-color:rgba(255,80,80,0.3); color:#ff6b6b; }
 
-/* ====== TOP BAR ====== */
-.topbar { display:flex; align-items:center; justify-content:space-between; padding:16px 24px 0; }
-.topbar-name { font-size:18px; font-weight:700; color:#000; letter-spacing:-0.3px; }
-.topbar-avatar { 
-  width:36px; height:36px; background:rgba(0,0,0,0.12); border-radius:50%; 
-  display:flex; align-items:center; justify-content:center; 
-  font-size:15px; font-weight:800; color:#000;
-}
+.content { padding:20px; max-width:1200px; margin:0 auto; }
 
-/* ====== AMOUNT DISPLAY ====== */
-.amount-display { flex:1; display:flex; align-items:center; justify-content:center; padding:10px 20px; min-height: 140px; }
-.amount-text { 
-  font-size:80px; font-weight:700; color:#000; letter-spacing:-2px; 
-  line-height:1; word-break:break-all; text-align:center;
-}
+/* ══════ STAT CARDS ══════ */
+.stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:24px; }
+@media (min-width:640px) { .stats-grid { grid-template-columns:repeat(4,1fr); gap:14px; } }
+.stat-card { background:#0d0d0d; border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:18px 16px; position:relative; overflow:hidden; }
+.stat-card.pink { border-color:rgba(236,72,153,0.18); background:linear-gradient(135deg,#0d0d0d,#1a0a10); }
+.stat-icon { font-size:20px; margin-bottom:10px; }
+.stat-label { font-size:10px; color:rgba(255,255,255,0.38); text-transform:uppercase; letter-spacing:0.12em; font-weight:700; margin-bottom:6px; }
+.stat-val { font-size:24px; font-weight:800; color:#fff; letter-spacing:-0.5px; line-height:1; }
+.stat-card.pink .stat-val { color:#ec4899; }
+.stat-sub { font-size:11px; color:rgba(255,255,255,0.28); margin-top:5px; font-weight:500; }
 
-/* ====== KEYPAD ====== */
-.keypad-section { padding:0 30px 15px; }
-.keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:320px; margin:0 auto; }
-.key { 
-  background:transparent; border:none; border-radius: 16px; 
-  font-size:32px; font-weight:500; color:#000; padding:16px 0; 
-  cursor:pointer; font-family:'DM Sans',sans-serif; transition: all 0.15s ease; 
-}
-.key:active { background:rgba(0,0,0,0.08); transform:scale(0.95); }
-.key-backspace { font-size:26px; font-weight:600; display:flex; align-items:center; justify-content:center; }
+/* ══════ TABS & ACTIONS ══════ */
+.tabs { display:flex; gap:8px; margin-bottom:18px; }
+.tab-btn { background:#111; border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.45); padding:9px 18px; border-radius:11px; font-size:13px; font-weight:700; cursor:pointer; flex:1; text-align:center; }
+@media (min-width:480px) { .tab-btn { flex:none; } }
+.tab-btn.active { background:rgba(236,72,153,0.12); border-color:rgba(236,72,153,0.3); color:#ec4899; }
 
-/* ====== QUICK AMOUNTS & PAY ACTION ====== */
-.action-section { padding:0 20px 20px; display:flex; flex-direction:column; gap:12px; }
+.action-group { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+.btn-sm { padding:5px 10px; border:none; border-radius:6px; font-size:10px; font-weight:800; cursor:pointer; text-transform:uppercase; }
+.btn-appr { background:rgba(0,200,81,0.15); color:#00C851; border:1px solid rgba(0,200,81,0.3); }
+.btn-rej { background:rgba(255,68,68,0.15); color:#ff4444; border:1px solid rgba(255,68,68,0.3); }
+.btn-pend { background:rgba(255,193,7,0.15); color:#ffc107; border:1px solid rgba(255,193,7,0.3); }
 
-.quick-amounts { display:none; flex-wrap:wrap; gap:8px; justify-content:center; padding-bottom:10px; }
-.quick-amounts.visible { display:flex; animation: fadeInDown 0.3s ease; }
-.quick-chip { 
-  background:rgba(0,0,0,0.1); border:none; border-radius:999px; 
-  padding:12px 20px; font-size:16px; font-weight:600; color:#000; cursor:pointer; 
-  transition: all 0.2s;
-}
-.quick-chip:active { transform: scale(0.95); }
-.quick-chip.selected { background:#000; color:#00D632; }
-
-.quick-btn { 
-  width:100%; background:rgba(0,0,0,0.08); border:none; border-radius:18px; 
-  padding:16px; font-size:16px; font-weight:700; color:#000; cursor:pointer; 
-  transition: all 0.2s;
-}
-.quick-btn:active { background:rgba(0,0,0,0.15); transform:scale(0.98); }
-
-.pay-btn { 
-  width:100%; background:#000; color:#fff; border:none; border-radius:18px; 
-  padding:18px; font-size:18px; font-weight:700; cursor:pointer; 
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  transition: all 0.2s;
-}
-.pay-btn:active:not(:disabled) { transform:scale(0.98); opacity: 0.9; }
-.pay-btn:disabled { opacity:0.7; cursor:not-allowed; }
-
-/* SPINNER */
-.btn-spinner { 
-  width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); 
-  border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; 
-}
-.pay-btn.loading .btn-spinner { display: block; }
-
-@keyframes spin { to { transform:rotate(360deg); } }
-@keyframes fadeInDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
-
-/* ====== BOTTOM NAV ====== */
-.bottom-nav { 
-  display:flex; align-items:center; justify-content:space-between; 
-  padding:15px 24px 20px; flex-shrink: 0; margin-top: auto;
-}
-.bnav-left { width: 40px; display:flex; justify-content:flex-start; align-items:center; }
-.bnav-amount { font-size:14px; font-weight:700; color:#000; }
-
-.bnav-center { 
-  width:44px; height:44px; background:#00D632; border-radius:50%; 
-  display:flex; align-items:center; justify-content:center; 
-  font-size:22px; font-weight:800; color:#fff; 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.2);
-}
-
-.bnav-right { width: 40px; display:flex; justify-content:flex-end; }
-.bnav-clock { 
-  width:24px; height:24px; border:2px solid #000; border-radius:50%; position:relative; 
-}
-.bnav-clock::after { content:''; position:absolute; width:2px; height:6px; background:#000; top:4px; left:50%; transform:translateX(-50%); border-radius:1px; }
-.bnav-clock::before { content:''; position:absolute; width:5px; height:2px; background:#000; top:50%; left:50%; transform:translateY(-50%); border-radius:1px; }
-
+/* ══════ TABLE ══════ */
+.table-wrap { background:#0d0d0d; border:1px solid rgba(255,255,255,0.07); border-radius:18px; overflow:hidden; overflow-x:auto; }
+table { width:100%; border-collapse:collapse; min-width:600px; }
+thead th { background:#111; padding:12px 16px; text-align:left; font-size:10px; font-weight:700; color:rgba(255,255,255,0.35); text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.06); }
+tbody td { padding:14px 16px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04); }
+tbody tr:hover { background:rgba(255,255,255,0.02); }
+.badge { padding:4px 10px; border-radius:999px; font-size:11px; font-weight:700; text-transform:uppercase; display:inline-block; }
+.badge.settled { background:rgba(0,200,81,0.12); color:#00C851; border:1px solid rgba(0,200,81,0.28); }
+.badge.pending { background:rgba(255,200,0,0.10); color:#ffc800; border:1px solid rgba(255,200,0,0.28); }
 </style>
 </head>
 <body>
 
-<div id="app-wrapper">
-  
+<!-- LOGIN PAGE -->
+<div class="login-wrap" id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">💅</div>
+    <div class="login-title">Beauty Queen Admin</div>
+    <div class="login-sub">Secure Login</div>
+    <div class="field-label">Email</div>
+    <input type="email" id="loginEmail" class="field-input" placeholder="Enter email">
+    <div class="field-label">Password</div>
+    <input type="password" id="loginPass" class="field-input" placeholder="Enter password">
+    <button class="login-btn" onclick="login()">Sign In →</button>
+    <div class="login-error" id="loginError">Error here</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
   <div class="topbar">
-    <div class="topbar-name">Beauty Queen</div>
-    <div class="topbar-avatar">B</div>
-  </div>
-
-  <div class="amount-display">
-    <div class="amount-text" id="amountDisplay">$0</div>
-  </div>
-
-  <div class="keypad-section">
-    <div class="keypad">
-      <button class="key" onclick="keyPress('1')">1</button>
-      <button class="key" onclick="keyPress('2')">2</button>
-      <button class="key" onclick="keyPress('3')">3</button>
-      <button class="key" onclick="keyPress('4')">4</button>
-      <button class="key" onclick="keyPress('5')">5</button>
-      <button class="key" onclick="keyPress('6')">6</button>
-      <button class="key" onclick="keyPress('7')">7</button>
-      <button class="key" onclick="keyPress('8')">8</button>
-      <button class="key" onclick="keyPress('9')">9</button>
-      <button class="key" onclick="keyPress('.')">.</button>
-      <button class="key" onclick="keyPress('0')">0</button>
-      <button class="key key-backspace" onclick="keyPress('back')">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
-      </button>
+    <div class="topbar-logo">
+      <div class="topbar-icon">BQ</div>
+      <div>
+        <div class="topbar-title">Beauty Queen</div>
+        <div class="topbar-sub">Brand Admin Panel</div>
+      </div>
     </div>
-  </div>
-  
-  <div class="action-section">
-    <div class="quick-amounts" id="quickAmounts">
-      <button class="quick-chip" onclick="setQuick(this,10)">$10</button>
-      <button class="quick-chip" onclick="setQuick(this,25)">$25</button>
-      <button class="quick-chip" onclick="setQuick(this,50)">$50</button>
-      <button class="quick-chip" onclick="setQuick(this,100)">$100</button>
-      <button class="quick-chip" onclick="setQuick(this,200)">$200</button>
-    </div>
-    <button class="quick-btn" onclick="toggleQuick()">Quick amount</button>
-    
-    <button class="pay-btn" id="payBtn" onclick="submitPayment()">
-      <div class="btn-spinner"></div>
-      <span id="payBtnText">Pay</span>
-    </button>
-  </div>
-
-  <div class="bottom-nav">
-    <div class="bnav-left">
-      <span class="bnav-amount" id="navAmount">$0</span>
-    </div>
-    <div class="bnav-center">$</div>
-    <div class="bnav-right">
-      <div class="bnav-clock"></div>
+    <div class="topbar-right">
+      <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
+  <div class="content">
+    <div class="stats-grid">
+      <div class="stat-card pink">
+        <div class="stat-icon">💰</div>
+        <div class="stat-label">Available Balance</div>
+        <div class="stat-val" id="statAvailable">$0.00</div>
+        <div class="stat-sub">Approved Balance</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-label">Pending Approval</div>
+        <div class="stat-val" id="statPendingApprove" style="color:#ffc107;">$0.00</div>
+        <div class="stat-sub">Awaiting Action</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-label">Total Settled</div>
+        <div class="stat-val" id="statSettled">$0.00</div>
+        <div class="stat-sub">Paid invoices</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💸</div>
+        <div class="stat-label">Withdrawn</div>
+        <div class="stat-val" id="statWithdrawn">$0.00</div>
+        <div class="stat-sub">Total cashed out</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('payments', this)">💳 Payments</button>
+      <button class="tab-btn" onclick="switchTab('withdrawals', this)">💸 Withdrawals</button>
+    </div>
+
+    <!-- PAYMENTS TAB -->
+    <div id="tab-payments">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID / Address</th>
+              <th>Amount</th>
+              <th>Pay Status</th>
+              <th>Approval</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="paymentsBody">
+            <tr><td colspan="5" style="text-align:center; padding:30px; color:#666;">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- WITHDRAWALS TAB -->
+    <div id="tab-withdrawals" style="display:none;">
+      <div style="display:flex; gap:8px; margin-bottom:16px;">
+        <input type="number" id="wdAmount" class="field-input" placeholder="Amount ($)" style="width:150px; margin-bottom:0;">
+        <input type="text" id="wdNote" class="field-input" placeholder="Wallet/Note" style="width:200px; margin-bottom:0;">
+        <button onclick="withdraw()" style="background:#ec4899; color:#fff; border:none; padding:0 20px; border-radius:14px; font-weight:bold; cursor:pointer;">Request Withdraw</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Note</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawalsBody">
+             <tr><td colspan="4" style="text-align:center; padding:30px; color:#666;">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-// ⚠️ আপনার নতুন Supabase URL & Key (Admin প্যানেল থেকে নেওয়া)
-const SUPABASE_URL      = 'https://qhyimqvuzzanekcqaemg.supabase.co';
+const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
-const BTCPAY_URL        = `${SUPABASE_URL}/functions/v1/btcpay-webhook`;
-const BTC_SECONDS       = 60 * 60; // 60 Minutes
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let rawInput     = '';
-let quickVisible = false;
+let currentBrandId = null;
+const BRAND_NAME = 'beauty-queen'; // 👈 Important: matches your DB
 
-function formatDisplay(raw) {
-  if (!raw || raw === '') return '$0';
-  if (raw === '.') return '$0.';
-  const parts = raw.split('.');
-  const intPart = parseInt(parts[0] || '0', 10);
-  let result = '$' + intPart;
-  if (parts.length > 1) result += '.' + parts[1];
-  return result;
+async function checkSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    if(!currentBrandId) currentBrandId = await getBrandId();
+    loadData();
+  } else {
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+  }
 }
 
-function getNumericValue() {
-  if (!rawInput || rawInput === '.') return 0;
-  return parseFloat(rawInput) || 0;
+async function login() {
+  const email = document.getElementById('loginEmail').value;
+  const pass = document.getElementById('loginPass').value;
+  const btn = document.querySelector('.login-btn');
+  btn.innerText = "Loading...";
+  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+  if(error) { alert(error.message); btn.innerText = "Sign In →"; } 
+  else checkSession();
 }
 
-function updateDisplay() {
-  const val = getNumericValue();
-  document.getElementById('amountDisplay').textContent = formatDisplay(rawInput);
-  document.getElementById('navAmount').textContent = val > 0 ? '$' + val.toFixed(2) : '$0';
+async function logout() { await supabase.auth.signOut(); checkSession(); }
+
+async function getBrandId(){
+  const { data } = await supabase.from('brands').select('id').eq('name', BRAND_NAME).single();
+  return data ? data.id : null;
 }
 
-function keyPress(k) {
-  if (k === 'back') { rawInput = rawInput.slice(0, -1); }
-  else if (k === '.') { if (!rawInput.includes('.')) rawInput += '.'; }
-  else {
-    if (rawInput.includes('.')) {
-      if (rawInput.split('.')[1].length >= 2) return;
-    }
-    // Amount Limit Fix
-    let futureValue = parseFloat(rawInput + k);
-    if (futureValue > 2000) return; 
+async function loadData() {
+  if(!currentBrandId) return;
+  
+  // Stats RPC
+  const { data: bal } = await supabase.rpc('approved_balance', { p_brand: currentBrandId });
+  document.getElementById('statAvailable').textContent = "$" + (bal || 0).toFixed(2);
+  const { data: pend } = await supabase.rpc('pending_approval_balance', { p_brand: currentBrandId });
+  document.getElementById('statPendingApprove').textContent = "$" + (pend || 0).toFixed(2);
+
+  // Payments
+  const { data: pays } = await supabase.from('payments').select('*').eq('brand_id', currentBrandId).order('created_at', {ascending:false});
+  let settledTotal = 0;
+  
+  document.getElementById('paymentsBody').innerHTML = pays?.map(p => {
+    if(p.status === 'settled') settledTotal += Number(p.amount);
     
-    rawInput += k;
-  }
-  document.querySelectorAll('.quick-chip').forEach(c => c.classList.remove('selected'));
-  updateDisplay();
+    let act = '';
+    if(p.approval_status === 'approved') act = '<span style="color:#00C851;font-size:11px;font-weight:bold;">✓ APPROVED</span>';
+    else if(p.approval_status === 'rejected') act = '<span style="color:#ff4444;font-size:11px;font-weight:bold;">✗ REJECTED</span>';
+    else act = `<button class="btn-sm btn-appr" onclick="approve('${p.payment_uuid}')">Approve</button> 
+                <button class="btn-sm btn-rej" onclick="reject('${p.payment_uuid}')">Reject</button>`;
+                
+    return `<tr>
+      <td style="font-family:monospace;">${(p.lightning_address || p.invoice_id || 'N/A').substring(0,25)}</td>
+      <td style="font-weight:bold;">$${p.amount}</td>
+      <td><span class="badge ${p.status}">${p.status}</span></td>
+      <td><div class="action-group">${act}</div></td>
+      <td style="color:#666;font-size:12px;">${new Date(p.created_at).toLocaleDateString()}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" style="text-align:center;">No data</td></tr>';
+  
+  document.getElementById('statSettled').textContent = "$" + settledTotal.toFixed(2);
+
+  // Withdrawals
+  const { data: wds } = await supabase.from('withdrawals').select('*').eq('brand_id', currentBrandId).order('created_at', {ascending:false});
+  let wTotal = 0;
+  
+  document.getElementById('withdrawalsBody').innerHTML = wds?.map(w => {
+    wTotal += Number(w.amount);
+    return `<tr>
+      <td style="color:#ff4d4d;font-weight:bold;">-$${w.amount}</td>
+      <td><span class="badge ${w.status || 'pending'}">${w.status || 'pending'}</span></td>
+      <td>${w.note || '-'}</td>
+      <td style="color:#666;font-size:12px;">${new Date(w.created_at).toLocaleDateString()}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="4" style="text-align:center;">No data</td></tr>';
+  
+  document.getElementById('statWithdrawn').textContent = "$" + wTotal.toFixed(2);
 }
 
-function setQuick(btn, amt) {
-  document.querySelectorAll('.quick-chip').forEach(c => c.classList.remove('selected'));
-  btn.classList.add('selected');
-  rawInput = String(amt);
-  updateDisplay();
+async function approve(id) { await supabase.from('payments').update({approval_status:'approved'}).eq('payment_uuid', id); loadData(); }
+async function reject(id) { await supabase.from('payments').update({approval_status:'rejected'}).eq('payment_uuid', id); loadData(); }
+
+async function withdraw() {
+  const amount = Number(document.getElementById('wdAmount').value);
+  const note = document.getElementById('wdNote').value;
+  if(!amount) return alert('Enter amount');
+  
+  const { data: can } = await supabase.rpc('can_withdraw', { p_brand: currentBrandId, p_amount: amount });
+  if(!can) return alert('Insufficient approved balance!');
+  
+  await supabase.from('withdrawals').insert({ brand_id: currentBrandId, amount, note });
+  alert('Withdraw requested!');
+  document.getElementById('wdAmount').value = '';
+  loadData();
 }
 
-function toggleQuick() {
-  quickVisible = !quickVisible;
-  const el = document.getElementById('quickAmounts');
-  quickVisible ? el.classList.add('visible') : el.classList.remove('visible');
+function switchTab(t, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-payments').style.display = t==='payments' ? 'block' : 'none';
+  document.getElementById('tab-withdrawals').style.display = t==='withdrawals' ? 'block' : 'none';
 }
 
-function showLoading() {
-  const btn = document.getElementById('payBtn');
-  btn.disabled = true;
-  btn.classList.add('loading');
-  document.getElementById('payBtnText').textContent = "Generating...";
-}
-function hideLoading() {
-  const btn = document.getElementById('payBtn');
-  btn.disabled = false;
-  btn.classList.remove('loading');
-  document.getElementById('payBtnText').textContent = "Pay";
-}
-
-function getUserKey() {
-  let k = sessionStorage.getItem('pv_user_key');
-  if (k) return k;
-  k = crypto.randomUUID ? crypto.randomUUID() : `pv-${Date.now()}`;
-  sessionStorage.setItem('pv_user_key', k); return k;
-}
-
-async function submitPayment() {
-  const amount = getNumericValue();
-  if (!amount || amount < 2) {
-    alert('Minimum payment amount is $2');
-    return;
-  }
-
-  showLoading();
-  try {
-    let city = '', country = '';
-    try {
-      const ipRes = await fetch('https://ipapi.co/json/');
-      const ipData = await ipRes.json();
-      city = ipData.city || ''; country = ipData.country_name || '';
-    } catch (_) {}
-    const userKey = getUserKey();
-
-    // 🟢 DYNAMIC DOMAIN LOGIC
-    const dynamicDomain = window.location.origin + window.location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
-
-    const res = await fetch(BTCPAY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'lightning', userKey, source: dynamicDomain, city, country }),
-    });
-    const data = await res.json();
-    
-    if (!res.ok) throw new Error(data.error || 'Failed to create invoice');
-
-    let bolt11 = data.lightningCode || '';
-    if (bolt11.toLowerCase().startsWith('lightning:')) bolt11 = bolt11.slice(10);
-
-    const session = {
-      amount: Number(data.amount), invoiceId: data.invoiceId, paymentType: 'lightning',
-      payCode: bolt11, qrText: bolt11, cashAppUrl: `https://cash.app/launch/lightning/${bolt11}`,
-      secondsLeft: BTC_SECONDS, expiresAt: data.expiresAt || null,
-    };
-
-    sessionStorage.setItem('invoiceSession', JSON.stringify(session));
-    window.location.href = 'pay/invoice-btc.html'; 
-  } catch (e) {
-    hideLoading();
-    alert(`Error: ${e.message}`);
-  }
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  sessionStorage.removeItem('invoiceSession');
-  updateDisplay();
-});
+window.onload = checkSession;
 </script>
 </body>
 </html>
