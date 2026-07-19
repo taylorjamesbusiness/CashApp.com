@@ -3,349 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Master Dashboard - Central Control</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Master Dashboard</title>
+
+<!-- 🟢 jsdelivr এর বদলে unpkg লিংক (Bypass Block) 🟢 -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
 <style>
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body { font-family:'DM Sans',sans-serif; background:#030712; color:#f3f4f6; min-height:100vh; }
-
-/* ══════ LOGIN ══════ */
-.login-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; background: radial-gradient(circle at 50% 30%, rgba(37,99,235,0.08) 0%, transparent 60%); }
-.login-card { width:100%; max-width:380px; background:#0f172a; border:1px solid rgba(37,99,235,0.2); border-radius:24px; padding:40px 30px; box-shadow:0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); }
-.login-logo { width:64px; height:64px; background:linear-gradient(135deg,#3b82f6,#1d4ed8); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:900; color:#fff; margin:0 auto 24px; box-shadow:0 8px 24px rgba(37,99,235,0.4); }
-.login-title { text-align:center; font-size:22px; font-weight:800; margin-bottom:5px; color:#fff; }
-.login-sub { text-align:center; color:#94a3b8; font-size:13px; margin-bottom:30px; font-weight:500; text-transform:uppercase; letter-spacing:1px; }
-.field-input { width:100%; background:#1e293b; border:1px solid #334155; border-radius:12px; padding:14px 16px; font-size:15px; color:#fff; outline:none; font-family:'DM Sans',sans-serif; margin-bottom:16px; transition:all 0.2s; }
-.field-input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.15); }
-.login-btn { width:100%; background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; font-family:'DM Sans',sans-serif; box-shadow:0 4px 14px rgba(37,99,235,0.3); transition:all 0.2s; margin-top:8px; }
-.login-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(37,99,235,0.4); }
-
-/* ══════ DASHBOARD ══════ */
-#dashboard { display:none; }
-.topbar { background:rgba(15,23,42,0.9); backdrop-filter:blur(12px); border-bottom:1px solid #1e293b; padding:16px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
-.topbar-logo { display:flex; align-items:center; gap:12px; }
-.topbar-icon { width:40px; height:40px; background:linear-gradient(135deg,#3b82f6,#1d4ed8); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:900; box-shadow:0 4px 12px rgba(37,99,235,0.3); }
-.topbar-title { font-size:18px; font-weight:800; letter-spacing:-0.3px; }
-.topbar-sub { font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
-.logout-btn { background:#1e293b; border:1px solid #334155; color:#cbd5e1; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:'DM Sans'; }
-.logout-btn:hover { background:#ef4444; border-color:#ef4444; color:#fff; }
-
-.content { padding:24px; max-width:1300px; margin:0 auto; }
-
-/* ══════ STAT CARDS ══════ */
-.stats-grid { display:grid; grid-template-columns:repeat(1, 1fr); gap:16px; margin-bottom:30px; }
-@media (min-width:640px) { .stats-grid { grid-template-columns:repeat(3, 1fr); } }
-.stat-card { background:#0f172a; border:1px solid #1e293b; border-radius:20px; padding:24px; position:relative; overflow:hidden; }
-.stat-card.blue { border-color:rgba(59,130,246,0.3); background:linear-gradient(135deg,#0f172a,#172554); }
-.stat-card::before { content:''; position:absolute; top:-20px; right:-20px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%); }
-.stat-card.blue::before { background:radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%); }
-.stat-label { font-size:12px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
-.stat-val { font-size:32px; font-weight:800; color:#fff; letter-spacing:-1px; }
-.stat-card.blue .stat-val { color:#60a5fa; }
-.stat-sub { font-size:13px; color:#64748b; margin-top:8px; font-weight:500; }
-
-/* ══════ TABS ══════ */
-.tabs { display:flex; gap:12px; margin-bottom:24px; overflow-x:auto; padding-bottom:5px; }
-.tab-btn { background:#0f172a; border:1px solid #1e293b; color:#94a3b8; padding:12px 24px; border-radius:12px; font-size:14px; font-weight:700; cursor:pointer; font-family:'DM Sans'; transition:all 0.2s; white-space:nowrap; }
-.tab-btn:hover { background:#1e293b; color:#e2e8f0; }
-.tab-btn.active { background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.3); color:#60a5fa; }
-
-/* ══════ TABLES & CARDS ══════ */
-.section-title { font-size:18px; font-weight:800; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
-.brand-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; margin-bottom:30px; }
-.brand-card { background:#0f172a; border:1px solid #1e293b; border-radius:16px; padding:20px; transition:transform 0.2s; }
-.brand-card:hover { transform:translateY(-2px); border-color:#334155; }
-.brand-name { font-size:18px; font-weight:800; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:10px; }
-.brand-bal { font-size:24px; font-weight:800; color:#10b981; }
-.brand-bal-label { font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; margin-bottom:4px; }
-
-.table-wrap { background:#0f172a; border:1px solid #1e293b; border-radius:16px; overflow:hidden; }
-.table-scroll { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; text-align:left; }
-thead th { background:#1e293b; padding:16px; font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; white-space:nowrap; border-bottom:1px solid #334155; }
-tbody td { padding:16px; font-size:14px; border-bottom:1px solid #1e293b; white-space:nowrap; }
-tbody tr:last-child td { border-bottom:none; }
-tbody tr:hover { background:#161f33; }
-.empty-state { padding:40px; text-align:center; color:#64748b; font-weight:500; }
-
-/* ══════ BADGES & BUTTONS ══════ */
-.badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:99px; font-size:11px; font-weight:700; text-transform:uppercase; }
-.badge.pending { background:rgba(245,158,11,0.1); color:#f59e0b; border:1px solid rgba(245,158,11,0.2); }
-.badge.completed { background:rgba(16,185,129,0.1); color:#10b981; border:1px solid rgba(16,185,129,0.2); }
-.badge.approved { background:rgba(59,130,246,0.1); color:#3b82f6; border:1px solid rgba(59,130,246,0.2); }
-.badge.settled { background:rgba(16,185,129,0.1); color:#10b981; border:1px solid rgba(16,185,129,0.2); }
-
-.action-btn { padding:6px 14px; border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; font-family:'DM Sans'; transition:all 0.2s; }
-.btn-done { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); margin-right:6px; }
-.btn-done:hover { background:#10b981; color:#000; }
-.btn-del { background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); }
-.btn-del:hover { background:#ef4444; color:#fff; }
-
-::-webkit-scrollbar { width:6px; height:6px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:#334155; border-radius:10px; }
+body{margin:0;font-family:sans-serif;background:#000;color:#fff;}
+.container{max-width:1100px;margin:auto;padding:20px;}
+.card{background:#111;padding:15px;border-radius:10px;margin-bottom:15px;}
+button{padding:8px 12px;border:none;border-radius:6px;cursor:pointer;}
 </style>
 </head>
+
 <body>
 
-<!-- 🟢 MASTER LOGIN -->
-<div class="login-wrap" id="loginPage">
-  <div class="login-card">
-    <div class="login-logo">🌍</div>
-    <div class="login-title">Master Dashboard</div>
-    <div class="login-sub">Super Admin Access</div>
-    <input type="email" id="loginEmail" class="field-input" placeholder="Master Email">
-    <input type="password" id="loginPass" class="field-input" placeholder="Password" onkeydown="if(event.key==='Enter') login()">
-    <button class="login-btn" onclick="login()">Authenticate ➔</button>
+<!-- LOGIN -->
+<div id="loginPage" class="container">
+  <div class="card">
+    <h2>🌍 Master Login</h2>
+    <input id="email" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;">
+    <input id="pass" type="password" placeholder="Password" style="width:100%;padding:10px;margin-bottom:10px;" onkeydown="if(event.key==='Enter') login()">
+    <button onclick="login()" id="loginBtn">Login</button>
   </div>
 </div>
 
-<!-- 🟢 MASTER DASHBOARD -->
-<div id="dashboard">
-  <div class="topbar">
-    <div class="topbar-logo">
-      <div class="topbar-icon">🌍</div>
-      <div>
-        <div class="topbar-title">Master Control</div>
-        <div class="topbar-sub">Global Overview</div>
-      </div>
-    </div>
-    <button class="logout-btn" onclick="logout()">Secure Logout</button>
+<!-- DASHBOARD -->
+<div id="dashboard" class="container" style="display:none;">
+
+  <div class="card">
+    <h3>💰 Global Balance</h3>
+    <div id="balance">Loading...</div>
   </div>
 
-  <div class="content">
-    
-    <!-- 🟢 TOP STATS -->
-    <div class="stats-grid">
-      <div class="stat-card blue">
-        <div class="stat-label">🌍 Global Approved Balance</div>
-        <div class="stat-val" id="statGlobalBalance">$0.00</div>
-        <div class="stat-sub">Sum of all approved payments</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">⏳ Pending Withdrawals</div>
-        <div class="stat-val" id="statPendingWd" style="color:#f59e0b;">0</div>
-        <div class="stat-sub">Awaiting master action</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">🏷️ Total Brands</div>
-        <div class="stat-val" id="statTotalBrands">0</div>
-        <div class="stat-sub">Active integrated brands</div>
-      </div>
-    </div>
-
-    <!-- 🟢 TABS -->
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('overview', this)">🏢 Brands Overview</button>
-      <button class="tab-btn" onclick="switchTab('withdrawals', this)">💸 Withdraw Requests</button>
-      <button class="tab-btn" onclick="switchTab('allpayments', this)">💳 All Payments (Audit)</button>
-    </div>
-
-    <!-- 🟢 TAB 1: OVERVIEW -->
-    <div id="tab-overview">
-      <div class="section-title">🏷️ Connected Brands</div>
-      <div class="brand-grid" id="brandsContainer">
-        <!-- Rendered via JS -->
-      </div>
-    </div>
-
-    <!-- 🟢 TAB 2: WITHDRAWALS -->
-    <div id="tab-withdrawals" style="display:none;">
-      <div class="section-title">💸 Withdrawal Management</div>
-      <div class="table-wrap">
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Brand</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Note / Destination</th>
-                <th>Date Requested</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="withdrawsContainer">
-              <tr><td colspan="6" class="empty-state">Loading data...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- 🟢 TAB 3: ALL PAYMENTS (Read Only) -->
-    <div id="tab-allpayments" style="display:none;">
-      <div class="section-title">💳 Global Payment Audit (Read Only)</div>
-      <div class="table-wrap">
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Brand</th>
-                <th>Invoice / ID</th>
-                <th>Amount</th>
-                <th>Pay Status</th>
-                <th>Approval</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody id="allPaymentsContainer">
-              <tr><td colspan="6" class="empty-state">Loading data...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
+  <div class="card">
+    <h3>🏷️ Brands</h3>
+    <div id="brands">Loading...</div>
   </div>
+
+  <div class="card">
+    <h3>💸 Withdraw Requests</h3>
+    <div id="withdraws">Loading...</div>
+  </div>
+
+  <button onclick="logout()">Logout</button>
+
 </div>
 
 <script>
-// 🟢 Supabase Config
-const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
+// 🟢 আপনার আসল URL এবং Anon Key বসানো হয়েছে
+const supabase = window.supabase.createClient(
+  "https://qhyimqvuzzanekcqaemg.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0"
+);
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-let globalBrandMap = {};
-
-// 🟢 AUTHENTICATION
-async function checkSession() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    loadEverything();
-  } else {
-    document.getElementById('loginPage').style.display = 'flex';
-    document.getElementById('dashboard').style.display = 'none';
-  }
-}
-
+// ✅ LOGIN
 async function login() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPass').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('pass').value;
+  const btn = document.getElementById('loginBtn');
+
+  if(!email || !password) return alert("Please enter email and password");
+
+  btn.innerText = "Authenticating...";
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password
   });
 
-  console.log("LOGIN RESPONSE:", data, error); // ✅ ADD THIS
-
   if (error) {
-    alert("Login Error: " + error.message);
+    alert(error.message);
+    btn.innerText = "Login";
     return;
   }
-
-  alert("Login success"); // ✅ CHECK
-
-  // ✅ FORCE session reload
-  setTimeout(() => {
-    checkSession();
-  }, 500);
 }
-  // 2. Global Balance
-  const { data: payments } = await supabase.from('payments').select('amount').eq('approval_status','approved');
-  let totalBal = 0;
-  payments?.forEach(p => totalBal += Number(p.amount));
-  document.getElementById('statGlobalBalance').innerText = "$" + totalBal.toFixed(2);
 
-  // 3. Withdraw Requests
-  const { data: wd } = await supabase.from('withdrawals').select('*').order('created_at', {ascending: false});
-  const wdDiv = document.getElementById('withdrawsContainer');
-  
-  let pendingCount = 0;
-  
-  if (!wd || wd.length === 0) {
-    wdDiv.innerHTML = '<tr><td colspan="6" class="empty-state">No withdrawals found.</td></tr>';
+// ✅ SESSION LISTENER (MOST IMPORTANT)
+supabase.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
   } else {
-    wdDiv.innerHTML = wd.map(w => {
-      const bName = globalBrandMap[w.brand_id] || 'Unknown';
-      const isPending = (!w.status || w.status === 'pending');
-      if(isPending) pendingCount++;
-      
-      const badge = isPending ? '<span class="badge pending">Pending</span>' : '<span class="badge completed">Completed</span>';
-      
-      let actions = '-';
-      if(isPending) {
-        actions = `
-          <button class="action-btn btn-done" onclick="markDone('${w.id}')">Approve</button>
-          <button class="action-btn btn-del" onclick="deleteWd('${w.id}')">Reject/Del</button>
+    document.getElementById('loginPage').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+});
+
+// ✅ LOAD DATA
+async function loadData() {
+
+  // ✅ GLOBAL BALANCE
+  const { data: payments } = await supabase
+    .from('payments')
+    .select('amount')
+    .eq('approval_status','approved');
+
+  let total = 0;
+  payments?.forEach(p => total += Number(p.amount));
+
+  document.getElementById('balance').innerText = "$" + total.toFixed(2);
+
+  // ✅ BRANDS
+  const { data: brands } = await supabase.from('brands').select('*');
+
+  const bDiv = document.getElementById('brands');
+  bDiv.innerHTML = '';
+
+  for (const b of brands || []) {
+    const { data: bal } = await supabase.rpc('approved_balance', {
+      p_brand: b.id
+    });
+
+    bDiv.innerHTML += `
+      <div class="card" style="background:#1a1a1a; margin-top:10px;">
+        <strong>${b.name}</strong> → $${(bal||0).toFixed(2)}
+      </div>
+    `;
+  }
+
+  // ✅ WITHDRAW REQUESTS
+  const { data: wd } = await supabase
+    .from('withdrawals')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  const wDiv = document.getElementById('withdraws');
+  wDiv.innerHTML = '';
+
+  if(!wd || wd.length === 0) {
+      wDiv.innerHTML = "No pending withdrawals.";
+  } else {
+      wd.forEach(w => {
+        let badge = w.status === 'completed' 
+            ? '<span style="color:#00C851;">[Completed]</span>' 
+            : '<span style="color:#ffc107;">[Pending]</span>';
+
+        let actionBtns = w.status !== 'completed' 
+            ? `<br><button onclick="done('${w.id}')" style="background:#00C851;color:#000;margin-top:10px;">Done</button>
+               <button onclick="del('${w.id}')" style="background:#ff4444;color:#fff;margin-top:10px;">Delete</button>` 
+            : '';
+
+        wDiv.innerHTML += `
+          <div class="card" style="background:#1a1a1a; margin-top:10px;">
+            ${badge} <strong>$${w.amount}</strong> - ${w.note || 'No note'}
+            ${actionBtns}
+          </div>
         `;
-      }
-
-      return `<tr>
-        <td style="font-weight:700; color:#fff;">${bName}</td>
-        <td style="font-weight:800; color:#10b981;">$${Number(w.amount).toFixed(2)}</td>
-        <td>${badge}</td>
-        <td style="color:#94a3b8;">${w.note || '-'}</td>
-        <td style="color:#64748b; font-size:12px;">${new Date(w.created_at).toLocaleString()}</td>
-        <td>${actions}</td>
-      </tr>`;
-    }).join('');
-  }
-  document.getElementById('statPendingWd').innerText = pendingCount;
-
-  // 4. All Payments (Read-Only)
-  const { data: allPay } = await supabase.from('payments').select('*').order('created_at', {ascending: false}).limit(100);
-  const payDiv = document.getElementById('allPaymentsContainer');
-  
-  if (!allPay || allPay.length === 0) {
-    payDiv.innerHTML = '<tr><td colspan="6" class="empty-state">No payments found.</td></tr>';
-  } else {
-    payDiv.innerHTML = allPay.map(p => {
-      const bName = globalBrandMap[p.brand_id] || p.brand || '-';
-      const shortId = p.invoice_id ? p.invoice_id.substring(0,12)+'...' : '-';
-      
-      const payBadge = p.status === 'settled' 
-        ? '<span class="badge settled">Settled</span>' 
-        : `<span class="badge" style="background:#1e293b; color:#94a3b8;">${p.status}</span>`;
-        
-      const appBadge = p.approval_status === 'approved' 
-        ? '<span class="badge approved">Approved</span>' 
-        : `<span class="badge" style="background:#1e293b; color:#94a3b8;">${p.approval_status}</span>`;
-
-      return `<tr>
-        <td style="font-weight:700; color:#e2e8f0;">${bName}</td>
-        <td style="font-family:monospace; color:#94a3b8;" title="${p.invoice_id}">${shortId}</td>
-        <td style="font-weight:700; color:#fff;">$${Number(p.amount||0).toFixed(2)}</td>
-        <td>${payBadge}</td>
-        <td>${appBadge}</td>
-        <td style="color:#64748b; font-size:12px;">${new Date(p.created_at).toLocaleString()}</td>
-      </tr>`;
-    }).join('');
+      });
   }
 }
 
-// 🟢 ACTIONS
-async function markDone(id) {
-  if(!confirm("Mark this withdrawal as Completed/Paid?")) return;
-  await supabase.from('withdrawals').update({ status: 'completed' }).eq('id', id);
-  loadEverything();
+// ✅ ACTIONS
+async function done(id){
+  if(!confirm("Mark as completed?")) return;
+  await supabase.from('withdrawals')
+    .update({status:'completed'})
+    .eq('id', id);
+  loadData();
 }
 
-async function deleteWd(id) {
-  if(!confirm("Are you sure you want to delete/reject this request?")) return;
-  await supabase.from('withdrawals').delete().eq('id', id);
-  loadEverything();
+async function del(id){
+  if(!confirm("Delete this request?")) return;
+  await supabase.from('withdrawals')
+    .delete()
+    .eq('id', id);
+  loadData();
 }
 
-// 🟢 TAB SWITCHER
-function switchTab(tabId, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  
-  document.getElementById('tab-overview').style.display = 'none';
-  document.getElementById('tab-withdrawals').style.display = 'none';
-  document.getElementById('tab-allpayments').style.display = 'none';
-  
-  document.getElementById('tab-' + tabId).style.display = 'block';
+// ✅ LOGOUT
+async function logout(){
+  await supabase.auth.signOut();
 }
-
-// Start
-window.onload = checkSession;
 </script>
+
 </body>
 </html>
