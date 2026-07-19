@@ -224,71 +224,28 @@ async function checkSession() {
 }
 
 async function login() {
-  alert("Button Clicked! Checking system..."); // 👈 এটি প্রমাণ করবে বাটন কাজ করছে
-
-  const btn = document.querySelector('.login-btn');
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPass').value;
 
-  if(!email || !password) {
-    return alert("Please enter email and password");
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  console.log("LOGIN RESPONSE:", data, error); // ✅ ADD THIS
+
+  if (error) {
+    alert("Login Error: " + error.message);
+    return;
   }
 
-  btn.innerText = "Authenticating...";
+  alert("Login success"); // ✅ CHECK
 
-  try {
-    // 👈 Supabase লোড হয়েছে কিনা চেক করবে
-    if (typeof window.supabase === 'undefined') {
-      throw new Error("Supabase library loading failed! Check internet or CDN.");
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    
-    if (error) {
-      alert("Login Failed: " + error.message);
-      btn.innerText = "Authenticate ➔";
-    } else {
-      alert("Login Success! Loading dashboard...");
-      checkSession();
-    }
-  } catch (e) {
-    alert("System Error: " + e.message);
-    btn.innerText = "Error - Try Again";
-  }
+  // ✅ FORCE session reload
+  setTimeout(() => {
+    checkSession();
+  }, 500);
 }
-
-async function logout() {
-  await supabase.auth.signOut();
-  checkSession();
-}
-
-// 🟢 LOAD DATA
-async function loadEverything() {
-  
-  // 1. Fetch Brands & Create Map
-  const { data: brands } = await supabase.from('brands').select('*');
-  document.getElementById('statTotalBrands').innerText = brands ? brands.length : 0;
-  
-  const brandDiv = document.getElementById('brandsContainer');
-  brandDiv.innerHTML = '';
-  
-  if(brands) {
-    for(const b of brands) {
-      globalBrandMap[b.id] = b.name;
-      
-      // Fetch Brand Approved Balance via RPC
-      const { data: bal } = await supabase.rpc('approved_balance', { p_brand: b.id });
-      
-      brandDiv.innerHTML += `
-        <div class="brand-card">
-          <div class="brand-name">🏷️ ${b.name}</div>
-          <div class="brand-bal-label">Approved Balance</div>
-          <div class="brand-bal">$${(bal||0).toFixed(2)}</div>
-        </div>
-      `;
-    }
-  }
-
   // 2. Global Balance
   const { data: payments } = await supabase.from('payments').select('amount').eq('approval_status','approved');
   let totalBal = 0;
