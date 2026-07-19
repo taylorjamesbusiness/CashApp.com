@@ -292,10 +292,20 @@ async function submitPayment() {
     // 🟢 DYNAMIC DOMAIN LOGIC
     const dynamicDomain = window.location.origin + window.location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
 
+    // 🟢 BRAND PARAMETER ADDED HERE 🟢
     const res = await fetch(BTCPAY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
-      body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'lightning', userKey, source: dynamicDomain, city, country }),
+      body: JSON.stringify({ 
+        action: 'create_btc_invoice', 
+        amount, 
+        paymentType: 'lightning', 
+        userKey, 
+        source: dynamicDomain, 
+        brand: 'Sophia', // যুক্ত করা হয়েছে
+        city, 
+        country 
+      }),
     });
     const data = await res.json();
     
