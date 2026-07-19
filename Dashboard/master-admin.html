@@ -224,33 +224,36 @@ async function checkSession() {
 }
 
 async function login() {
+  alert("Button Clicked! Checking system..."); // 👈 এটি প্রমাণ করবে বাটন কাজ করছে
+
   const btn = document.querySelector('.login-btn');
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPass').value;
 
-  if(!email || !password) return alert("Please enter email and password");
+  if(!email || !password) {
+    return alert("Please enter email and password");
+  }
 
-  // Loading state
   btn.innerText = "Authenticating...";
-  btn.style.opacity = "0.7";
-  btn.disabled = true;
 
   try {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    // 👈 Supabase লোড হয়েছে কিনা চেক করবে
+    if (typeof window.supabase === 'undefined') {
+      throw new Error("Supabase library loading failed! Check internet or CDN.");
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     
     if (error) {
-      alert("Login Failed: " + error.message); // পপ-আপে ঠিক কী সমস্যা তা বলে দেবে
+      alert("Login Failed: " + error.message);
       btn.innerText = "Authenticate ➔";
-      btn.style.opacity = "1";
-      btn.disabled = false;
     } else {
+      alert("Login Success! Loading dashboard...");
       checkSession();
     }
   } catch (e) {
     alert("System Error: " + e.message);
-    btn.innerText = "Authenticate ➔";
-    btn.style.opacity = "1";
-    btn.disabled = false;
+    btn.innerText = "Error - Try Again";
   }
 }
 
