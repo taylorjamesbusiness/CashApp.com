@@ -224,11 +224,34 @@ async function checkSession() {
 }
 
 async function login() {
+  const btn = document.querySelector('.login-btn');
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPass').value;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) alert("Login Failed: " + error.message);
-  else checkSession();
+
+  if(!email || !password) return alert("Please enter email and password");
+
+  // Loading state
+  btn.innerText = "Authenticating...";
+  btn.style.opacity = "0.7";
+  btn.disabled = true;
+
+  try {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    
+    if (error) {
+      alert("Login Failed: " + error.message); // পপ-আপে ঠিক কী সমস্যা তা বলে দেবে
+      btn.innerText = "Authenticate ➔";
+      btn.style.opacity = "1";
+      btn.disabled = false;
+    } else {
+      checkSession();
+    }
+  } catch (e) {
+    alert("System Error: " + e.message);
+    btn.innerText = "Authenticate ➔";
+    btn.style.opacity = "1";
+    btn.disabled = false;
+  }
 }
 
 async function logout() {
