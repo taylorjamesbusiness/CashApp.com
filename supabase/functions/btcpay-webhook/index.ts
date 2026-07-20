@@ -33,37 +33,16 @@ serve(async (req: Request) => {
     if (payload.amount && payload.source && !payload.type) {
       const amount = parseFloat(payload.amount)
       const source = payload.source
-      const brand = payload.brand
       const email = payload.email || ''
       const paymentType = payload.paymentType || 'lightning'
       const cfCity = req.headers.get('CF-IPCity') || payload.city || ''
       const cfCountry = req.headers.get('CF-IPCountry') || payload.country || ''
-
+      
+      // 🟢 DYNAMIC DOMAIN FIX: ফ্রন্টএন্ড থেকে আসা ডাইনামিক সোর্স নেবে 🟢
       const requestOrigin = req.headers.get("origin") || payload.source;
 
       if (!amount || amount < 2) {
         return new Response(JSON.stringify({ error: 'Minimum amount is $2' }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } })
-      }
-
-      // 🟢 Brand Validation 🟢
-      if (!brand) {
-        return new Response(
-          JSON.stringify({ error: 'Brand required' }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        )
-      }
-
-      const { data: brandRow } = await supabase
-        .from('brands')
-        .select('id')
-        .eq('name', brand)
-        .single()
-
-      if (!brandRow) {
-        return new Response(
-          JSON.stringify({ error: 'Invalid brand' }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        )
       }
 
       const btcpayApiKey = Deno.env.get('BTCPAY_API_KEY') ?? ''
@@ -100,28 +79,12 @@ serve(async (req: Request) => {
         }
       } catch (pmErr) { console.error('[PM error]', pmErr) }
 
-      // 🟢 Updated Payment Insert Logic 🟢
+      // 🟢 PENDING STATUS FIX 🟢
       const { error: dbErr } = await supabase.from('payments').insert({
-        payment_uuid: crypto.randomUUID(),
-        invoice_id: invoiceId,
-        amount,
-        currency: 'USD',
-        status: 'pending',
-        approval_status: 'pending',
-        payment_type: paymentType,
-        source,
-        brand,
-        brand_id: brandRow.id,
-        lightning_address: lightningCode, // ✅ ADDED HERE
-        email,
-        city: cfCity,
-        country: cfCountry
+        invoice_id: invoiceId, amount, currency: 'USD', status: 'pending', payment_type: paymentType, source, email, city: cfCity, country: cfCountry
       })
-
-      if (dbErr) { 
-        console.error("DB Insert Error:", dbErr)
-        return new Response(JSON.stringify({ error: 'Failed to save payment' }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }) 
-      }
+      
+      if (dbErr) { return new Response(JSON.stringify({ error: 'Failed to save payment' }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }) }
 
       return new Response(JSON.stringify({ invoiceId, amount, paymentType, lightningCode, btcAddress, btcAmount: btcDue, checkoutLink: invoiceData.checkoutLink }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } })
     }
@@ -129,7 +92,7 @@ serve(async (req: Request) => {
     // 3. BTCPAY WEBHOOK
     if (payload.type) {
       const webhookSecret = Deno.env.get('BTCPAY_WEBHOOK_SECRET')
-
+      
       if (webhookSecret) {
         const sigHeader = req.headers.get('btcpay-sig')
         if (!sigHeader || !sigHeader.startsWith('sha256=')) { return new Response(JSON.stringify({ error: 'Unauthorized webhook' }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }) }
@@ -140,20 +103,12 @@ serve(async (req: Request) => {
         if (`sha256=${macHex}` !== sigHeader) { return new Response(JSON.stringify({ error: 'Invalid webhook signature' }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }) }
       }
 
-      // 🟢 Updated Settlement Logic 🟢
       if (payload.type === 'InvoiceSettled' || payload.type === 'InvoicePaymentSettled') {
         const invoiceId = payload.invoiceId
         const { data: existing } = await supabase.from('payments').select('id').eq('invoice_id', invoiceId).single()
-
-        if (existing) {
-          await supabase
-            .from('payments')
-            .update({
-              status: 'settled',
-              paid_at: new Date().toISOString()
-            })
-            .eq('invoice_id', invoiceId)
-        }
+        
+        if (existing) { await supabase.from('payments').update({ status: 'settled', paid_at: new Date().toISOString() }).eq('invoice_id', invoiceId) } 
+        else { await supabase.from('payments').insert({ invoice_id: invoiceId, amount: payload.payment?.value || 0, currency: 'USD', status: 'settled', payment_type: payload.payment?.paymentMethodId?.includes('LN') ? 'lightning' : 'onchain', source: 'webhook', paid_at: new Date().toISOString() }) }
       }
 
       if (payload.type === 'InvoiceExpired') {
@@ -165,7 +120,6 @@ serve(async (req: Request) => {
 
     return new Response(JSON.stringify({ received: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } })
   } catch (err) {
-    console.error("Global Error:", err)
     return new Response(JSON.stringify({ error: 'Invalid request' }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } })
   }
 })
