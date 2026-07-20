@@ -3,63 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Master Dashboard</title>
+<title>Master Dashboard - Direct Auth</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- 🟢 unpkg লিংক (Bypass Block) 🟢 -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-body{margin:0;font-family:sans-serif;background:#000;color:#fff;}
-.container{max-width:1100px;margin:auto;padding:20px;}
-.card{background:#111;padding:15px;border-radius:10px;margin-bottom:15px;}
-button{padding:8px 12px;border:none;border-radius:6px;cursor:pointer;}
+body { margin:0; font-family:sans-serif; background:#000; color:#fff; }
+.container { max-width:1100px; margin:auto; padding:20px; }
+.card { background:#111; padding:15px; border-radius:10px; margin-bottom:15px; }
+button { padding:8px 12px; border:none; border-radius:6px; cursor:pointer; }
+.field-input { width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box; }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- 🟢 LOGIN PAGE 🟢 -->
 <div id="loginPage" class="container">
   <div class="card">
-    <h2>🌍 Master Login</h2>
-    <input id="email" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;">
-    <input id="pass" type="password" placeholder="Password" style="width:100%;padding:10px;margin-bottom:10px;">
-    <button onclick="login()">Login</button>
+    <h2>🌍 Master Login (Direct Auth)</h2>
+    <input id="loginEmail" class="field-input" placeholder="Email">
+    <input id="loginPass" type="password" class="field-input" placeholder="Password" onkeydown="if(event.key==='Enter') login()">
+    <button onclick="login()" id="loginBtn" style="background:#3b82f6;color:white;width:100%;font-weight:bold;padding:12px;">Login</button>
   </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- 🟢 DASHBOARD 🟢 -->
 <div id="dashboard" class="container" style="display:none;">
 
   <div class="card">
     <h3>💰 Global Balance</h3>
-    <div id="balance">$0</div>
+    <div id="balance">Loading...</div>
   </div>
 
   <div class="card">
     <h3>🏷️ Brands</h3>
-    <div id="brands"></div>
+    <div id="brands">Loading...</div>
   </div>
 
   <div class="card">
     <h3>💸 Withdraw Requests</h3>
-    <div id="withdraws"></div>
+    <div id="withdraws">Loading...</div>
   </div>
 
-  <button onclick="logout()">Logout</button>
+  <button onclick="logout()" style="background:#ef4444; color:#fff; font-weight:bold;">Logout</button>
 
 </div>
 
 <script>
-
+// 🟢 Supabase Config
 const supabase = window.supabase.createClient(
   "https://qhyimqvuzzanekcqaemg.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0"
 );
 
-// ✅ LOGIN
+// 🔥 FIX 1: FORCE SESSION FROM RESPONSE (আপনার লজিক অনুযায়ী)
 async function login() {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('pass').value;
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const btn = document.getElementById('loginBtn');
+
+  if(!email || !password) return alert("Please enter email and password");
+
+  btn.innerText = "Authenticating...";
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -70,37 +77,23 @@ async function login() {
 
   if (error) {
     alert(error.message);
+    btn.innerText = "Login";
     return;
   }
 
-  alert("Login success");
+  // ✅ IMPORTANT FIX: Direct Session Check
+  if (data.session) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadEverything(); // Dashboard Data লোড হবে
+  } else {
+    alert("Session not created!");
+    btn.innerText = "Login";
+  }
 }
 
-// ✅ SESSION LISTENER (MOST IMPORTANT)
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log("AUTH EVENT:", event);
-
-  if (session) {
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    loadData();
-  }
-});
-
-// ✅ CHECK SESSION ON LOAD
-window.onload = async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (session) {
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    loadData();
-  }
-};
-
-// ✅ LOAD DATA
-async function loadData() {
-
+// 🟢 LOAD EVERYTHING FUNCTION
+async function loadEverything() {
   // ✅ GLOBAL BALANCE
   const { data: payments } = await supabase
     .from('payments')
@@ -109,23 +102,18 @@ async function loadData() {
 
   let total = 0;
   payments?.forEach(p => total += Number(p.amount));
-
   document.getElementById('balance').innerText = "$" + total.toFixed(2);
 
   // ✅ BRANDS
   const { data: brands } = await supabase.from('brands').select('*');
-
   const bDiv = document.getElementById('brands');
   bDiv.innerHTML = '';
 
   for (const b of brands || []) {
-    const { data: bal } = await supabase.rpc('approved_balance', {
-      p_brand: b.id
-    });
-
+    const { data: bal } = await supabase.rpc('approved_balance', { p_brand: b.id });
     bDiv.innerHTML += `
-      <div class="card">
-        ${b.name} → $${(bal||0).toFixed(2)}
+      <div class="card" style="background:#1a1a1a; margin-top:10px;">
+        <strong>${b.name}</strong> → $${(bal||0).toFixed(2)}
       </div>
     `;
   }
@@ -139,39 +127,55 @@ async function loadData() {
   const wDiv = document.getElementById('withdraws');
   wDiv.innerHTML = '';
 
-  wd?.forEach(w => {
-    wDiv.innerHTML += `
-      <div class="card">
-        $${w.amount} - ${w.note || ''}
-        <br>
-        <button onclick="done('${w.id}')">Done</button>
-        <button onclick="del('${w.id}')">Delete</button>
-      </div>
-    `;
-  });
+  if(!wd || wd.length === 0) {
+      wDiv.innerHTML = "No pending withdrawals.";
+  } else {
+      wd.forEach(w => {
+        let badge = w.status === 'completed' 
+            ? '<span style="color:#00C851;">[Completed]</span>' 
+            : '<span style="color:#ffc107;">[Pending]</span>';
+
+        let actionBtns = w.status !== 'completed' 
+            ? `<br><button onclick="done('${w.id}')" style="background:#00C851;color:#000;margin-top:10px;">Done</button>
+               <button onclick="del('${w.id}')" style="background:#ff4444;color:#fff;margin-top:10px;margin-left:5px;">Delete</button>` 
+            : '';
+
+        wDiv.innerHTML += `
+          <div class="card" style="background:#1a1a1a; margin-top:10px;">
+            ${badge} <strong>$${w.amount}</strong> - ${w.note || 'No note'}
+            ${actionBtns}
+          </div>
+        `;
+      });
+  }
 }
 
-// ✅ ACTIONS
+// 🟢 ACTIONS
 async function done(id){
-  await supabase.from('withdrawals')
-    .update({status:'completed'})
-    .eq('id', id);
-  loadData();
+  if(!confirm("Mark as completed?")) return;
+  await supabase.from('withdrawals').update({status:'completed'}).eq('id', id);
+  loadEverything();
 }
 
 async function del(id){
-  await supabase.from('withdrawals')
-    .delete()
-    .eq('id', id);
-  loadData();
+  if(!confirm("Delete this request?")) return;
+  await supabase.from('withdrawals').delete().eq('id', id);
+  loadEverything();
 }
 
-// ✅ LOGOUT
+// 🟢 LOGOUT
 async function logout(){
   await supabase.auth.signOut();
-  location.reload();
+  // Logout করার পর ম্যানুয়ালি লগইন পেজ শো করা হচ্ছে
+  document.getElementById('loginPage').style.display = 'block';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginBtn').innerText = "Login";
 }
 
+// 🔥 FIX 2: REMOVED `window.onload = checkSession;`
+// 🔥 FIX 3: REMOVED `supabase.auth.onAuthStateChange`
 </script>
 
 </body>
