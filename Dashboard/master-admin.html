@@ -3,16 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Master Dashboard Debug</title>
+<title>Master Dashboard</title>
 
-<!-- Supabase CDN -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{margin:0;font-family:sans-serif;background:#000;color:#fff;}
 .container{max-width:1100px;margin:auto;padding:20px;}
 .card{background:#111;padding:15px;border-radius:10px;margin-bottom:15px;}
-button{padding:10px 15px;border:none;border-radius:6px;cursor:pointer; font-weight:bold;}
+button{padding:8px 12px;border:none;border-radius:6px;cursor:pointer;}
 </style>
 </head>
 
@@ -21,92 +20,158 @@ button{padding:10px 15px;border:none;border-radius:6px;cursor:pointer; font-weig
 <!-- LOGIN -->
 <div id="loginPage" class="container">
   <div class="card">
-    <h2>🌍 Master Login (Diagnostic)</h2>
-    <input id="email" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;box-sizing:border-box;">
-    <input id="pass" type="password" placeholder="Password" style="width:100%;padding:10px;margin-bottom:10px;box-sizing:border-box;">
-    <button onclick="login()" id="loginBtn" style="background:#3b82f6;color:white;width:100%;">Click to Login</button>
+    <h2>🌍 Master Login</h2>
+    <input id="email" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;">
+    <input id="pass" type="password" placeholder="Password" style="width:100%;padding:10px;margin-bottom:10px;">
+    <button onclick="login()">Login</button>
   </div>
 </div>
 
+<!-- DASHBOARD -->
 <div id="dashboard" class="container" style="display:none;">
-  <h2>Dashboard Loaded Successfully!</h2>
-  <button onclick="logout()" style="background:#ef4444;color:white;">Logout</button>
+
+  <div class="card">
+    <h3>💰 Global Balance</h3>
+    <div id="balance">$0</div>
+  </div>
+
+  <div class="card">
+    <h3>🏷️ Brands</h3>
+    <div id="brands"></div>
+  </div>
+
+  <div class="card">
+    <h3>💸 Withdraw Requests</h3>
+    <div id="withdraws"></div>
+  </div>
+
+  <button onclick="logout()">Logout</button>
+
 </div>
 
 <script>
-// 🚨 ১. MOBILE ERROR CATCHER: কোড ক্র্যাশ করলে স্ক্রিনে ভাসবে!
-window.onerror = function(msg, url, lineNo, columnNo, error) {
-  alert("🚨 System Error: " + msg + "\n\nLine: " + lineNo);
-  document.getElementById('loginBtn').innerText = "System Crashed!";
-  return false;
-};
 
-let supabase;
+const supabase = window.supabase.createClient(
+  "https://qhyimqvuzzanekcqaemg.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0"
+);
 
-// 🚨 ২. DELAYED INIT: পেজ লোড হওয়ার পর চেক করবে Supabase ব্লক কিনা
-setTimeout(() => {
-  if (typeof window.supabase === 'undefined') {
-    alert("⚠️ INTERNET BLOCK DETECTED!\n\nআপনার ইন্টারনেট (বা WiFi) Supabase এর ফাইলগুলো ব্লক করে রেখেছে। দয়া করে একটি VPN চালু করে পেজটি রিলোড দিন।");
-    document.getElementById('loginBtn').innerText = "Blocked by ISP - Use VPN";
-    document.getElementById('loginBtn').style.background = "#ef4444";
-  } else {
-    // যদি ব্লক না থাকে, তাহলে ইনিশিয়ালাইজ করবে
-    try {
-      supabase = window.supabase.createClient(
-        "https://qhyimqvuzzanekcqaemg.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0"
-      );
-      
-      // Session Listener
-      supabase.auth.onAuthStateChange((event, session) => {
-        if (session) {
-          document.getElementById('loginPage').style.display = 'none';
-          document.getElementById('dashboard').style.display = 'block';
-        } else {
-          document.getElementById('loginPage').style.display = 'block';
-          document.getElementById('dashboard').style.display = 'none';
-        }
-      });
-      
-    } catch(e) {
-      alert("Init Error: " + e.message);
-    }
-  }
-}, 800); // ৮০০ মিলিসেকেন্ড অপেক্ষা করবে ফাইল লোড হওয়ার জন্য
-
-// ✅ LOGIN FUNCTION
+// ✅ LOGIN
 async function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('pass').value;
-  const btn = document.getElementById('loginBtn');
 
-  if(!email || !password) return alert("Please enter email and password");
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
 
-  if (!supabase) {
-    return alert("Supabase is not loaded. Turn on VPN and refresh.");
+  console.log("LOGIN:", data, error);
+
+  if (error) {
+    alert(error.message);
+    return;
   }
 
-  btn.innerText = "Authenticating...";
+  alert("Login success");
+}
 
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
+// ✅ SESSION LISTENER (MOST IMPORTANT)
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log("AUTH EVENT:", event);
+
+  if (session) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
+  }
+});
+
+// ✅ CHECK SESSION ON LOAD
+window.onload = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
+  }
+};
+
+// ✅ LOAD DATA
+async function loadData() {
+
+  // ✅ GLOBAL BALANCE
+  const { data: payments } = await supabase
+    .from('payments')
+    .select('amount')
+    .eq('approval_status','approved');
+
+  let total = 0;
+  payments?.forEach(p => total += Number(p.amount));
+
+  document.getElementById('balance').innerText = "$" + total.toFixed(2);
+
+  // ✅ BRANDS
+  const { data: brands } = await supabase.from('brands').select('*');
+
+  const bDiv = document.getElementById('brands');
+  bDiv.innerHTML = '';
+
+  for (const b of brands || []) {
+    const { data: bal } = await supabase.rpc('approved_balance', {
+      p_brand: b.id
     });
 
-    if (error) {
-      alert("Login Failed: " + error.message);
-      btn.innerText = "Click to Login";
-    }
-  } catch(e) {
-    alert("Login Crash: " + e.message);
-    btn.innerText = "Click to Login";
+    bDiv.innerHTML += `
+      <div class="card">
+        ${b.name} → $${(bal||0).toFixed(2)}
+      </div>
+    `;
   }
+
+  // ✅ WITHDRAW REQUESTS
+  const { data: wd } = await supabase
+    .from('withdrawals')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  const wDiv = document.getElementById('withdraws');
+  wDiv.innerHTML = '';
+
+  wd?.forEach(w => {
+    wDiv.innerHTML += `
+      <div class="card">
+        $${w.amount} - ${w.note || ''}
+        <br>
+        <button onclick="done('${w.id}')">Done</button>
+        <button onclick="del('${w.id}')">Delete</button>
+      </div>
+    `;
+  });
 }
 
-async function logout(){
-  if(supabase) await supabase.auth.signOut();
+// ✅ ACTIONS
+async function done(id){
+  await supabase.from('withdrawals')
+    .update({status:'completed'})
+    .eq('id', id);
+  loadData();
 }
+
+async function del(id){
+  await supabase.from('withdrawals')
+    .delete()
+    .eq('id', id);
+  loadData();
+}
+
+// ✅ LOGOUT
+async function logout(){
+  await supabase.auth.signOut();
+  location.reload();
+}
+
 </script>
 
 </body>
