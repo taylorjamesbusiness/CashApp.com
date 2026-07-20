@@ -160,7 +160,7 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
         <div class="stat-val" id="statSettled">$0.00</div>
         <div class="stat-sub" id="statSettledCount">0 payments</div>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-icon">🏦</div>
         <div class="stat-label">Available Balance</div>
@@ -324,19 +324,19 @@ async function fetchPayments() {
       headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
     });
     let data = await res.json();
-    
+
     // Check if error
     if (data.error) {
       console.error("Supabase Error:", data.error);
       return;
     }
-    
+
     const now = new Date();
-    
+
     allPayments = data.map(p => {
       // Dynamic Expiration Logic: USDC = 15m, BTC = 60m
       p._expireMins = (p.payment_type && p.payment_type.toLowerCase() === 'usdc') ? 15 : 60;
-      
+
       // Fix: Check for both 'new' and 'pending'
       if (p.status === 'new' || p.status === 'pending') {
         const diffMin = (now - new Date(p.created_at)) / 60000;
@@ -362,16 +362,16 @@ function updateStats() {
   const settled = allPayments.filter(p => p.status === 'settled' || p.status === 'completed' || p.status === 'paid');
   const pending = allPayments.filter(p => (p.status === 'new' || p.status === 'pending') && !p._uiExpired);
   const expired = allPayments.filter(p => p.status === 'expired' || p._uiExpired);
-  
+
   const totalSettled = settled.reduce((s,p) => s + parseFloat(p.amount || 0), 0);
   const totalWithdrawn = allWithdrawals.reduce((s,w) => s + parseFloat(w.amount || 0), 0);
   const available = totalSettled - totalWithdrawn;
-  
+
   document.getElementById('statSettled').textContent = '$' + totalSettled.toFixed(2);
   document.getElementById('statSettledCount').textContent = settled.length + ' payments';
-  
+
   document.getElementById('statAvailable').textContent = '$' + available.toFixed(2);
-  
+
   document.getElementById('statPending').textContent = pending.length;
   document.getElementById('statTotal').textContent = allPayments.length;
   document.getElementById('statExpired').textContent = expired.length + ' expired';
@@ -401,15 +401,15 @@ function getFilteredPayments() {
   const statusFilter = document.getElementById('filterStatus').value;
   const dateFilter = document.getElementById('filterDate').value;
   const search = document.getElementById('searchInput').value.toLowerCase();
-  
+
   return allPayments.filter(p => {
     let es = p.status;
     if (p._uiExpired) es = 'expired';
-    
+
     // Fix: Treat 'new' and 'pending' as the same thing for the filter
     if (statusFilter === 'pending' && (es !== 'pending' && es !== 'new')) return false;
     else if (statusFilter && statusFilter !== 'pending' && es !== statusFilter) return false;
-    
+
     if (search && !(p.invoice_id||'').toLowerCase().includes(search)) return false;
     if (dateFilter) {
       const d = new Date(p.created_at), now = new Date();
@@ -455,7 +455,7 @@ function renderPayments() {
     if (p._uiExpired) es = 'expired';
     const shortId = (p.invoice_id||'').substring(0,18) + '...';
     const globalIndex = start + index + 1;
-    
+
     const methodStr = p.payment_type ? p.payment_type.toUpperCase() : 'LIGHTNING';
     const methodColor = methodStr === 'USDC' ? '#00C851' : (methodStr === 'ONCHAIN' ? '#f7931a' : '#ffc400');
 
@@ -481,7 +481,7 @@ function renderPayments() {
     let es = p.status;
     if (p._uiExpired) es = 'expired';
     const shortId = (p.invoice_id||'').substring(0,22) + '...';
-    
+
     const methodStr = p.payment_type ? p.payment_type.toUpperCase() : 'LIGHTNING';
     const methodColor = methodStr === 'USDC' ? '#00C851' : (methodStr === 'ONCHAIN' ? '#f7931a' : '#ffc400');
 
@@ -574,7 +574,7 @@ async function submitWithdrawal() {
   const amt = parseFloat(document.getElementById('wdAmount').value);
   const note = document.getElementById('wdNote').value || '';
   if (!amt || amt <= 0) return alert('Enter a valid amount');
-  
+
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/withdrawals`, {
       method: 'POST',
@@ -586,12 +586,12 @@ async function submitWithdrawal() {
       },
       body: JSON.stringify({ amount: amt, note: note })
     });
-    
+
     if(!res.ok) {
         alert("Make sure you have created the 'withdrawals' table with RLS disabled!");
         return;
     }
-    
+
     document.getElementById('wdAmount').value = '';
     document.getElementById('wdNote').value = '';
     loadData(); 
