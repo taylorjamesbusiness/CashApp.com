@@ -3,16 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Master Dashboard</title>
+<title>Admin Panel</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{margin:0;font-family:sans-serif;background:#000;color:#fff;}
-.container{max-width:1100px;margin:auto;padding:20px;}
-.card{background:#111;padding:15px;border-radius:10px;margin-bottom:15px;}
-input{width:100%;padding:10px;margin-bottom:10px;}
-button{padding:10px;border:none;border-radius:6px;cursor:pointer;}
+body {
+  margin:0;
+  font-family:sans-serif;
+  background:#000;
+  color:#fff;
+}
+
+.container {
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+
+.card {
+  background:#111;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+input {
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+}
+
+button {
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -21,23 +48,26 @@ button{padding:10px;border:none;border-radius:6px;cursor:pointer;}
 <!-- LOGIN -->
 <div id="loginPage" class="container">
   <div class="card">
-    <h2>Login</h2>
+    <h2>Admin Login</h2>
+
     <input id="email" placeholder="Email">
     <input id="pass" type="password" placeholder="Password">
+
     <button onclick="login()">Login</button>
   </div>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashboard" class="container" style="display:none;">
+
   <div class="card">
-    <h3>Global Balance</h3>
+    <h3>Balance</h3>
     <div id="balance">$0</div>
   </div>
 
   <div class="card">
-    <h3>Brands</h3>
-    <div id="brands"></div>
+    <h3>Payments</h3>
+    <div id="payments"></div>
   </div>
 
   <div class="card">
@@ -46,20 +76,21 @@ button{padding:10px;border:none;border-radius:6px;cursor:pointer;}
   </div>
 
   <button onclick="logout()">Logout</button>
+
 </div>
 
 <script>
 
 // ✅ ONLY ONE SUPABASE INSTANCE
 const SUPABASE_URL = "https://qhyimqvuzzanekcqaemg.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
 
 const supabase = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
-// ✅ LOGIN
+// ✅ LOGIN FUNCTION
 async function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('pass').value;
@@ -76,7 +107,6 @@ async function login() {
     return;
   }
 
-  // ✅ DIRECT UI SWITCH (NO SESSION BUG)
   document.getElementById('loginPage').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
 
@@ -97,23 +127,13 @@ async function loadData() {
 
   document.getElementById('balance').innerText = "$" + total.toFixed(2);
 
-  // brands
-  const { data: brands } = await supabase.from('brands').select('*');
+  // payments list
+  const pDiv = document.getElementById('payments');
+  pDiv.innerHTML = '';
 
-  const bDiv = document.getElementById('brands');
-  bDiv.innerHTML = '';
-
-  for (const b of brands || []) {
-    const { data: bal } = await supabase.rpc('approved_balance', {
-      p_brand: b.id
-    });
-
-    bDiv.innerHTML += `
-      <div class="card">
-        ${b.display_name} → $${(bal || 0).toFixed(2)}
-      </div>
-    `;
-  }
+  payments?.forEach(p => {
+    pDiv.innerHTML += `<div>$${p.amount}</div>`;
+  });
 
   // withdrawals
   const { data: wd } = await supabase
@@ -127,32 +147,14 @@ async function loadData() {
   wd?.forEach(w => {
     wDiv.innerHTML += `
       <div class="card">
-        $${w.amount} - ${w.note || ''}
-        <br>
-        <button onclick="done('${w.id}')">Done</button>
-        <button onclick="del('${w.id}')">Delete</button>
+        $${w.amount}
       </div>
     `;
   });
 }
 
-// ✅ ACTIONS
-async function done(id){
-  await supabase.from('withdrawals')
-    .update({status:'completed'})
-    .eq('id', id);
-  loadData();
-}
-
-async function del(id){
-  await supabase.from('withdrawals')
-    .delete()
-    .eq('id', id);
-  loadData();
-}
-
 // ✅ LOGOUT
-async function logout(){
+async function logout() {
   await supabase.auth.signOut();
   location.reload();
 }
