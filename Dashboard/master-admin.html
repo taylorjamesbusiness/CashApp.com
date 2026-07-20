@@ -92,61 +92,76 @@ async function login() {
   }
 }
 
-// 🟢 LOAD EVERYTHING FUNCTION
+// 🟢 LOAD EVERYTHING FUNCTION (UPDATED & SAFE)
 async function loadEverything() {
-  // ✅ GLOBAL BALANCE
-  const { data: payments } = await supabase
-    .from('payments')
-    .select('amount')
-    .eq('approval_status','approved');
+  try {
+    // ✅ GLOBAL BALANCE
+    const { data: payments, error: payErr } = await supabase
+      .from('payments')
+      .select('amount')
+      .eq('approval_status','approved');
+    
+    if (payErr) throw payErr; // Error throw করবে catch ব্লকে যাওয়ার জন্য
 
-  let total = 0;
-  payments?.forEach(p => total += Number(p.amount));
-  document.getElementById('balance').innerText = "$" + total.toFixed(2);
+    let total = 0;
+    payments?.forEach(p => total += Number(p.amount));
+    document.getElementById('balance').innerText = "$" + total.toFixed(2);
 
-  // ✅ BRANDS
-  const { data: brands } = await supabase.from('brands').select('*');
-  const bDiv = document.getElementById('brands');
-  bDiv.innerHTML = '';
+    // ✅ BRANDS
+    const { data: brands, error: brandErr } = await supabase.from('brands').select('*');
+    if (brandErr) throw brandErr;
 
-  for (const b of brands || []) {
-    const { data: bal } = await supabase.rpc('approved_balance', { p_brand: b.id });
-    bDiv.innerHTML += `
-      <div class="card" style="background:#1a1a1a; margin-top:10px;">
-        <strong>${b.name}</strong> → $${(bal||0).toFixed(2)}
-      </div>
-    `;
-  }
+    const bDiv = document.getElementById('brands');
+    bDiv.innerHTML = '';
 
-  // ✅ WITHDRAW REQUESTS
-  const { data: wd } = await supabase
-    .from('withdrawals')
-    .select('*')
-    .order('created_at',{ascending:false});
+    for (const b of brands || []) {
+      const { data: bal, error: rpcErr } = await supabase.rpc('approved_balance', { p_brand: b.id });
+      if (rpcErr) throw rpcErr;
 
-  const wDiv = document.getElementById('withdraws');
-  wDiv.innerHTML = '';
+      // 🔥 FIX: UI-তে display_name ব্যবহার করা হয়েছে
+      bDiv.innerHTML += `
+        <div class="card" style="background:#1a1a1a; margin-top:10px;">
+          <strong>${b.display_name}</strong> → $${(bal||0).toFixed(2)}
+        </div>
+      `;
+    }
 
-  if(!wd || wd.length === 0) {
-      wDiv.innerHTML = "No pending withdrawals.";
-  } else {
-      wd.forEach(w => {
-        let badge = w.status === 'completed' 
-            ? '<span style="color:#00C851;">[Completed]</span>' 
-            : '<span style="color:#ffc107;">[Pending]</span>';
+    // ✅ WITHDRAW REQUESTS
+    const { data: wd, error: wdErr } = await supabase
+      .from('withdrawals')
+      .select('*')
+      .order('created_at',{ascending:false});
+    
+    if (wdErr) throw wdErr;
 
-        let actionBtns = w.status !== 'completed' 
-            ? `<br><button onclick="done('${w.id}')" style="background:#00C851;color:#000;margin-top:10px;">Done</button>
-               <button onclick="del('${w.id}')" style="background:#ff4444;color:#fff;margin-top:10px;margin-left:5px;">Delete</button>` 
-            : '';
+    const wDiv = document.getElementById('withdraws');
+    wDiv.innerHTML = '';
 
-        wDiv.innerHTML += `
-          <div class="card" style="background:#1a1a1a; margin-top:10px;">
-            ${badge} <strong>$${w.amount}</strong> - ${w.note || 'No note'}
-            ${actionBtns}
-          </div>
-        `;
-      });
+    if(!wd || wd.length === 0) {
+        wDiv.innerHTML = "No pending withdrawals.";
+    } else {
+        wd.forEach(w => {
+          let badge = w.status === 'completed' 
+              ? '<span style="color:#00C851;">[Completed]</span>' 
+              : '<span style="color:#ffc107;">[Pending]</span>';
+
+          let actionBtns = w.status !== 'completed' 
+              ? `<br><button onclick="done('${w.id}')" style="background:#00C851;color:#000;margin-top:10px;">Done</button>
+                 <button onclick="del('${w.id}')" style="background:#ff4444;color:#fff;margin-top:10px;margin-left:5px;">Delete</button>` 
+              : '';
+
+          wDiv.innerHTML += `
+            <div class="card" style="background:#1a1a1a; margin-top:10px;">
+              ${badge} <strong>$${w.amount}</strong> - ${w.note || 'No note'}
+              ${actionBtns}
+            </div>
+          `;
+        });
+    }
+  } catch (e) {
+    // 🚨 EXTRA IMPORTANT (Silent Crash Fix)
+    console.error("LOAD ERROR:", e);
+    alert("Dashboard error: " + e.message);
   }
 }
 
