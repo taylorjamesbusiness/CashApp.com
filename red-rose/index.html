@@ -134,7 +134,7 @@ body {
 <body>
 
 <div id="app-wrapper">
-  
+
   <div class="topbar">
     <div class="topbar-name">Red Rose</div>
     <div class="topbar-avatar">R</div>
@@ -162,7 +162,7 @@ body {
       </button>
     </div>
   </div>
-  
+
   <div class="action-section">
     <div class="quick-amounts" id="quickAmounts">
       <button class="quick-chip" onclick="setQuick(this,10)">$10</button>
@@ -172,7 +172,7 @@ body {
       <button class="quick-chip" onclick="setQuick(this,200)">$200</button>
     </div>
     <button class="quick-btn" onclick="toggleQuick()">Quick amount</button>
-    
+
     <button class="pay-btn" id="payBtn" onclick="submitPayment()">
       <div class="btn-spinner"></div>
       <span id="payBtnText">Pay</span>
@@ -193,8 +193,8 @@ body {
 
 <script>
 // ⚠️ আপনার নতুন Supabase URL & Key (Admin প্যানেল থেকে নেওয়া)
-const SUPABASE_URL      = 'https://dirokbqnuosazuwhbdhs.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpcm9rYnFudW9zYXp1d2hiZGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MDAwOTksImV4cCI6MjA5ODk3NjA5OX0.UTHzC66WjL37dNgc-VWNswH-nCvAvgvEDpz8KYsQp-A';
+const SUPABASE_URL      = 'https://szvoroqtrdheuymqqpfk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dm9yb3F0cmRoZXV5bXFxcGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NjM4NTEsImV4cCI6MjEwMDEzOTg1MX0.EZJ9XSyHObM0f29FhDu2P0mOpHM7kBlNG-MjzBK9sm4';
 const BTCPAY_URL        = `${SUPABASE_URL}/functions/v1/btcpay-webhook`;
 const BTC_SECONDS       = 60 * 60; // 60 Minutes
 
@@ -232,7 +232,7 @@ function keyPress(k) {
     // Amount Limit Fix
     let futureValue = parseFloat(rawInput + k);
     if (futureValue > 2000) return; 
-    
+
     rawInput += k;
   }
   document.querySelectorAll('.quick-chip').forEach(c => c.classList.remove('selected'));
@@ -298,7 +298,7 @@ async function submitPayment() {
       body: JSON.stringify({ action: 'create_btc_invoice', amount, paymentType: 'lightning', userKey, source: dynamicDomain, city, country }),
     });
     const data = await res.json();
-    
+
     if (!res.ok) throw new Error(data.error || 'Failed to create invoice');
 
     let bolt11 = data.lightningCode || '';
