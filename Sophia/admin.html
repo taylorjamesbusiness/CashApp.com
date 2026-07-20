@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel - Sophia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
-<!-- 🟢 Supabase JS 🟢 -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 🟢 FIX 1: unpkg CDN (Bypass ISP Block) 🟢 -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 body { font-family:'DM Sans',sans-serif; background:#000; color:#fff; min-height:100vh; }
@@ -286,9 +288,8 @@ tbody tr:hover { background:rgba(255,255,255,0.02); }
 </div>
 
 <script>
-// 🟢 Supabase Client Config 🟢
+// 🟢 FIX 2: ONLY ONE DECLARATION OF SUPABASE 🟢
 const SUPABASE_URL = 'https://qhyimqvuzzanekcqaemg.supabase.co';
-// Ensure to use the correct Anon Key here
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoeWltcXZ1enphbmVrY3FhZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQ0NTgsImV4cCI6MjA5Nzg2MDQ1OH0.9_N1k4KhmK0Q9biy1SBOo6bvHsZEbTsyaPLz1t1k-R0';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -300,21 +301,24 @@ let allWithdrawals = [];
 let currentPayPage = 1;
 let currentBrandId = null; 
 
-// 🟢 AUTHENTICATION 🟢
+// 🟢 AUTHENTICATION (Direct Auth Integration) 🟢
 async function checkSession() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    
-    // Fetch Brand ID once
-    if(!currentBrandId) currentBrandId = await getBrandId();
-    
-    loadData();
-    startCountdownTick();
-  } else {
-    document.getElementById('loginPage').style.display = 'flex';
-    document.getElementById('dashboard').style.display = 'none';
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (session) {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      
+      if(!currentBrandId) currentBrandId = await getBrandId();
+      
+      loadData();
+      startCountdownTick();
+    } else {
+      document.getElementById('loginPage').style.display = 'flex';
+      document.getElementById('dashboard').style.display = 'none';
+    }
+  } catch (e) {
+    console.error("Session Check Error:", e);
   }
 }
 
@@ -337,16 +341,23 @@ async function login() {
   err.style.display = 'none';
 
   try {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    // 🟢 FIX 3: DIRECT SESSION INJECTION 🟢
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      err.textContent = error.message; // Error মেসেজ স্ক্রিনে দেখাবে
+      err.textContent = error.message; 
       err.style.display = 'block';
       btn.innerText = "Sign In →";
       btn.style.opacity = "1";
       btn.disabled = false;
-    } else {
-      checkSession();
+    } else if (data.session) {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      
+      if(!currentBrandId) currentBrandId = await getBrandId();
+      
+      loadData();
+      startCountdownTick();
     }
   } catch(e) {
     err.textContent = "Network Error: " + e.message;
@@ -359,19 +370,30 @@ async function login() {
 
 async function logout() {
   await supabase.auth.signOut();
-  checkSession();
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
+  document.querySelector('.login-btn').innerText = "Sign In →";
+  document.querySelector('.login-btn').disabled = false;
+  document.querySelector('.login-btn').style.opacity = "1";
 }
 
 // 🟢 GET BRAND ID 🟢
 async function getBrandId(){
-  const { data, error } = await supabase
-    .from('brands')
-    .select('id')
-    .eq('name', 'Sophia')
-    .single();
-    
-  if (error) console.error("Error fetching brand:", error);
-  return data ? data.id : null;
+  try {
+    const { data, error } = await supabase
+      .from('brands')
+      .select('id')
+      .eq('name', 'Sophia')
+      .single();
+      
+    if (error) throw error;
+    return data ? data.id : null;
+  } catch (e) {
+    console.error("Error fetching brand:", e);
+    return null;
+  }
 }
 
 // 🟢 LOAD DATA & RPC STATS 🟢
@@ -390,13 +412,13 @@ async function loadData() {
 }
 
 async function fetchRpcStats() {
-  // 1. RPC: Approved Balance
-  const { data: bal } = await supabase.rpc('approved_balance', { p_brand: currentBrandId });
-  document.getElementById('statAvailable').textContent = "$" + (bal || 0).toFixed(2);
+  try {
+    const { data: bal } = await supabase.rpc('approved_balance', { p_brand: currentBrandId });
+    document.getElementById('statAvailable').textContent = "$" + (bal || 0).toFixed(2);
 
-  // 2. RPC: Pending Approval Amount
-  const { data: pend } = await supabase.rpc('pending_approval_balance', { p_brand: currentBrandId });
-  document.getElementById('statPendingApprove').textContent = "$" + (pend || 0).toFixed(2);
+    const { data: pend } = await supabase.rpc('pending_approval_balance', { p_brand: currentBrandId });
+    document.getElementById('statPendingApprove').textContent = "$" + (pend || 0).toFixed(2);
+  } catch (e) { console.error("RPC Stats Error:", e); }
 }
 
 async function fetchPayments() {
@@ -450,7 +472,6 @@ function updateManualStats() {
 
 // 🟢 APPROVAL ACTIONS 🟢
 async function setApproval(uuid, status) {
-  // ✅ Fix 2: Approve only settled payments
   if (status === 'approved') {
     const payment = allPayments.find(p => p.payment_uuid === uuid);
     if (payment && payment.status !== 'settled') {
@@ -459,56 +480,55 @@ async function setApproval(uuid, status) {
     }
   }
 
-  const { error } = await supabase
-    .from('payments')
-    .update({ approval_status: status })
-    .eq('payment_uuid', uuid);
-    
-  if (error) alert("Error updating approval: " + error.message);
-  else loadData();
+  try {
+    const { error } = await supabase
+      .from('payments')
+      .update({ approval_status: status })
+      .eq('payment_uuid', uuid);
+      
+    if (error) throw error;
+    loadData();
+  } catch (e) {
+    alert("Error updating approval: " + e.message);
+  }
 }
 
 // 🟢 WITHDRAW ACTION 🟢
 async function withdraw() {
   const amountStr = document.getElementById('wdAmount').value;
   const note = document.getElementById('wdNote').value || '';
-  
-  // ✅ Fix 1: Number() instead of parseFloat()
   const amount = Number(amountStr); 
   
   if (!amount || amount <= 0) return alert('Enter a valid amount');
   if (!currentBrandId) return alert('Brand ID not found');
 
-  // Check RPC
-  const { data: can, error: rpcErr } = await supabase.rpc('can_withdraw', {
-    p_brand: currentBrandId,
-    p_amount: amount
-  });
+  try {
+    const { data: can, error: rpcErr } = await supabase.rpc('can_withdraw', {
+      p_brand: currentBrandId,
+      p_amount: amount
+    });
 
-  if (rpcErr) {
-    alert("Error checking balance: " + rpcErr.message);
-    return;
-  }
+    if (rpcErr) throw rpcErr;
 
-  if (!can) {
-    alert("Insufficient approved balance to withdraw this amount!");
-    return;
-  }
+    if (!can) {
+      alert("Insufficient approved balance to withdraw this amount!");
+      return;
+    }
 
-  // Insert Withdrawal
-  const { error } = await supabase.from('withdrawals').insert({
-    brand_id: currentBrandId,
-    amount: amount,
-    note: note
-  });
+    const { error } = await supabase.from('withdrawals').insert({
+      brand_id: currentBrandId,
+      amount: amount,
+      note: note
+    });
 
-  if (error) {
-    alert("Withdrawal failed: " + error.message);
-  } else {
+    if (error) throw error;
+
     alert("Withdraw request sent successfully.");
     document.getElementById('wdAmount').value = '';
     document.getElementById('wdNote').value = '';
     loadData();
+  } catch (e) {
+    alert("Withdrawal failed: " + e.message);
   }
 }
 
@@ -586,7 +606,6 @@ function renderPayments() {
     const methodStr = p.payment_type ? p.payment_type.toUpperCase() : 'LN';
     const methodColor = methodStr === 'USDC' ? '#00C851' : (methodStr === 'ONCHAIN' ? '#f7931a' : '#ffc400');
 
-    // 🟢 Action Buttons UI 🟢
     let actionUI = '';
     if (p.approval_status === 'approved') {
       actionUI = `<span style="color:#00C851;font-weight:800;font-size:11px;">✓ APPROVED</span>
