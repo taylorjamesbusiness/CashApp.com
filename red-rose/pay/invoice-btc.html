@@ -100,14 +100,14 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
 
   <div class="qr-container">
     <div class="awaiting-text">Awaiting payment...</div>
-    
+
     <a id="qrLink" href="#" target="_blank">
       <div class="qr-outer-frame">
         <div id="qrcode"></div>
         <div class="qr-logo"><div class="qr-logo-inner">$</div></div>
       </div>
     </a>
-    
+
     <div style="width: 100%; max-width: 340px;">
         <div class="info-card">★ If you have trouble scanning, you can copy the invoice address and use the paste option.</div>
         <div class="info-card">
@@ -154,8 +154,8 @@ html, body { width: 100%; height: 100%; font-family: 'DM Sans', sans-serif; back
 
 <script>
 // Supabase
-const SUPABASE_URL = 'https://dirokbqnuosazuwhbdhs.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpcm9rYnFudW9zYXp1d2hiZGhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MDAwOTksImV4cCI6MjA5ODk3NjA5OX0.UTHzC66WjL37dNgc-VWNswH-nCvAvgvEDpz8KYsQp-A';
+const SUPABASE_URL = 'https://szvoroqtrdheuymqqpfk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6dm9yb3F0cmRoZXV5bXFxcGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NjM4NTEsImV4cCI6MjEwMDEzOTg1MX0.EZJ9XSyHObM0f29FhDu2P0mOpHM7kBlNG-MjzBK9sm4';
 
 let timerInterval, pollInterval;
 let currentPayCode = '';
@@ -170,7 +170,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!saved) { window.location.href = '../index.html'; return; }
   const data = JSON.parse(saved);
   currentPayCode = data.payCode || data.qrText;
-  
+
   // QR Code size slightly reduced to prevent scrolling
   new QRCode(document.getElementById('qrcode'), { text: data.cashAppUrl || currentPayCode, width: 190, height: 190 });
   document.getElementById('qrLink').href = data.cashAppUrl || '#';
@@ -188,7 +188,7 @@ function copyAddress() {
   btn.style.background = '#00D632';
   btn.style.color = '#000';
   btn.style.border = 'none';
-  
+
   setTimeout(() => { 
       btn.textContent = 'Copy address'; 
       btn.style.background = 'rgba(255, 255, 255, 0.1)';
@@ -241,7 +241,7 @@ function startPolling(invoiceId, amount) {
         body: JSON.stringify({ checkStatus: true, invoiceId })
       });
       const data = await res.json();
-      
+
       if (data?.status === 'settled' || data?.status === 'Processing') {
         clearInterval(pollInterval);
         clearInterval(timerInterval);
